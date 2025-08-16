@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h2>Edit Profile</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Show non-editable fields -->
+        <p><strong>Name:</strong> {{ user.get_full_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Department:</strong> {{ user.department.name }}</p>
+        <p><strong>Semester:</strong> {{user.semester.semester}}</p>
+
+        <!-- Editable fields -->
+        {{ form.as_p }}
+
+        <button type="submit">Save Changes</button>
+    </form>
+</body>
+</html>
