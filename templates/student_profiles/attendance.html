@@ -1,0 +1,355 @@
+{% extends "student_base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="mb-0">Attendance Dashboard</h2>
+      <small class="text-muted">As of {{ today }}</small>
+    </div>
+
+    <!-- Filters -->
+    <form method="get" class="row g-2">
+      <div class="col-auto">
+        <label class="form-label mb-0 small">Start</label>
+        <input type="date" name="start" class="form-control" value="{{ start }}">
+      </div>
+      <div class="col-auto">
+        <label class="form-label mb-0 small">End</label>
+        <input type="date" name="end" class="form-control" value="{{ end }}">
+      </div>
+      <div class="col-auto d-flex align-items-end">
+        <button class="btn btn-primary">Apply</button>
+      </div>
+      {% if start or end %}
+      <div class="col-auto d-flex align-items-end">
+        <a href="{% url 'student_attendance' %}" class="btn btn-outline-secondary">Clear</a>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">Total Classes</div>
+              <div class="fs-3 fw-bold">{{ total_classes }}</div>
+            </div>
+            <i class="bi bi-journal-check fs-2 text-secondary"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-muted small">Present</div>
+          <div class="fs-3 fw-bold text-success">{{ total_present }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-muted small">Absent</div>
+          <div class="fs-3 fw-bold text-danger">{{ total_absent }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">Overall %</div>
+              <div class="fs-3 fw-bold">{{ overall_percent }}%</div>
+              <div class="small {% if overall_percent >= benchmark %}text-success{% else %}text-warning{% endif %}">
+                Benchmark: {{ benchmark }}%
+              </div>
+            </div>
+            <div style="width:74px;height:74px;">
+              <canvas id="overallRing"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-lg-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <strong>Subject-wise Attendance %</strong>
+          <div class="small text-muted">With 75% benchmark line</div>
+        </div>
+        <div class="card-body">
+          <canvas id="subjectBar" style="max-height: 360px;"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <strong>Overall Attendance</strong>
+          <div class="small text-muted">Present vs Absent</div>
+        </div>
+        <div class="card-body">
+          <canvas id="overallDoughnut" style="max-height: 360px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="row g-3 mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white">
+          <strong>Daily Attendance Trend</strong>
+          <div class="small text-muted">Percentage of periods attended per day</div>
+        </div>
+        <div class="card-body">
+          <canvas id="timelineLine" style="max-height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subject table -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white">
+      <strong>Subject Summary</strong>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Subject</th>
+              <th class="text-center">Present</th>
+              <th class="text-center">Absent</th>
+              <th class="text-center">Total</th>
+              <th class="text-center">%</th>
+              <th class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if subject_stats %}
+              {% for s in subject_stats %}
+              <tr>
+                <td class="fw-semibold">{{ s.subject }}</td>
+                <td class="text-center text-success">{{ s.present }}</td>
+                <td class="text-center text-danger">{{ s.absent }}</td>
+                <td class="text-center">{{ s.total }}</td>
+                <td class="text-center fw-semibold">{{ s.percent }}%</td>
+                <td class="text-center">
+                  {% if s.percent >= benchmark %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">On Track</span>
+                  {% else %}
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Below 75%</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr><td colspan="6" class="text-center text-muted py-4">No attendance data in the selected range.</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed records -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <strong>Attendance Records (Latest)</strong>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Date</th>
+              <th>Subject</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in entries %}
+            <tr>
+              <td>{{ e.attendance.date }}</td>
+              <td>{{ e.attendance.subject.name }}</td>
+              <td>
+                {% if e.status == "present" %}
+                  <span class="badge bg-success">Present</span>
+                {% else %}
+                  <span class="badge bg-danger">Absent</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center text-muted py-4">No records.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  // Data from Django context
+  const SUBJECT_LABELS = {{ chart_labels|safe }};
+  const SUBJECT_PERCENTS = {{ chart_percents|safe }};
+  const OVERALL_PRESENT = {{ total_present|default:0 }};
+  const OVERALL_ABSENT = {{ total_absent|default:0 }};
+  const OVERALL_PERCENT = {{ overall_percent|default:"0" }};
+  const BENCHMARK = {{ benchmark|default:75 }};
+  const TLABELS = {{ timeline_labels|safe }};
+  const TPERCENT = {{ timeline_percent|safe }};
+
+  // Plugin: horizontal benchmark line for bar/line charts
+  const benchmarkLine = {
+    id: 'benchmarkLine',
+    afterDatasetsDraw(chart, args, pluginOptions) {
+      const {ctx, chartArea: {top, bottom, left, right}, scales: {y}} = chart;
+      if (!y) return;
+      const yPos = y.getPixelForValue(BENCHMARK);
+      ctx.save();
+      ctx.beginPath();
+      ctx.setLineDash([6, 6]);
+      ctx.moveTo(left, yPos);
+      ctx.lineTo(right, yPos);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#6c757d';
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#6c757d';
+      ctx.font = '12px system-ui';
+      ctx.fillText(`${BENCHMARK}%`, left + 6, yPos - 6);
+      ctx.restore();
+    }
+  };
+
+  // Subject-wise bar (%)
+  const barCtx = document.getElementById('subjectBar');
+  if (barCtx) {
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: SUBJECT_LABELS,
+        datasets: [{
+          label: 'Attendance %',
+          data: SUBJECT_PERCENTS
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.parsed.y + '%' } }
+        }
+      },
+      plugins: [benchmarkLine]
+    });
+  }
+
+  // Overall doughnut (present vs absent)
+  const doughCtx = document.getElementById('overallDoughnut');
+  if (doughCtx) {
+    new Chart(doughCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Present', 'Absent'],
+        datasets: [{
+          data: [OVERALL_PRESENT, OVERALL_ABSENT]
+        }]
+      },
+      options: {
+        cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  }
+
+  // Overall ring in KPI card (mini doughnut)
+  const ringCtx = document.getElementById('overallRing');
+  if (ringCtx) {
+    new Chart(ringCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['%', 'rest'],
+        datasets: [{
+          data: [OVERALL_PERCENT, Math.max(0, 100 - OVERALL_PERCENT)]
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        cutout: '80%'
+      }
+    });
+  }
+
+  // Timeline (daily %)
+  const lineCtx = document.getElementById('timelineLine');
+  if (lineCtx) {
+    new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: TLABELS,
+        datasets: [{
+          label: 'Daily Attendance %',
+          data: TPERCENT,
+          tension: 0.3,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.parsed.y + '%' } }
+        }
+      },
+      plugins: [benchmarkLine]
+    });
+  }
+</script>
+
+<style>
+  /* Optional subtle badges (Bootstrap 5.3+ suggested) */
+  .bg-success-subtle { background-color: rgba(25,135,84,.15)!important; }
+  .bg-warning-subtle { background-color: rgba(255,193,7,.15)!important; }
+  .border-success-subtle { border-color: rgba(25,135,84,.2)!important; }
+  .border-warning-subtle { border-color: rgba(255,193,7,.2)!important; }
+</style>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Teachers ({{ request.user.department.name }})</h2>
+  <table class="table table-hover table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Semesters</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for teacher in teachers %}
+        <tr onclick="window.location='{% url 'teacher_detail' teacher.pk %}'" style="cursor:pointer;">
+          <td>{{ teacher.get_full_name }}</td>
+          <td>{{ teacher.email }}</td>
+          <td>
+            {% for sem in teacher.semesters.all %}
+              Semester {{ sem.semester }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+              -
+            {% endfor %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3" class="text-center">No teachers found</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

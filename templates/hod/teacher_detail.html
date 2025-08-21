@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card p-3">
+    <h2>{{ teacher.get_full_name }}</h2>
+    <p><strong>Email:</strong> {{ teacher.email }}</p>
+    <p><strong>Department:</strong> {{ teacher.department.name }}</p>
+    <p><strong>Semesters Assigned:</strong>
+      {% for sem in teacher.semesters.all %}
+        Semester {{ sem.semester }}{% if not forloop.last %}, {% endif %}
+      {% empty %}
+        None
+      {% endfor %}
+    </p>
+  </div>
+
+  <!-- Today's Classes -->
+  <div class="card mt-4 p-3">
+    <h4>Today's Classes</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Subject</th>
+          <th>Semester</th>
+          <th>Day</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for routine in todays_classes %}
+          <tr>
+            <td>{{ routine.start_time }} - {{ routine.end_time }}</td>
+            <td>{{ routine.subject.name }}</td>
+            <td>{{ routine.semester.semester }}</td>
+            <td>{{ routine.get_day_of_week_display }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="text-center">No classes today</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Notices -->
+  <div class="card mt-4 p-3">
+    <h4>Notices</h4>
+    <ul>
+      {% for notice in notices %}
+        <li><strong>{{ notice.title }}</strong> - {{ notice.description }}</li>
+      {% empty %}
+        <li>No notices available</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Actions -->
+  <div class="mt-4">
+    <a href="{% url 'teacher_edit' teacher.pk %}" class="btn btn-warning">Edit Teacher</a>
+    <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Back to Teachers</a>
+  </div>
+  
+</div>
+{% endblock %}

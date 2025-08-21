@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ title }}</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const roleField = document.getElementById("id_role");
+      const deptField = document.getElementById("id_department").closest("p");
+      const semField = document.getElementById("id_semester").closest("p");
+
+      function toggleFields() {
+        const role = roleField.value;
+        deptField.style.display = "none";
+        semField.style.display = "none";
+
+        if (role === "hod") {
+          deptField.style.display = "block";
+        } else if (role === "teacher") {
+          deptField.style.display = "block";
+          semField.style.display = "block";
+        } else if (role === "student") {
+          deptField.style.display = "block";
+          semField.style.display = "block";
+        }
+      }
+
+      roleField.addEventListener("change", toggleFields);
+      toggleFields(); // run on load
+    });
+  </script>
+  <button type="submit" class="btn btn-success">Save</button>
+  <a href="{% url 'user_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

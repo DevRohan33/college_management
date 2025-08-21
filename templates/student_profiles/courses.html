@@ -1,0 +1,17 @@
+{% extends "student_base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">📘 My Courses</div>
+    <div class="card-body">
+        {% for subject in subjects %}
+        <div class="mb-3">
+            <h6>{{ subject.name }} ({{ subject.code }})</h6>
+            <small class="text-muted">Instructor: {{ subject.teacher.get_full_name }}</small>
+        </div>
+        {% empty %}
+        <p class="text-muted">No courses assigned yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

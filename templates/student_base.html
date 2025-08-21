@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --background-color: #f4f7fc;
+            --card-bg: #ffffff;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-dark);
+        }
+
+        .main-container { display: flex; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--card-bg);
+            min-height: 100vh;
+            position: fixed;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .sidebar-header .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+            margin: 0;
+        }
+        .sidebar-menu li a {
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .sidebar-menu li a .fa-fw {
+            width: 25px;
+            margin-right: 15px;
+        }
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            color: var(--primary-color);
+            background-color: #eef2ff;
+        }
+        .sidebar-menu li a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-gradient);
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 30px;
+        }
+        .header-title {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        .card-header {
+            background: none;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a class="navbar-brand" href="/">ECE</a>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{% url 'student_dashboard' %}" class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}"><i class="fas fa-tachometer-alt fa-fw"></i> Dashboard</a></li>
+            <li><a href="{% url 'student_courses' %}" class="{% if request.resolver_match.url_name == 'student_courses' %}active{% endif %}"><i class="fas fa-book fa-fw"></i> My Courses</a></li>
+            <li><a href="{% url 'student_assignment_list' %}"><i class="fas fa-tasks fa-fw"></i> Assignments</a></li>
+            <li><a href="{% url 'attendance' %}"><i class="fas fa-user-check fa-fw"></i> Attendance</a></li>
+            <li><a href="#"><i class="fas fa-poll fa-fw"></i> Results</a></li>
+            <li><a href="{% url 'event_list' %}" class="{% if request.resolver_match.url_name == 'event_list' %}active{% endif %}"><i class="fas fa-calendar-alt fa-fw"></i> Events</a></li>
+            <li><a href="{% url 'edit_profile' %}" class="{% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}"><i class="fas fa-user fa-fw"></i> My Profile</a></li>
+            <hr class="mx-4 my-2">
+            <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Page Content -->
+    <!-- Page Content -->
+<main class="main-content">
+
+    <!-- Django messages -->
+    {% if messages %}
+      <div class="container mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

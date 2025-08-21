@@ -1,143 +1,251 @@
+
+
+
+{% extends "Student_base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-</head>
-<body class="bg-light">
+{% block title %}Student Dashboard{% endblock %}
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">My College</a>
-        <div class="d-flex align-items-center">
-            <span class="navbar-text me-3">Welcome, {{ user.first_name }}</span>
-            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Logout</a>
-        </div>
+{% block extra_css %}
+<style>
+    .progress-card .progress-bar {
+        background: var(--primary-gradient);
+    }
+    .profile-card { text-align: center; }
+    .profile-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 3px solid #e2e8f0;
+        margin-bottom: 15px;
+    }
+    .latest-notice {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        border-left: 4px solid var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header>
+    <div>
+        <h1 class="header-title">Welcome Back, {{ user.first_name|default:user.username }}!</h1>
+        <p class="text-muted">Here's what's happening today. Let's make it a productive one.</p>
     </div>
-</nav>
+</header>
 
-<main class="container mt-4">
-
-    <!-- Personal Details & Image -->
-    <div class="row mb-4">
-        <div class="col-md-9">
-            <div class="card shadow-sm p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="text-primary fw-bold mb-0">Personal Details</h5>
-                    <a href="{% url 'edit_profile' %}" class="text-decoration-none text-primary">
-                        <i class="bi bi-pencil-square fs-5"></i>
-                    </a>
-                </div>
-                <p><strong>Name:</strong> {{ user.get_full_name }}</p>
-                <p><strong>Roll No:</strong> {{ student.roll_no }}</p>
-                <p><strong>Registration Number:</strong> {{ student.registration_number }}</p>
-                <p><strong>Department:</strong> {{ user.department.name }}</p>
-                <p><strong>Semester:</strong> {{user.semester.semester}}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
-                <p><strong>Mobile No:</strong>{{ student.phone_number }} </p>
-                <p><strong>Session:</strong>{{ student.session }} </p>
-                <p><strong>Aap ID:</strong> {{ student.aap_id }}</p>
+<div class="row">
+    <!-- Left Column -->
+    <div class="col-lg-8">
+        
+        <!-- Personal Details -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Personal Details</span>
+                <a href="{% url 'edit_profile' %}" class="edit-btn"><i class="fas fa-edit"></i></a>
             </div>
-        </div>
-        <div class="col-md-3 text-center">
-            <div class="card shadow-sm p-3">
-                <img 
-                    src="{% if student and student.profile_image %}{{ student.profile_image.url }}{% else %}{% static 'default-profile.png' %}{% endif %}"
-                    alt="Profile Image"
-                    class="img-fluid rounded"
-                >
-            </div>
-        </div>
-    </div>
-
-    <!-- Subjects Table -->
-    <div class="card shadow-sm p-3 mb-4">
-        <h5 class="text-primary fw-bold mb-3">Subjects</h5>
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Subject Name</th>
-                    <th>Paper Code</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for subject in subjects %}
-                <tr>
-                    <td>{{ subject.name }}</td>
-                    <td>{{ subject.code }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2" class="text-center text-muted py-3">
-                        No subjects assigned.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-    </div>
-
-    <div class="row">
-        <!-- Attendance -->
-        <div class="col-md-8">
-            <div class="card shadow-sm p-3 mb-4">
-                <h5 class="text-primary fw-bold mb-3">Attendance Report</h5>
-                <p>Total Classes: {{ attendance.total }}</p>
-                <p>Attended: {{ attendance.attended }}</p>
-                <p>Percentage: {{ attendance.percentage }}%</p>
-            </div>
-        </div>
-
-        <!-- Notifications -->
-        <div class="col-md-4">
-            <div class="card shadow-sm p-3 mb-4">
-                <h5 class="text-primary fw-bold mb-3">Notifications</h5>
-                <ul class="list-group">
-                    {% for note in notifications %}
-                    <li class="list-group-item">{{ note }}</li>
-                    {% empty %}
-                    <li class="list-group-item text-muted">No notifications.</li>
-                    {% endfor %}
+            <div class="card-body">
+                <ul class="details-list">
+                    <li class="details-item"><strong>Name:</strong> {{ user.get_full_name }}</li>
+                    <li class="details-item"><strong>Roll No:</strong> {{ student.roll_no|default:'Not available' }}</li>
+                    <li class="details-item"><strong>Registration No:</strong> {{ student.registration_number|default:'Not available' }}</li>
+                    <li class="details-item"><strong>Department:</strong> {{ user.department.name }}</li>
+                    <li class="details-item"><strong>Semester:</strong> {{ user.semester.semester }}th</li>
+                    <li class="details-item"><strong>Email:</strong> {{ user.email }}</li>
+                    <li class="details-item"><strong>Mobile:</strong> {{ student.phone_number|default:'Not available' }}</li>
                 </ul>
             </div>
         </div>
+
+        <!-- Routine -->
+        <div class="card mb-4">
+            <div class="card-header">📅 Class Routine</div>
+            <div class="card-body">
+            
+                <!-- Tabs -->
+                <ul class="nav nav-tabs mb-3" id="routineTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="today-tab" data-bs-toggle="tab" data-bs-target="#today" type="button" role="tab">
+                            Today
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly" type="button" role="tab">
+                            Weekly
+                        </button>
+                    </li>
+                </ul>
+            
+                <!-- Tab Content -->
+                <div class="tab-content" id="routineTabsContent">
+                
+                    <!-- Today Tab -->
+                    <div class="tab-pane fade show active" id="today" role="tabpanel">
+                        <ul class="list-group">
+                            {% for routine in todays_routines %}
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <div>
+                                        <strong>{{ routine.subject.name }}</strong><br>
+                                        <small class="text-muted">{{ routine.start_time|time:"h:i A" }} - {{ routine.end_time|time:"h:i A" }}</small>
+                                    </div>
+                                    <span class="badge bg-light text-dark">{{ routine.subject.get_subject_type_display }}</span>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item text-center text-muted">No classes today.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                
+                    <!-- Weekly Tab -->
+                    <div class="tab-pane fade" id="weekly" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-striped text-center align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Time</th>
+                                        <th>Subject</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% regroup weekly_routines by get_day_of_week_display as day_list %}
+                                    {% for day in day_list %}
+                                    <tr class="table-primary">
+                                        <td colspan="4" class="fw-bold">{{ day.grouper }}</td>
+                                    </tr>
+                                    {% for routine in day.list %}
+                                    <tr>
+                                        <td></td>
+                                        <td>{{ routine.start_time|time:"h:i A" }} - {{ routine.end_time|time:"h:i A" }}</td>
+                                        <td>{{ routine.subject.name }}</td>
+                                        <td>{{ routine.subject.get_subject_type_display }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+
+        <!-- Subjects -->
+        <div class="card mb-4">
+            <div class="card-header">My Subjects</div>
+            <div class="card-body">
+                {% for subject in subjects %}
+                    <div class="subject-item">
+                        <i class="fas fa-book text-primary me-2"></i>
+                        <span>{{ subject.name }} ({{ subject.code }})</span>
+                    </div>
+                {% empty %}
+                    <p class="text-center text-muted">No subjects assigned.</p>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
-    <h2>My Class Routine</h2>
-    <table border="1">
-        <tr>
-            <th>Day</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Subject</th>
-        </tr>
-        {% for routine in routines %}
-        <tr>
-            <td>{{ routine.get_day_of_week_display }}</td>
-            <td>{{ routine.start_time|time:"H:i" }}</td>
-            <td>{{ routine.end_time|time:"H:i" }}</td>
-            <td>{{ routine.subject.name }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">No routine available.</td>
-        </tr>
-        {% endfor %}
-    </table>
-    
+    <!-- Right Column -->
+    <div class="col-lg-4">
 
-    <!-- Result Button -->
-    {% comment %} <div class="text-center mb-5">
-        <a href="{% url 'student_results' %}" class="btn btn-success btn-lg shadow">View Results</a>
-    </div> {% endcomment %}
+        <!-- Profile -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                {% if student.profile_image %}
+                    <img src="{{ student.profile_image.url }}" class="profile-image rounded-circle">
+                {% else %}
+                    <img src="https://via.placeholder.com/150x150/667eea/ffffff?text={{ user.first_name|slice:':1'|upper }}{{ user.last_name|slice:':1'|upper }}" class="profile-image rounded-circle">
+                {% endif %}
+                <div><span class="badge bg-primary-light">ID: {{ student.roll_no|default:user.username }}</span></div>
+            </div>
+        </div>
 
-</main>
+        <!-- Attendance Chart (Present vs Absent) -->
+        <div class="card mb-4">
+          <div class="card-header">📊 Attendance Overview</div>
+          <div class="card-body text-center">
+            <canvas id="attendanceDoughnut" style="max-height: 250px;"></canvas>
+            <p class="mt-3 mb-0">
+              <strong>{{ attendance_percent }}%</strong> Overall  
+              ({{ attendance_present }} Present / {{ attendance_absent }} Absent / {{ attendance_total }} Total)
+            </p>
+          </div>
+        </div>
 
-</body>
-</html>
+        <!-- Latest Notice -->
+        <div class="card mb-4">
+            <div class="card-header">📢 Latest Notice</div>
+            <div class="card-body">
+                {% if notices %}
+                    <div class="latest-notice">
+                        <h6 class="mb-1">{{ notices.0.title }}</h6>
+                        <small class="text-muted">{{ notices.0.created_at|timesince }} ago</small>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No notices available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Clubs Section (dummy for now) -->
+        <div class="card mb-4">
+            <div class="card-header">🎭 My Clubs</div>
+            <div class="card-body">
+                {% if student.clubs.exists %}
+                    <ul>
+                        {% for club in student.clubs.all %}
+                            <li>{{ club.name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">You haven't joined any clubs yet.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Join a Club</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="card mb-4">
+            <div class="card-header">📊 Academic Results</div>
+            <div class="card-body text-center">
+                <a href="{% url 'student_results' %}" class="btn btn-primary w-100">
+                    <i class="fas fa-download me-2"></i> Download Latest Result
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  const ctx = document.getElementById('attendanceDoughnut');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Present', 'Absent'],
+        datasets: [{
+          data: [{{ attendance_present }}, {{ attendance_absent }}],
+          backgroundColor: ['#28a745', '#dc3545'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: { callbacks: { label: c => c.label + ': ' + c.parsed } }
+        }
+      }
+    });
+  }
+</script>
+
+{% endblock %}

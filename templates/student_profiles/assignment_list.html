@@ -1,0 +1,61 @@
+{% extends 'student_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">📘 My Assignments</h2>
+
+    {% if assignments %}
+    <div class="row">
+        {% for assignment in assignments %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 h-100 assignment-card" 
+                 onclick="window.location.href='{% url 'submit_assignment' assignment.id %}'"
+                 style="cursor: pointer; transition: transform 0.2s;">
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ assignment.title }}</h5>
+                    <p class="card-text text-muted">{{ assignment.details|truncatechars:80 }}</p>
+                    
+                    <p class="mb-1">
+                        <strong>Due:</strong> 
+                        <span class="{% if assignment.submit_date < now %}text-danger{% endif %}">
+                            {{ assignment.submit_date|date:"Y-m-d H:i" }}
+                        </span>
+                    </p>
+                    
+                    <p class="mb-1"><strong>Teacher:</strong> {{ assignment.created_by }}</p>
+                    
+                    <div class="mt-2">
+                        {% if assignment.submission %}
+                            <span class="badge bg-success">✅ Submitted</span>
+                        {% else %}
+                            {% if assignment.submit_last_date < now %}
+                                <span class="badge bg-danger">❌ Overdue</span>
+                            {% else %}
+                                <span class="badge bg-primary">⏳ Pending</span>
+                            {% endif %}
+                        {% endif %}
+                                            
+                    </div>
+                </div>
+                
+                <div class="card-footer text-muted small">
+                    Created: {{ assignment.created_at|date:"M d, Y H:i" }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">No assignments available yet ✅</div>
+    {% endif %}
+</div>
+
+<style>
+.assignment-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}

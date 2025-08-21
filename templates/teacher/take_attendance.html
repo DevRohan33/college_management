@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Select Class for Attendance</h2>
+
+    <!-- Routine Classes -->
+    <h4 class="mt-4">Routine Classes</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Subject</th>
+                <th>Semester</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in routines %}
+            <tr>
+                <td>{{ r.get_day_of_week_display }}</td>
+                <td>{{ r.start_time }} - {{ r.end_time }}</td>
+                <td>{{ r.subject.name }}</td>
+                <td>Sem {{ r.semester.semester }}</td>
+                <td>
+                    <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" 
+                       class="btn btn-sm btn-success">Take Attendance</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center">No routine classes assigned.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Custom Class -->
+    <h4 class="mt-4">Custom Class</h4>
+    <form method="get" action="{% url 'mark_attendance_custom' %}">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="subject">Select Subject</label>
+                <select name="subject" class="form-control" required>
+                    <option value="">-- Select --</option>
+                    {% for s in subjects %}
+                    <option value="{{ s.id }}">{{ s.name }} (Sem {{ s.semester.semester }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Take Attendance</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

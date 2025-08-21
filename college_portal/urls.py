@@ -8,6 +8,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('account.urls')),
     path('', include('student.urls')),
+    path('', include('events.urls')),
+    path('', include('routine.urls')),
+    path("", include("hod.urls")),
+    path("", include("portal_admin.urls")),
+    path("", include("attendance.urls")),
+    path("", include("assignment.urls")),
+
+
 ]
 
 if settings.DEBUG:

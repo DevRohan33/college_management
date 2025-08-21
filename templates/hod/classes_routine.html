@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Class Routines</h2>
+
+  <!-- Semester Filter -->
+  <form method="get" class="form-inline mb-3">
+    <label class="mr-2">Select Semester:</label>
+    <select name="semester" class="form-control mr-2" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for sem in semesters %}
+        <option value="{{ sem.id }}" {% if selected_semester|default:'' == sem.id|stringformat:"s" %}selected{% endif %}>
+          Semester {{ sem.semester }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <!-- Group by Day -->
+  {% regroup routines by day_of_week as day_list %}
+
+  {% for day in day_list %}
+    <h4 class="mt-4">{{ day.list.0.get_day_of_week_display }}</h4>
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>Semester</th>
+          <th>Time</th>
+          <th>Subject</th>
+          <th>Teacher</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for routine in day.list %}
+          <tr>
+            <td>{{ routine.semester.semester }}</td>
+            <td>{{ routine.start_time }} - {{ routine.end_time }}</td>
+            <td>{{ routine.subject.name }}</td>
+            <td>{{ routine.teacher.get_full_name }}</td>
+            <td>
+              <a href="{% url 'hod_routine_edit' routine.pk %}" class="btn btn-sm btn-warning">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">No classes found</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+
+  <a href="{% url 'hod_routine_create' %}" class="btn btn-primary mt-3">+ Create New Routine</a>
+</div>
+{% endblock %}

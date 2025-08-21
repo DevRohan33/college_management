@@ -1,26 +1,70 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Profile</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <h2>Edit Profile</h2>
+{% extends "student_base.html" %}
+{% block title %}Edit Profile{% endblock %}
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+{% block content %}
+<h1 class="header-title">Edit Your Profile</h1>
+<div class="card">
+    <div class="card-header">Update Your Information</div>
+    <div class="card-body p-4">
+        <form method="POST" enctype="multipart/form-data" class="edit-form">
+                        {% csrf_token %}
 
-        <!-- Show non-editable fields -->
-        <p><strong>Name:</strong> {{ user.get_full_name }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Department:</strong> {{ user.department.name }}</p>
-        <p><strong>Semester:</strong> {{user.semester.semester}}</p>
-
-        <!-- Editable fields -->
-        {{ form.as_p }}
-
-        <button type="submit">Save Changes</button>
-    </form>
-</body>
-</html>
+                        <h5 class="mb-3">Non-Editable Details</h5>
+                        <div class="row">
+                            <div class="col-md-6"><div class="non-editable-field"><strong>Name:</strong> {{ user.get_full_name }}</div></div>
+                            <div class="col-md-6"><div class="non-editable-field"><strong>Email:</strong> {{ user.email }}</div></div>
+                            <div class="col-md-6"><div class="non-editable-field"><strong>Department:</strong> {{ user.department.name }}</div></div>
+                            <div class="col-md-6"><div class="non-editable-field"><strong>Semester:</strong> {{ user.semester.semester }}th</div></div>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Editable Details</h5>
+                        <div class="row">
+                            <div class="col-12 text-center mb-4">
+                                {% if student.profile_image %}
+                                    <img src="{{ student.profile_image.url }}" alt="Current Profile Image" class="current-profile-image mb-3">
+                                {% endif %}
+                                <div class="mb-3">
+                                    <label for="{{ form.profile_image.id_for_label }}" class="form-label">{{ form.profile_image.label }}</label>
+                                    <input type="file" name="profile_image" class="form-control" id="id_profile_image">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">{{ form.phone_number.label }}</label>
+                                <input type="text" name="phone_number" value="{{ student.phone_number|default:'' }}" class="form-control" id="id_phone_number">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.session.id_for_label }}" class="form-label">{{ form.session.label }}</label>
+                                <input type="text" name="session" value="{{ student.session|default:'' }}" class="form-control" id="id_session">
+                            </div>
+                        <div class="col-md-6 mb-3">
+                                <label for="{{ form.aap_id.id_for_label }}" class="form-label">{{ form.aap_id.label }}</label>
+                                <input type="text" name="aap_id" value="{{ student.aap_id|default:'' }}" class="form-control" id="id_aap_id">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.registration_number.id_for_label }}" class="form-label">{{ form.registration_number.label }}</label>
+                                <input type="text" name="registration_number" value="{{ student.registration_number|default:'' }}" class="form-control" id="id_registration_number">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.roll_no.id_for_label }}" class="form-label">{{ form.roll_no.label }}</label>
+                                <input type="text" name="roll_no" value="{{ student.roll_no|default:'' }}" class="form-control" id="id_roll_no">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.address.id_for_label }}" class="form-label">{{ form.address.label }}</label>
+                                <textarea name="address" class="form-control" rows="3" id="id_address">{{ student.address|default:'' }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-end">
+                            <a href="{% url 'student_change_password' %}" class="btn btn-primary">
+                                Change Password
+                            </a>
+                        </div>
+                        
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Save Changes</button>
+                        </div>
+                    </form>
+    </div>
+</div>
+{% endblock %}

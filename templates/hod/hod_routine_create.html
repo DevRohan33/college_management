@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Create New Routine</h2>
+  <form method="post" class="card p-3">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-success">Save Routine</button>
+    <a href="{% url 'classes_routine' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

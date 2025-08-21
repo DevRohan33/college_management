@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+# from django.db import connection
 
 def main():
     """Run administrative tasks."""
@@ -17,6 +17,10 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+# with connection.cursor() as cursor:
+#     cursor.execute("DROP TABLE IF EXISTS assignment_assignment;")
+#     cursor.execute("DROP TABLE IF EXISTS assignment_assignmentsubmission;")
+#     print("Deleted unwanted tables successfully ✅")
 
 if __name__ == '__main__':
     main()

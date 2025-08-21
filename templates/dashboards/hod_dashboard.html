@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #adb5bd;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            background-color: #495057;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        .navbar-brand-custom {
+            color: #ffffff;
+            font-weight: bold;
+            padding: 0 20px;
+            font-size: 1.5rem;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar text-white">
+        <h3 class="navbar-brand-custom mb-4">My College</h3>
+        <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+        <a href="#department"><i class="fas fa-building me-2"></i>Department</a>
+        <a href="{% url 'teacher_list' %}"><i class="fas fa-chalkboard-teacher me-2"></i>Teachers</a>
+        <a href="{% url 'classes_routine' %}"><i class="fas fa-user-graduate me-2"></i>Classes</a>
+        <a href="#subjects"><i class="fas fa-book me-2"></i>Subjects</a>
+        <a href="#notices"><i class="fas fa-bullhorn me-2"></i>Notices</a>
+        <hr class="bg-secondary">
+        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid">
+
+            <!-- Welcome Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">HOD Dashboard</h1>
+                <div class="d-flex align-items-center">
+                    <span class="me-3 fs-5">Welcome, <strong>{{ user.first_name|default:user.username }}</strong></span>
+                    <img src="https://via.placeholder.com/40" class="rounded-circle" alt="User Avatar">
+                </div>
+            </div>
+
+            <!-- Quick Department Overview -->
+            <section id="dashboard" class="mb-5">
+                <h3 class="border-bottom pb-2 mb-3">Department Overview ({{ department.name }})</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary shadow">
+                            <div class="card-body text-center">
+                                <h4>{{ total_teachers }}</h4>
+                                <p>Teachers</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success shadow">
+                            <div class="card-body text-center">
+                                <h4>{{ total_students }}</h4>
+                                <p>Students</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-info shadow">
+                            <div class="card-body text-center">
+                                <h4>{{ subjects.count }}</h4>
+                                <p>Subjects</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Teachers Section -->
+            <section id="teachers" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">Teachers in Department</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for teacher in teachers %}
+                            <tr>
+                                <td>{{ teacher.get_full_name }}</td>
+                                <td>{{ teacher.email }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="2" class="text-center">No teachers found</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Students Section -->
+            <section id="students" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">Students in Department</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ student.get_full_name }}</td>
+                                <td>{{ student.email }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="2" class="text-center">No students found</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Subjects Section -->
+            <section id="subjects" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">Subjects Offered</h2>
+                <ul class="list-group">
+                    {% for subject in subjects %}
+                    <li class="list-group-item">{{ subject.code }} - {{ subject.name }} (Sem {{ subject.semester.semester }})</li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No subjects found</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- Notices Section -->
+            <section id="notices" class="card shadow-sm p-4 mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h2>Department Notices</h2>
+                    
+                    <form method="post" action="{% url 'notice_create' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Post New Notice</button>
+                    </form>
+
+
+                </div>
+                <div class="list-group">
+                    {% for notice in notices %}
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ notice.title }}</h5>
+                            <small>{{ notice.age }}</small>
+                        </div>
+                        <p class="mb-1">{{ notice.content }}</p>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item text-muted">No notices available</div>
+                    {% endfor %}
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+
+</html>

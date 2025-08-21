@@ -1,28 +1,223 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Student Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 20px;
+            z-index: 100;
+        }
+
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #adb5bd;
+            display: block;
+            transition: 0.2s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            background-color: #495057;
+        }
+
+        .sidebar .sidebar-heading {
+            padding: 10px 25px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #6c757d;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 25px;
+        }
+
+        .navbar-brand-custom {
+            color: #ffffff;
+            font-weight: bold;
+            padding: 0 25px;
+            font-size: 1.5rem;
+        }
+
+        .card-icon {
+            font-size: 3.5rem;
+            opacity: 0.2;
+        }
+
+        .quick-actions .btn {
+            font-size: 1.1rem;
+            padding: 15px;
+        }
+
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 20px;
+            z-index: 100;
+            overflow-y: auto;
+            /* ADD THIS LINE */
+        }
+    </style>
 </head>
-<body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">My College</a>
-        <div class="d-flex align-items-center">
-            <span class="navbar-text me-3">Welcome, {{ user.username }}</span>
-            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Logout</a>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar text-white">
+        <h3 class="navbar-brand-custom mb-4">Admin Panel</h3>
+        <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt fa-fw me-2"></i>Dashboard</a>
+
+        <div class="sidebar-heading">Management</div>
+        <a href="{% url 'user_list' %}"><i class="fas fa-users-cog fa-fw me-2"></i>User Management</a>
+        <a href="#students"><i class="fas fa-user-graduate fa-fw me-2"></i>Student Data</a>
+        <a href="#teachers"><i class="fas fa-chalkboard-teacher fa-fw me-2"></i>Teachers</a>
+        <a href="#departments"><i class="fas fa-building fa-fw me-2"></i>Departments</a>
+        <a href="#notices"><i class="fas fa-bullhorn fa-fw me-2"></i>Notices</a>
+
+        <div class="sidebar-heading">System</div>
+        <a href="/admin/" target="_blank"><i class="fas fa-cogs fa-fw me-2"></i>Full Admin Site</a>
+        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">{{ role }} Dashboard</h1>
+                <div class="d-flex align-items-center">
+                    <span class="me-3 fs-5">Welcome, <strong>{{ user.first_name|default:user.username }}</strong></span>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <section id="dashboard" class="mb-5">
+                <h3 class="border-bottom pb-2 mb-3">Quick Stats</h3>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm text-center">
+                            <h4>{{ total_users }}</h4>
+                            <p>Total Users</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm text-center">
+                            <h4>{{ total_students }}</h4>
+                            <p>Students</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm text-center">
+                            <h4>{{ total_teachers }}</h4>
+                            <p>Teachers</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 shadow-sm text-center">
+                            <h4>{{ total_departments }}</h4>
+                            <p>Departments</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students List -->
+            <section id="students" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">Student List</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in students %}
+                            <tr>
+                                <td>{{ s.get_full_name }}</td>
+                                <td>{{ s.email }}</td>
+                                <td>{{ s.department.name }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center">No students found</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Teachers List -->
+            <section id="teachers" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">Teacher List</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in teachers %}
+                            <tr>
+                                <td>{{ t.get_full_name }}</td>
+                                <td>{{ t.email }}</td>
+                                <td>{{ t.department.name }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center">No teachers found</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Departments List -->
+            <section id="departments" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">Departments</h2>
+                <ul class="list-group">
+                    {% for d in departments %}
+                    <li class="list-group-item">{{ d.name }}</li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No departments found</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
         </div>
-    </div>
-</nav>
+    </main>
 
-<main class="container mt-5">
-    <div class="card shadow p-4">
-        <h1 class="text-primary fw-bold mb-3">{{ role }} Dashboard</h1>
-        <p>You are logged in as a {{ role }}.</p>
-    </div>
-</main>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+
 </html>

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header with action button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-tasks me-2 text-primary"></i>All Assignments</h2>
+        <a href="{% url 'create_assignment' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Create Assignment
+        </a>
+    </div>
+
+    <!-- Assignments Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light py-3">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Assignment List</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th><i class="fas fa-heading me-1"></i> Title</th>
+                            <th><i class="fas fa-info-circle me-1"></i> Details</th>
+                            <th><i class="fas fa-calendar-times me-1"></i> Submit Before</th>
+                            <th><i class="fas fa-user me-1"></i> Created By</th>
+                            <th><i class="fas fa-clock me-1"></i> Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                        <tr class="clickable-row" data-url="{% url 'assignment_detail' assignment.id %}">
+                            <td>
+                                <a href="{% url 'assignment_detail' assignment.id %}" class="text-decoration-none fw-bold text-primary">
+                                    {{ assignment.title }}
+                                </a>
+                            </td>
+                            <td class="text-truncate" style="max-width: 200px;" title="{{ assignment.details }}">
+                                {{ assignment.details }}
+                            </td>
+                            <td>
+                                <span class="badge {% if assignment.is_past_due %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                    {{ assignment.submit_last_date|date:"Y-m-d H:i" }}
+                                </span>
+                            </td>
+                            <td>{{ assignment.created_by }}</td>
+                            <td><small class="text-muted">{{ assignment.created_at|date:"Y-m-d H:i" }}</small></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <i class="fas fa-inbox fa-3x mb-3 text-muted"></i>
+                                <p class="text-muted">No assignments found.</p>
+                                <a href="{% url 'create_assignment' %}" class="btn btn-primary mt-2">
+                                    <i class="fas fa-plus me-2"></i>Create Your First Assignment
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+        cursor: pointer;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        padding: 12px 15px;
+    }
+    
+    .table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+    
+    .badge {
+        font-size: 0.85em;
+        padding: 0.35em 0.65em;
+    }
+    
+    .clickable-row {
+        transition: background-color 0.2s;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make table rows clickable
+        const rows = document.querySelectorAll('.clickable-row');
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                window.location.href = this.dataset.url;
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'events',
     'subject',
     'routine',
-    'student'
+    'student',
+    'hod',
+    'portal_admin',
+    'assignment',  
 ]
 
 AUTH_USER_MODEL = 'account.User'

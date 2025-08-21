@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Form Header with Progress Indicator -->
+            <div class="d-flex align-items-center mb-4">
+                <a href="{% url 'assignment_list' %}" class="btn btn-outline-secondary btn-sm me-3">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="flex-grow-1">
+                    <h2 class="mb-0">Create New Assignment</h2>
+                    <p class="text-muted mb-0">Fill in all the details below to create a new assignment</p>
+                </div>
+                <div class="progress-container">
+                    <div class="progress" style="width: 120px; height: 8px;">
+                        <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <small class="text-muted">Step 1 of 4</small>
+                </div>
+            </div>
+
+            <div class="card advanced-form-card">
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <!-- Form Navigation Sidebar -->
+                        <div class="col-md-3">
+                            <div class="form-sidebar">
+                                <div class="nav-step active">
+                                    <div class="step-icon">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="step-info">
+                                        <div class="step-title">Basic Info</div>
+                                        <div class="step-desc">Title & Details</div>
+                                    </div>
+                                </div>
+                                <div class="nav-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                    <div class="step-info">
+                                        <div class="step-title">Category</div>
+                                        <div class="step-desc">Subject & Department</div>
+                                    </div>
+                                </div>
+                                <div class="nav-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="step-info">
+                                        <div class="step-title">Audience</div>
+                                        <div class="step-desc">Semester</div>
+                                    </div>
+                                </div>
+                                <div class="nav-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div class="step-info">
+                                        <div class="step-title">Schedule</div>
+                                        <div class="step-desc">Due Date</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Content -->
+                        <div class="col-md-9">
+                            <div class="form-content p-4">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    
+                                    <!-- Basic Information Section -->
+                                    <div class="form-section active">
+                                        <h4 class="section-title"><i class="fas fa-book me-2"></i>Basic Information</h4>
+                                        <p class="section-description">Provide a title and detailed description for your assignment</p>
+                                        
+                                        <div class="floating-input-group">
+                                            {{ form.title }}
+                                            <label for="{{ form.title.id_for_label }}">Assignment Title</label>
+                                            <div class="icon">
+                                                <i class="fas fa-heading"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="floating-input-group">
+                                            {{ form.details }}
+                                            <label for="{{ form.details.id_for_label }}">Assignment Details</label>
+                                            <div class="icon">
+                                                <i class="fas fa-align-left"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Category Section -->
+                                    <div class="form-section">
+                                        <h4 class="section-title"><i class="fas fa-tag me-2"></i>Category</h4>
+                                        <p class="section-description">Select the subject and department for this assignment</p>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="floating-input-group">
+                                                    {{ form.subject }}
+                                                    <label for="{{ form.subject.id_for_label }}">Subject</label>
+                                                    <div class="icon">
+                                                        <i class="fas fa-book"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="floating-input-group">
+                                                    {{ form.department }}
+                                                    <label for="{{ form.department.id_for_label }}">Department</label>
+                                                    <div class="icon">
+                                                        <i class="fas fa-building"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Audience Section -->
+                                    <div class="form-section">
+                                        <h4 class="section-title"><i class="fas fa-users me-2"></i>Audience</h4>
+                                        <p class="section-description">Select which semester this assignment is for</p>
+                                        
+                                        <div class="floating-input-group">
+                                            {{ form.semester }}
+                                            <label for="{{ form.semester.id_for_label }}">Semester</label>
+                                            <div class="icon">
+                                                <i class="fas fa-graduation-cap"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Schedule Section -->
+                                    <div class="form-section">
+                                        <h4 class="section-title"><i class="fas fa-calendar me-2"></i>Schedule</h4>
+                                        <p class="section-description">Set the due date for this assignment</p>
+                                        
+                                        <div class="floating-input-group">
+                                            {{ form.submit_last_date }}
+                                            <label for="{{ form.submit_last_date.id_for_label }}">Due Date & Time</label>
+                                            <div class="icon">
+                                                <i class="fas fa-clock"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-navigation mt-4">
+                                        <button type="button" class="btn btn-outline-secondary" id="prev-btn" disabled>
+                                            <i class="fas fa-arrow-left me-1"></i> Previous
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="next-btn">
+                                            Next <i class="fas fa-arrow-right ms-1"></i>
+                                        </button>
+                                        <button type="submit" class="btn btn-success" id="submit-btn">
+                                            <i class="fas fa-check me-1"></i> Create Assignment
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<style>
+    .advanced-form-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    
+    .form-sidebar {
+        background: linear-gradient(135deg, #4e54c8, #8a64d0);
+        color: white;
+        height: 100%;
+        padding: 2rem 1.5rem;
+    }
+    
+    .nav-step {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+    
+    .nav-step.active {
+        opacity: 1;
+    }
+    
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+    
+    .step-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .step-desc {
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+    
+    .form-content {
+        background: #fff;
+        height: 100%;
+    }
+    
+    .form-section {
+        display: none;
+    }
+    
+    .form-section.active {
+        display: block;
+        animation: fadeIn 0.5s;
+    }
+    
+    .section-title {
+        color: #4e54c8;
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-description {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+    
+    .floating-input-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .floating-input-group input,
+    .floating-input-group select,
+    .floating-input-group textarea {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background: #f8f9fa;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+    
+    .floating-input-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .floating-input-group label {
+        position: absolute;
+        top: 1rem;
+        left: 3rem;
+        color: #6c757d;
+        pointer-events: none;
+        transition: all 0.3s;
+        background: #f8f9fa;
+        padding: 0 0.5rem;
+    }
+    
+    .floating-input-group .icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        transition: color 0.3s;
+    }
+    
+    .floating-input-group input:focus,
+    .floating-input-group select:focus,
+    .floating-input-group textarea:focus {
+        border-color: #4e54c8;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(78, 84, 200, 0.1);
+        outline: none;
+    }
+    
+    .floating-input-group input:focus ~ label,
+    .floating-input-group select:focus ~ label,
+    .floating-input-group textarea:focus ~ label,
+    .floating-input-group input:not(:placeholder-shown) ~ label,
+    .floating-input-group select:not([value=""]) ~ label,
+    .floating-input-group textarea:not(:placeholder-shown) ~ label {
+        top: -0.5rem;
+        left: 0.8rem;
+        font-size: 0.8rem;
+        color: #4e54c8;
+        background: #fff;
+    }
+    
+    .floating-input-group input:focus ~ .icon,
+    .floating-input-group select:focus ~ .icon,
+    .floating-input-group textarea:focus ~ .icon {
+        color: #4e54c8;
+    }
+    
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    #submit-btn {
+        display: none;
+    }
+    
+    .progress-container {
+        text-align: right;
+    }
+    
+    .progress {
+        border-radius: 10px;
+        margin-bottom: 0.25rem;
+    }
+    
+    .progress-bar {
+        background-color: #4e54c8;
+        border-radius: 10px;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sections = document.querySelectorAll('.form-section');
+        const steps = document.querySelectorAll('.nav-step');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const progressBar = document.querySelector('.progress-bar');
+        let currentSection = 0;
+        
+        // Initialize form
+        showSection(currentSection);
+        updateProgress();
+        
+        // Next button click handler
+        nextBtn.addEventListener('click', function() {
+            if (validateSection(currentSection)) {
+                currentSection++;
+                showSection(currentSection);
+                updateProgress();
+            }
+        });
+        
+        // Previous button click handler
+        prevBtn.addEventListener('click', function() {
+            currentSection--;
+            showSection(currentSection);
+            updateProgress();
+        });
+        
+        function showSection(index) {
+            // Hide all sections
+            sections.forEach(section => section.classList.remove('active'));
+            steps.forEach(step => step.classList.remove('active'));
+            
+            // Show current section
+            sections[index].classList.add('active');
+            steps[index].classList.add('active');
+            
+            // Update button visibility
+            if (index === 0) {
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.disabled = false;
+            }
+            
+            if (index === sections.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+        }
+        
+        function updateProgress() {
+            const progress = ((currentSection + 1) / sections.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressBar.setAttribute('aria-valuenow', progress);
+            
+            // Update progress text
+            document.querySelector('.progress-container small').textContent = 
+                `Step ${currentSection + 1} of ${sections.length}`;
+        }
+        
+        function validateSection(index) {
+            // Simple validation - in a real app you would add more robust validation
+            const currentSection = sections[index];
+            const inputs = currentSection.querySelectorAll('input, select, textarea');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (input.hasAttribute('required') && !input.value) {
+                    isValid = false;
+                    input.classList.add('is-invalid');
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            return isValid;
+        }
+        
+        // Add floating label functionality
+        const inputs = document.querySelectorAll('.floating-input-group input, .floating-input-group select, .floating-input-group textarea');
+        
+        inputs.forEach(input => {
+            // Check if the input has a value on load
+            if (input.value) {
+                input.parentNode.querySelector('label').classList.add('active');
+            }
+            
+            // Add event listeners
+            input.addEventListener('focus', function() {
+                this.parentNode.querySelector('label').classList.add('active');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentNode.querySelector('label').classList.remove('active');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

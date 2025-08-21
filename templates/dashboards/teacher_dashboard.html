@@ -1,28 +1,239 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Student Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #adb5bd;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            background-color: #495057;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        .navbar-brand-custom {
+            color: #ffffff;
+            font-weight: bold;
+            padding: 0 20px;
+            font-size: 1.5rem;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+    </style>
 </head>
-<body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">My College</a>
-        <div class="d-flex align-items-center">
-            <span class="navbar-text me-3">Welcome, {{ user.username }}</span>
-            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Logout</a>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar text-white">
+        <h3 class="navbar-brand-custom mb-4">My College</h3>
+        <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+        <a href="#profile"><i class="fas fa-user me-2"></i>My Profile</a>
+        <a href="#classes"><i class="fas fa-chalkboard-user me-2"></i>My Classes</a>
+        <a href="{% url 'take_attendance' %}"><i class="fas fa-user-check me-2"></i>Attendance</a>
+        <a href="{% url 'assignment_list' %}"><i class="fas fa-graduation-cap me-2"></i>Assignment</a>
+        <a href="#notice"><i class="fas fa-bullhorn me-2"></i>Notices</a>
+        <hr class="bg-secondary">
+        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid">
+
+            <!-- Welcome Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">Teacher Dashboard</h1>
+                <div class="d-flex align-items-center">
+                    <span class="me-3 fs-5">Welcome, <strong>{{ user.first_name|default:user.username }}</strong></span>
+                    <img src="https://via.placeholder.com/40" class="rounded-circle" alt="User Avatar">
+                </div>
+            </div>
+
+            <!-- Dashboard Overview -->
+            <section id="dashboard" class="mb-5">
+                <div class="row">
+                    <!-- Classes Card -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary shadow">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title">My Classes</h5>
+                                    <p class="card-text fs-4">{{ total_classes }}</p>
+                                </div>
+                                <i class="fas fa-chalkboard-user card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Notices Card -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-info shadow">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title">Active Notices</h5>
+                                    <p class="card-text fs-4">{{ notices|length }}</p>
+                                </div>
+                                <i class="fas fa-bullhorn card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Students Card -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success shadow">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title">Total Students</h5>
+                                    <p class="card-text fs-4">{{ total_students }}</p>
+                                </div>
+                                <i class="fas fa-users card-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">My Profile</h2>
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <img src="https://via.placeholder.com/150" class="img-fluid rounded-circle mb-3" alt="Profile Picture">
+                        <button class="btn btn-secondary btn-sm">Change Picture</button>
+                    </div>
+                    <div class="col-md-9">
+                        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Teacher ID:</strong> TCH-{{ user.id }}</p>
+                        <p><strong>Department:</strong> {{ user.department.name }}</p>
+                        <p><strong>Joined On:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+                        <a href="#" class="btn btn-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- My Classes Section -->
+            <section id="classes" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">My Classes</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Semester</th>
+                                <th>Department</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject in subjects %}
+                            <tr>
+                                <td>{{ subject.code }}</td>
+                                <td>{{ subject.name }}</td>
+                                <td>{{ subject.semester.semester }}</td>
+                                <td>{{ subject.department.name }}</td>
+                                <td><a href="#" class="btn btn-sm btn-info">View Details</a></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">You are not assigned to any classes yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Attendance Section -->
+            <section id="attendance" class="card shadow-sm p-4 mb-5">
+                <h2 class="border-bottom pb-2 mb-3">Take Attendance</h2>
+                <form>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="classSelect" class="form-label">Select Class</label>
+                            <select id="classSelect" class="form-select">
+                                <option selected>Choose...</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }} - Sem {{ subject.semester.semester }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="attendanceDate" class="form-label">Select Date</label>
+                            <input type="date" id="attendanceDate" class="form-control">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Load Students</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Notice Section -->
+            <section id="notice" class="card shadow-sm p-4 mb-5">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h2>Notices & Announcements</h2>
+                    <a href="{% url 'notice_create' %}" class="btn btn-primary">Post a New Notice</a>
+                </div>
+                <div class="list-group">
+                    {% for notice in notices %}
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ notice.title }}</h5>
+                            <small>{{ notice.created_at|timesince }} ago</small>
+                        </div>
+                        <p class="mb-1">{{ notice.description|truncatewords:20 }}</p>
+                        <small>By {{ notice.created_by.first_name }} {{ notice.created_by.last_name }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item text-muted">No notices available.</div>
+                    {% endfor %}
+                </div>
+            </section>
+            
+
         </div>
-    </div>
-</nav>
+    </main>
 
-<main class="container mt-5">
-    <div class="card shadow p-4">
-        <h1 class="text-primary fw-bold mb-3">{{ role }} Dashboard</h1>
-        <p>You are logged in as a {{ role }}.</p>
-    </div>
-</main>
-
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+
 </html>

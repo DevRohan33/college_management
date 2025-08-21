@@ -1,6 +1,7 @@
 from django.db import models
-from account.models import Department, Semester
+from account.models import Department, Semester 
 from subject.models import Subject
+from django.conf import settings
 
 class ClassRoutine(models.Model):
     DAYS = [
@@ -18,6 +19,14 @@ class ClassRoutine(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='routines')
+    teacher = models.ForeignKey(
+        settings.AUTH_USER_MODEL,         
+        on_delete=models.SET_NULL,         
+        related_name='routines',
+        null=True,                    
+        blank=True,                        
+        limit_choices_to={'role': 'teacher'}
+    )
 
     def __str__(self):
         return f"{self.department.name} - Semester {self.semester.semester} - {self.get_day_of_week_display()} ({self.subject.name})"

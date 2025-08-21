@@ -10,8 +10,9 @@ class Department(models.Model):
 
 class Semester(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="batches")
-    semester = models.IntegerField(null=True, blank=True)   # 1, 2, 3, 4, etc.
-
+    semester = models.IntegerField(null=True, blank=True)
+    class Meta:
+        unique_together = ('department', 'semester')
     def __str__(self):
         return f"Semester {self.semester} - ({self.department.name})"
 
@@ -19,12 +20,14 @@ class Semester(models.Model):
 # Custom User Model
 class User(AbstractUser):
     ROLE_CHOICES = [
-        ('admin', 'Admin (HOD)'),
+        ('admin', 'Admin'),
+        ('management', 'Management'),
+        ('hod', 'Head of Department'),
         ('teacher', 'Teacher'),
         ('student', 'Student'),
     ]
 
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True, blank=True) 
 

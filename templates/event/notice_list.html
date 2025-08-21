@@ -1,0 +1,18 @@
+{% extends "student_base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">📢 Notices & Events</div>
+    <div class="list-group list-group-flush">
+        {% for notice in notices %}
+        <div class="list-group-item">
+            <h5>{{ notice.title }}</h5>
+            <p>{{ notice.description }}</p>
+            <small class="text-muted">Posted {{ notice.created_at|timesince }} ago by {{ notice.created_by }}</small>
+        </div>
+        {% empty %}
+        <p class="list-group-item text-muted">No notices yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
