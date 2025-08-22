@@ -111,18 +111,16 @@ def management_dashboard(request):
 
 @login_required
 def hod_dashboard(request):
-    if getattr(request.user, "role", "").lower() != "hod":
+    if request.user.role != "hod":
         return redirect("index")
 
-    hod = request.user
-    dept = hod.department
+    dept = request.user.department
 
     teachers = User.objects.filter(role="teacher", department=dept)
     students = User.objects.filter(role="student", department=dept)
     subjects = Subject.objects.filter(department=dept)
-    notices = Notice.objects.filter(department=dept).order_by("-created_at")
     routines = ClassRoutine.objects.filter(department=dept)
-
+    notices = Notice.objects.filter(department=dept).order_by("-created_at")
 
     context = {
         "role": "Head of Department",
@@ -130,43 +128,45 @@ def hod_dashboard(request):
         "teachers": teachers,
         "students": students,
         "subjects": subjects,
+        "routines": routines,
         "total_teachers": teachers.count(),
         "total_students": students.count(),
         "notices": notices,
-        "routines": routines,
     }
     return render(request, "dashboards/hod_dashboard.html", context)
 
+
 @login_required
 def teacher_dashboard(request):
-    # Ensure the user is a teacher before proceeding
-    if getattr(request.user, "role", "").lower() != 'teacher':
-        return redirect('index') 
+    if request.user.role != "teacher":
+        return redirect("index")
 
     teacher = request.user
-    accessible_semesters = teacher.accessible_batches.all()
-    subjects = Subject.objects.filter(semester__in=accessible_semesters)
 
-    # Count total students in the semesters the teacher has access to
+    # Show subjects in teacher’s department & assigned semesters
+    accessible_semesters = teacher.accessible_batches.all()
+    subjects = Subject.objects.filter(
+        department=teacher.department,
+        semester__in=accessible_semesters
+    )
+
     student_count = User.objects.filter(
-        role='student', 
+        role="student",
+        department=teacher.department,
         semester__in=accessible_semesters
     ).count()
 
-    # Placeholder for notices - you can create a Notice model later
-    notices = Notice.objects.filter(
-        department=teacher.department  # restrict to teacher’s department
-    ).order_by('-created_at')
+    notices = Notice.objects.filter(department=teacher.department).order_by('-created_at')
 
     context = {
-        'role': 'Teacher',
-        'subjects': subjects,
-        'total_classes': subjects.count(),
-        'total_students': student_count,
-        'notices': notices
+        "role": "Teacher",
+        "subjects": subjects,
+        "total_classes": subjects.count(),
+        "total_students": student_count,
+        "notices": notices
     }
-    
-    return render(request, 'dashboards/teacher_dashboard.html', context)
+    return render(request, "dashboards/teacher_dashboard.html", context)
+
 
 
 @login_required

@@ -1,5 +1,7 @@
 from django.db import models
 from account.models import Department, Semester
+from django.conf import settings
+
 
 class Subject(models.Model):
     SUBJECT_TYPES = [
@@ -12,6 +14,10 @@ class Subject(models.Model):
     subject_type = models.CharField(max_length=10, choices=SUBJECT_TYPES)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='subjects')
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='subjects')
+    # Assign one or more teacher
+    teachers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="subjects")
 
     def __str__(self):
         return f"{self.name} ({self.code})"
+
+

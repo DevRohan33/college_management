@@ -1,59 +1,191 @@
-{% extends 'base.html' %}
+{% extends 'teacher_base.html' %}
 
 {% block content %}
 <div class="container mt-4">
-    <!-- Header with action button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0"><i class="fas fa-tasks me-2 text-primary"></i>All Assignments</h2>
-        <a href="{% url 'create_assignment' %}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Create Assignment
-        </a>
+    <!-- Header with search and action button -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h2 class="mb-3 mb-md-0">
+            <i class="fas fa-tasks me-2 text-primary"></i>All Assignments
+            <small class="text-muted fs-6">({{ assignments|length }} total)</small>
+        </h2>
+        <div class="d-flex flex-column flex-sm-row gap-2">
+            <div class="input-group" style="width: 300px;">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search assignments...">
+            </div>
+            <a href="{% url 'create_assignment' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create Assignment
+            </a>
+        </div>
     </div>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-pills mb-3" id="assignmentTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all" type="button" role="tab">
+                <i class="fas fa-list me-1"></i>All
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="active-tab" data-bs-toggle="pill" data-bs-target="#active" type="button" role="tab">
+                <i class="fas fa-clock me-1"></i>Active
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="overdue-tab" data-bs-toggle="pill" data-bs-target="#overdue" type="button" role="tab">
+                <i class="fas fa-exclamation-triangle me-1"></i>Overdue
+            </button>
+        </li>
+    </ul>
 
     <!-- Assignments Table -->
     <div class="card shadow-sm">
-        <div class="card-header bg-light py-3">
-            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Assignment List</h5>
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Assignment List</h5>
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-sort me-1"></i>Sort by
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" data-sort="title">Title</a></li>
+                        <li><a class="dropdown-item" href="#" data-sort="due-date">Due Date</a></li>
+                        <li><a class="dropdown-item" href="#" data-sort="created">Created Date</a></li>
+                        <li><a class="dropdown-item" href="#" data-sort="author">Author</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0" id="assignmentsTable">
                     <thead class="table-light">
                         <tr>
-                            <th><i class="fas fa-heading me-1"></i> Title</th>
-                            <th><i class="fas fa-info-circle me-1"></i> Details</th>
-                            <th><i class="fas fa-calendar-times me-1"></i> Submit Before</th>
-                            <th><i class="fas fa-user me-1"></i> Created By</th>
-                            <th><i class="fas fa-clock me-1"></i> Created At</th>
+                            <th class="sortable" data-column="title">
+                                <i class="fas fa-heading me-1"></i>Title
+                                <i class="fas fa-sort ms-1 text-muted"></i>
+                            </th>
+                            <th><i class="fas fa-info-circle me-1"></i>Details</th>
+                            <th class="sortable" data-column="due-date">
+                                <i class="fas fa-calendar-times me-1"></i>Submit Before
+                                <i class="fas fa-sort ms-1 text-muted"></i>
+                            </th>
+                            <th class="sortable" data-column="author">
+                                <i class="fas fa-user me-1"></i>Created By
+                                <i class="fas fa-sort ms-1 text-muted"></i>
+                            </th>
+                            <th class="sortable" data-column="created">
+                                <i class="fas fa-clock me-1"></i>Created At
+                                <i class="fas fa-sort ms-1 text-muted"></i>
+                            </th>
+                            <th width="100"><i class="fas fa-cog me-1"></i>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for assignment in assignments %}
-                        <tr class="clickable-row" data-url="{% url 'assignment_detail' assignment.id %}">
+                        <tr class="assignment-row {% if assignment.is_past_due %}overdue-row{% else %}active-row{% endif %}" 
+                            data-title="{{ assignment.title|lower }}" 
+                            data-author="{{ assignment.created_by|lower }}"
+                            data-due-date="{{ assignment.submit_last_date|date:'Y-m-d H:i' }}"
+                            data-created="{{ assignment.created_at|date:'Y-m-d H:i' }}">
                             <td>
-                                <a href="{% url 'assignment_detail' assignment.id %}" class="text-decoration-none fw-bold text-primary">
-                                    {{ assignment.title }}
-                                </a>
-                            </td>
-                            <td class="text-truncate" style="max-width: 200px;" title="{{ assignment.details }}">
-                                {{ assignment.details }}
+                                <div class="d-flex align-items-center">
+                                    <a href="{% url 'assignment_detail' assignment.id %}" class="text-decoration-none fw-bold text-primary assignment-title">
+                                        {{ assignment.title }}
+                                    </a>
+                                    {% if assignment.is_past_due %}
+                                        <span class="badge bg-danger ms-2">Overdue</span>
+                                    {% else %}
+                                        {% now "Y-m-d H:i" as now %}
+                                        {% if assignment.submit_last_date|timeuntil %}
+                                            <span class="badge bg-success ms-2">Active</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
                             </td>
                             <td>
-                                <span class="badge {% if assignment.is_past_due %}bg-danger{% else %}bg-warning text-dark{% endif %}">
-                                    {{ assignment.submit_last_date|date:"Y-m-d H:i" }}
-                                </span>
+                                <div class="assignment-details" style="max-width: 250px;">
+                                    <span class="text-truncate d-block" title="{{ assignment.details }}">
+                                        {{ assignment.details|truncatewords:15 }}
+                                    </span>
+                                    {% if assignment.details|length > 100 %}
+                                        <button class="btn btn-link btn-sm p-0 show-more-btn" data-bs-toggle="tooltip" title="Click to expand">
+                                            <small>Show more...</small>
+                                        </button>
+                                    {% endif %}
+                                </div>
                             </td>
-                            <td>{{ assignment.created_by }}</td>
-                            <td><small class="text-muted">{{ assignment.created_at|date:"Y-m-d H:i" }}</small></td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="badge {% if assignment.is_past_due %}bg-danger{% else %}bg-warning text-dark{% endif %} mb-1">
+                                        {{ assignment.submit_last_date|date:"M d, Y" }}
+                                    </span>
+                                    <small class="text-muted">{{ assignment.submit_last_date|date:"H:i" }}</small>
+                                    {% if not assignment.is_past_due %}
+                                        <small class="text-success">
+                                            <i class="fas fa-clock me-1"></i>{{ assignment.submit_last_date|timeuntil }} left
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2">
+                                        {{ assignment.created_by}}
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">{{ assignment.created_by }}</div>
+                                        {% if assignment.created_by.profile.department %}
+                                            <small class="text-muted">{{ assignment.created_by.profile.department }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <div class="text-muted">{{ assignment.created_at|date:"M d, Y" }}</div>
+                                    <small class="text-muted">{{ assignment.created_at|timesince }} ago</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'assignment_detail' assignment.id %}">
+                                                <i class="fas fa-eye me-2"></i>View Details
+                                            </a>
+                                        </li>
+                                        {% if user == assignment.created_by %}
+                                        <li>
+                                            <a class="dropdown-item" href="#">
+                                                <i class="fas fa-edit me-2"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="#" onclick="confirmDelete({{ assignment.id }}, '{{ assignment.title }}')">
+                                                <i class="fas fa-trash me-2"></i>Delete
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </td>
                         </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center py-5">
-                                <i class="fas fa-inbox fa-3x mb-3 text-muted"></i>
-                                <p class="text-muted">No assignments found.</p>
-                                <a href="{% url 'create_assignment' %}" class="btn btn-primary mt-2">
-                                    <i class="fas fa-plus me-2"></i>Create Your First Assignment
-                                </a>
+                        <tr id="emptyState">
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox fa-4x mb-3 text-muted"></i>
+                                    <h5 class="text-muted">No assignments found</h5>
+                                    <p class="text-muted">Get started by creating your first assignment.</p>
+                                    <a href="{% url 'create_assignment' %}" class="btn btn-primary mt-3">
+                                        <i class="fas fa-plus me-2"></i>Create Your First Assignment
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -62,52 +194,323 @@
             </div>
         </div>
     </div>
+
+    <!-- Pagination (if using pagination) -->
+    {% if is_paginated %}
+    <nav aria-label="Assignment pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+            </li>
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 
-<!-- Font Awesome for icons -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the assignment "<span id="assignmentTitle"></span>"?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Assignment</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Enhanced Styles -->
 <style>
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+    }
+    
     .table-hover tbody tr:hover {
-        background-color: rgba(0, 123, 255, 0.1);
-        cursor: pointer;
+        background-color: rgba(0, 123, 255, 0.05);
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
     }
     
     .card {
         border: none;
-        border-radius: 10px;
+        border-radius: 15px;
+        overflow: hidden;
     }
     
     .table th {
         border-top: none;
         font-weight: 600;
-        padding: 12px 15px;
+        padding: 15px;
+        background-color: #f8f9fa !important;
     }
     
     .table td {
-        padding: 12px 15px;
+        padding: 15px;
         vertical-align: middle;
+        border-bottom: 1px solid #e9ecef;
     }
     
     .badge {
-        font-size: 0.85em;
-        padding: 0.35em 0.65em;
+        font-size: 0.8em;
+        padding: 0.4em 0.8em;
+        border-radius: 20px;
     }
     
-    .clickable-row {
-        transition: background-color 0.2s;
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .sortable:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+    
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #007bff, #28a745);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+    
+    .assignment-title {
+        font-size: 1.05em;
+        transition: color 0.2s;
+    }
+    
+    .assignment-title:hover {
+        color: #0056b3 !important;
+    }
+    
+    .show-more-btn {
+        font-size: 0.8em;
+        color: #007bff;
+    }
+    
+    .empty-state {
+        padding: 40px 20px;
+    }
+    
+    .nav-pills .nav-link {
+        border-radius: 25px;
+        margin-right: 5px;
+    }
+    
+    .nav-pills .nav-link.active {
+        background-color: #007bff;
+    }
+    
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.9em;
+        }
+        
+        .avatar-circle {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8em;
+        }
+    }
+    
+    .overdue-row {
+        background-color: rgba(220, 53, 69, 0.05);
+        border-left: 3px solid #dc3545;
+    }
+    
+    .search-highlight {
+        background-color: #fff3cd;
+        padding: 2px 4px;
+        border-radius: 3px;
     }
 </style>
 
+<!-- Enhanced JavaScript -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Make table rows clickable
-        const rows = document.querySelectorAll('.clickable-row');
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('assignmentsTable');
+    const rows = table.querySelectorAll('tbody .assignment-row');
+    const emptyState = document.getElementById('emptyState');
+
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        let visibleRows = 0;
+
         rows.forEach(row => {
-            row.addEventListener('click', function() {
-                window.location.href = this.dataset.url;
-            });
+            const title = row.dataset.title;
+            const author = row.dataset.author;
+            const shouldShow = title.includes(searchTerm) || author.includes(searchTerm);
+            
+            if (shouldShow) {
+                row.style.display = '';
+                visibleRows++;
+                highlightSearchTerm(row, searchTerm);
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Show/hide empty state
+        if (emptyState) {
+            emptyState.style.display = visibleRows === 0 ? '' : 'none';
+        }
+    });
+
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('#assignmentTabs button');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.id.replace('-tab', '');
+            filterAssignments(filter);
         });
     });
+
+    function filterAssignments(filter) {
+        rows.forEach(row => {
+            let shouldShow = true;
+            
+            switch(filter) {
+                case 'active':
+                    shouldShow = !row.classList.contains('overdue-row');
+                    break;
+                case 'overdue':
+                    shouldShow = row.classList.contains('overdue-row');
+                    break;
+                case 'all':
+                default:
+                    shouldShow = true;
+                    break;
+            }
+            
+            row.style.display = shouldShow ? '' : 'none';
+        });
+    }
+
+    // Sorting functionality
+    const sortableHeaders = document.querySelectorAll('.sortable');
+    let sortDirection = {};
+
+    sortableHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+            const column = this.dataset.column;
+            const currentDirection = sortDirection[column] || 'asc';
+            const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+            sortDirection[column] = newDirection;
+            
+            sortTable(column, newDirection);
+            updateSortIcon(this, newDirection);
+        });
+    });
+
+    function sortTable(column, direction) {
+        const tbody = table.querySelector('tbody');
+        const sortedRows = Array.from(rows).sort((a, b) => {
+            let aVal = '', bVal = '';
+            
+            switch(column) {
+                case 'title':
+                    aVal = a.dataset.title;
+                    bVal = b.dataset.title;
+                    break;
+                case 'author':
+                    aVal = a.dataset.author;
+                    bVal = b.dataset.author;
+                    break;
+                case 'due-date':
+                case 'created':
+                    aVal = new Date(a.dataset[column.replace('-', '')]);
+                    bVal = new Date(b.dataset[column.replace('-', '')]);
+                    break;
+            }
+            
+            if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+            if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        // Remove existing rows and add sorted ones
+        rows.forEach(row => row.remove());
+        sortedRows.forEach(row => tbody.appendChild(row));
+    }
+
+    function updateSortIcon(header, direction) {
+        // Reset all sort icons
+        sortableHeaders.forEach(h => {
+            const icon = h.querySelector('.fa-sort, .fa-sort-up, .fa-sort-down');
+            icon.className = icon.className.replace(/fa-sort-(up|down)/, 'fa-sort');
+        });
+        
+        // Update clicked header icon
+        const icon = header.querySelector('.fas:last-child');
+        icon.className = icon.className.replace('fa-sort', `fa-sort-${direction === 'asc' ? 'up' : 'down'}`);
+    }
+
+    function highlightSearchTerm(row, searchTerm) {
+        if (!searchTerm) return;
+        
+        const titleElement = row.querySelector('.assignment-title');
+        const originalText = titleElement.textContent;
+        const highlightedText = originalText.replace(
+            new RegExp(searchTerm, 'gi'),
+            match => `<span class="search-highlight">${match}</span>`
+        );
+        titleElement.innerHTML = highlightedText;
+    }
+
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+// Delete confirmation function
+function confirmDelete(assignmentId, assignmentTitle) {
+    document.getElementById('assignmentTitle').textContent = assignmentTitle;
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+    
+    document.getElementById('confirmDeleteBtn').onclick = function() {
+        // Add your delete logic here - could be a form submission or AJAX call
+        window.location.href = `/assignments/${assignmentId}/delete/`;
+    };
+}
 </script>
+
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}

@@ -1,239 +1,527 @@
+{% extends 'teacher_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+{% block title %}Teacher Dashboard - My College{% endblock %}
 
-        .sidebar {
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            background-color: #343a40;
-            padding-top: 20px;
-        }
+{% block page_title %}Teacher Dashboard{% endblock %}
 
-        .sidebar a {
-            padding: 15px 20px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #adb5bd;
-            display: block;
-            transition: 0.3s;
-        }
+{% block extra_css %}
+<style>
+    .stats-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+    }
 
-        .sidebar a:hover,
-        .sidebar a.active {
-            color: #ffffff;
-            background-color: #495057;
-        }
+    .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
 
-        .main-content {
-            margin-left: 260px;
-            padding: 20px;
-        }
+    .stats-card-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
 
-        .navbar-brand-custom {
-            color: #ffffff;
-            font-weight: bold;
-            padding: 0 20px;
-            font-size: 1.5rem;
-        }
+    .stats-card-info {
+        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+        color: white;
+    }
 
-        .card-icon {
-            font-size: 3rem;
-            opacity: 0.3;
-        }
-    </style>
-</head>
+    .stats-card-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
 
-<body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar text-white">
-        <h3 class="navbar-brand-custom mb-4">My College</h3>
-        <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
-        <a href="#profile"><i class="fas fa-user me-2"></i>My Profile</a>
-        <a href="#classes"><i class="fas fa-chalkboard-user me-2"></i>My Classes</a>
-        <a href="{% url 'take_attendance' %}"><i class="fas fa-user-check me-2"></i>Attendance</a>
-        <a href="{% url 'assignment_list' %}"><i class="fas fa-graduation-cap me-2"></i>Assignment</a>
-        <a href="#notice"><i class="fas fa-bullhorn me-2"></i>Notices</a>
-        <hr class="bg-secondary">
-        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
-    </div>
+    .stats-card-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container-fluid">
+    .card-icon {
+        font-size: 3rem;
+        opacity: 0.3;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
 
-            <!-- Welcome Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h2">Teacher Dashboard</h1>
-                <div class="d-flex align-items-center">
-                    <span class="me-3 fs-5">Welcome, <strong>{{ user.first_name|default:user.username }}</strong></span>
-                    <img src="https://via.placeholder.com/40" class="rounded-circle" alt="User Avatar">
+    .section-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.02));
+        border-bottom: 1px solid var(--border-color);
+        padding: 20px 24px;
+        font-weight: 600;
+        font-size: 1.25rem;
+        position: relative;
+    }
+
+    .section-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border: 4px solid var(--primary-color);
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .btn-gradient {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        color: white;
+    }
+
+    .table-modern {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .table-modern thead th {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 16px;
+    }
+
+    .table-modern tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table-modern tbody tr:hover {
+        background: rgba(99, 102, 241, 0.05);
+        transform: translateX(4px);
+    }
+
+    .notice-item {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+        background: var(--card-bg);
+    }
+
+    .notice-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .quick-action-btn {
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .attendance-form {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.02));
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Overview Cards -->
+<div class="row mb-5">
+    <!-- Classes Card -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stats-card stats-card-primary">
+            <div class="card-body position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-subtitle mb-2">My Classes</h6>
+                        <h2 class="card-title mb-0">{{ total_classes|default:0 }}</h2>
+                        <small class="opacity-75">Active courses</small>
+                    </div>
+                    <i class="fas fa-chalkboard-user card-icon"></i>
                 </div>
             </div>
-
-            <!-- Dashboard Overview -->
-            <section id="dashboard" class="mb-5">
-                <div class="row">
-                    <!-- Classes Card -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-primary shadow">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="card-title">My Classes</h5>
-                                    <p class="card-text fs-4">{{ total_classes }}</p>
-                                </div>
-                                <i class="fas fa-chalkboard-user card-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Notices Card -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-info shadow">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="card-title">Active Notices</h5>
-                                    <p class="card-text fs-4">{{ notices|length }}</p>
-                                </div>
-                                <i class="fas fa-bullhorn card-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Students Card -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-success shadow">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="card-title">Total Students</h5>
-                                    <p class="card-text fs-4">{{ total_students }}</p>
-                                </div>
-                                <i class="fas fa-users card-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Profile Section -->
-            <section id="profile" class="card shadow-sm p-4 mb-5">
-                <h2 class="border-bottom pb-2 mb-3">My Profile</h2>
-                <div class="row">
-                    <div class="col-md-3 text-center">
-                        <img src="https://via.placeholder.com/150" class="img-fluid rounded-circle mb-3" alt="Profile Picture">
-                        <button class="btn btn-secondary btn-sm">Change Picture</button>
-                    </div>
-                    <div class="col-md-9">
-                        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                        <p><strong>Email:</strong> {{ user.email }}</p>
-                        <p><strong>Teacher ID:</strong> TCH-{{ user.id }}</p>
-                        <p><strong>Department:</strong> {{ user.department.name }}</p>
-                        <p><strong>Joined On:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
-                        <a href="#" class="btn btn-primary">Edit Profile</a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- My Classes Section -->
-            <section id="classes" class="card shadow-sm p-4 mb-5">
-                <h2 class="border-bottom pb-2 mb-3">My Classes</h2>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Course Code</th>
-                                <th>Course Name</th>
-                                <th>Semester</th>
-                                <th>Department</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for subject in subjects %}
-                            <tr>
-                                <td>{{ subject.code }}</td>
-                                <td>{{ subject.name }}</td>
-                                <td>{{ subject.semester.semester }}</td>
-                                <td>{{ subject.department.name }}</td>
-                                <td><a href="#" class="btn btn-sm btn-info">View Details</a></td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center">You are not assigned to any classes yet.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Attendance Section -->
-            <section id="attendance" class="card shadow-sm p-4 mb-5">
-                <h2 class="border-bottom pb-2 mb-3">Take Attendance</h2>
-                <form>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <label for="classSelect" class="form-label">Select Class</label>
-                            <select id="classSelect" class="form-select">
-                                <option selected>Choose...</option>
-                                {% for subject in subjects %}
-                                <option value="{{ subject.id }}">{{ subject.name }} - Sem {{ subject.semester.semester }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-5">
-                            <label for="attendanceDate" class="form-label">Select Date</label>
-                            <input type="date" id="attendanceDate" class="form-control">
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">Load Students</button>
-                        </div>
-                    </div>
-                </form>
-            </section>
-
-            <!-- Notice Section -->
-            <section id="notice" class="card shadow-sm p-4 mb-5">
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                    <h2>Notices & Announcements</h2>
-                    <a href="{% url 'notice_create' %}" class="btn btn-primary">Post a New Notice</a>
-                </div>
-                <div class="list-group">
-                    {% for notice in notices %}
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ notice.title }}</h5>
-                            <small>{{ notice.created_at|timesince }} ago</small>
-                        </div>
-                        <p class="mb-1">{{ notice.description|truncatewords:20 }}</p>
-                        <small>By {{ notice.created_by.first_name }} {{ notice.created_by.last_name }}</small>
-                    </a>
-                    {% empty %}
-                    <div class="list-group-item text-muted">No notices available.</div>
-                    {% endfor %}
-                </div>
-            </section>
-            
-
         </div>
-    </main>
+    </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <!-- Students Card -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stats-card stats-card-success">
+            <div class="card-body position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Total Students</h6>
+                        <h2 class="card-title mb-0">{{ total_students|default:0 }}</h2>
+                        <small class="opacity-75">Under guidance</small>
+                    </div>
+                    <i class="fas fa-users card-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Notices Card -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stats-card stats-card-info">
+            <div class="card-body position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Active Notices</h6>
+                        <h2 class="card-title mb-0">{{ notices|length|default:0 }}</h2>
+                        <small class="opacity-75">Published</small>
+                    </div>
+                    <i class="fas fa-bullhorn card-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
-</html>
+    <!-- Assignments Card -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stats-card stats-card-warning">
+            <div class="card-body position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Assignments</h6>
+                        <h2 class="card-title mb-0">8</h2>
+                        <small class="opacity-75">Pending review</small>
+                    </div>
+                    <i class="fas fa-tasks card-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card section-card mb-4">
+    <div class="section-header">
+        <i class="fas fa-bolt me-2"></i>Quick Actions
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="{% url 'take_attendance' %}" class="btn btn-outline-primary quick-action-btn w-100">
+                    <i class="fas fa-user-check me-2"></i>Take Attendance
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="{% url 'assignment_list' %}" class="btn btn-outline-success quick-action-btn w-100">
+                    <i class="fas fa-tasks me-2"></i>Create Assignment
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="{% url 'notice_create' %}" class="btn btn-outline-info quick-action-btn w-100">
+                    <i class="fas fa-bullhorn me-2"></i>Post Notice
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="#" class="btn btn-outline-warning quick-action-btn w-100">
+                    <i class="fas fa-chart-bar me-2"></i>View Reports
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Section -->
+<div class="card section-card" id="profile">
+    <div class="section-header">
+        <i class="fas fa-user me-2"></i>My Profile
+    </div>
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center mb-4 mb-md-0">
+                <img src="https://via.placeholder.com/150" class="profile-avatar mb-3" alt="Profile Picture">
+                <button class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-camera me-1"></i>Change Picture
+                </button>
+            </div>
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong><i class="fas fa-user me-2 text-primary"></i>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                        <p><strong><i class="fas fa-envelope me-2 text-primary"></i>Email:</strong> {{ user.email }}</p>
+                        <p><strong><i class="fas fa-id-badge me-2 text-primary"></i>Teacher ID:</strong> TCH-{{ user.id }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong><i class="fas fa-building me-2 text-primary"></i>Department:</strong> {{ user.department.name|default:"Not Assigned" }}</p>
+                        <p><strong><i class="fas fa-calendar me-2 text-primary"></i>Joined On:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+                        <p><strong><i class="fas fa-clock me-2 text-primary"></i>Last Login:</strong> {{ user.last_login|timesince }} ago</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="#" class="btn btn-gradient me-2">
+                        <i class="fas fa-edit me-1"></i>Edit Profile
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fas fa-key me-1"></i>Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- My Classes Section -->
+<div class="card section-card" id="classes">
+    <div class="section-header">
+        <i class="fas fa-chalkboard-user me-2"></i>My Classes
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-modern">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-code me-2"></i>Course Code</th>
+                        <th><i class="fas fa-book me-2"></i>Course Name</th>
+                        <th><i class="fas fa-layer-group me-2"></i>Semester</th>
+                        <th><i class="fas fa-building me-2"></i>Department</th>
+                        <th><i class="fas fa-users me-2"></i>Students</th>
+                        <th><i class="fas fa-cogs me-2"></i>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr>
+                        <td><span class="badge bg-primary">{{ subject.code }}</span></td>
+                        <td>{{ subject.name }}</td>
+                        <td>{{ subject.semester.semester }}</td>
+                        <td>{{ subject.department.name }}</td>
+                        <td><span class="badge bg-success">32</span></td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">You are not assigned to any classes yet.</p>
+                            <a href="#" class="btn btn-primary">Request Class Assignment</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Section -->
+<div class="card section-card" id="attendance">
+    <div class="section-header">
+        <i class="fas fa-user-check me-2"></i>Take Attendance
+    </div>
+    <div class="card-body">
+        <div class="attendance-form">
+            <form>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="classSelect" class="form-label">
+                            <i class="fas fa-chalkboard-user me-1"></i>Select Class
+                        </label>
+                        <select id="classSelect" class="form-select">
+                            <option selected>Choose a class...</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }} - Sem {{ subject.semester.semester }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="attendanceDate" class="form-label">
+                            <i class="fas fa-calendar me-1"></i>Select Date
+                        </label>
+                        <input type="date" id="attendanceDate" class="form-control">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="attendanceTime" class="form-label">
+                            <i class="fas fa-clock me-1"></i>Time Slot
+                        </label>
+                        <select id="attendanceTime" class="form-select">
+                            <option>09:00 - 10:00</option>
+                            <option>10:00 - 11:00</option>
+                            <option>11:00 - 12:00</option>
+                            <option>14:00 - 15:00</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-gradient px-4">
+                        <i class="fas fa-users me-2"></i>Load Students for Attendance
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Notice Section -->
+<div class="card section-card" id="notice">
+    <div class="section-header d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-bullhorn me-2"></i>Notices & Announcements
+        </div>
+        <a href="{% url 'notice_create' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i>Post New Notice
+        </a>
+    </div>
+    <div class="card-body">
+        {% for notice in notices %}
+        <div class="notice-item">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mb-0 text-primary">{{ notice.title }}</h6>
+                <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>{{ notice.created_at|timesince }} ago
+                </small>
+            </div>
+            <p class="mb-2 text-muted">{{ notice.description|truncatewords:25 }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-secondary">
+                    <i class="fas fa-user me-1"></i>By {{ notice.created_by.first_name }} {{ notice.created_by.last_name }}
+                </small>
+                <div>
+                    <a href="#" class="btn btn-sm btn-outline-primary me-1">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="#" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-4">
+            <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+            <p class="text-muted mb-3">No notices available at the moment.</p>
+            <a href="{% url 'notice_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create Your First Notice
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Recent Activity Section -->
+<div class="card section-card">
+    <div class="section-header">
+        <i class="fas fa-history me-2"></i>Recent Activity
+    </div>
+    <div class="card-body">
+        <div class="timeline">
+            <div class="timeline-item mb-3">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="bg-primary rounded-circle p-2" style="width: 40px; height: 40px;">
+                            <i class="fas fa-user-check text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-1">Attendance taken for Data Structures</h6>
+                        <p class="text-muted mb-0">32 students marked present</p>
+                        <small class="text-muted">2 hours ago</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timeline-item mb-3">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="bg-success rounded-circle p-2" style="width: 40px; height: 40px;">
+                            <i class="fas fa-tasks text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-1">New assignment posted</h6>
+                        <p class="text-muted mb-0">Algorithm Analysis - Due in 1 week</p>
+                        <small class="text-muted">1 day ago</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="bg-info rounded-circle p-2" style="width: 40px; height: 40px;">
+                            <i class="fas fa-bullhorn text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-1">Notice published</h6>
+                        <p class="text-muted mb-0">Mid-term exam schedule released</p>
+                        <small class="text-muted">3 days ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-set today's date for attendance
+    document.getElementById('attendanceDate').valueAsDate = new Date();
+    
+    // Add smooth animations for stats cards
+    const statsCards = document.querySelectorAll('.stats-card');
+    statsCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('animate-fade-in-up');
+    });
+    
+    // Form validation for attendance
+    document.querySelector('#attendance form').addEventListener('submit', function(e) {
+        const classSelect = document.getElementById('classSelect');
+        const dateSelect = document.getElementById('attendanceDate');
+        
+        if (classSelect.value === 'Choose a class...' || !dateSelect.value) {
+            e.preventDefault();
+            alert('Please select both class and date before proceeding.');
+        }
+    });
+</script>
+{% endblock %}

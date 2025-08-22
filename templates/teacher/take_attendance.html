@@ -1,55 +1,511 @@
-{% extends "base.html" %}
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}Take Attendance - Teacher Portal{% endblock %}
+
+{% block page_title %}Take Attendance{% endblock %}
+
+{% block extra_css %}
+<style>
+    .attendance-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 30px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .attendance-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .section-header {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+        border-bottom: 1px solid var(--border-color);
+        padding: 20px 24px;
+        font-weight: 600;
+        font-size: 1.25rem;
+        position: relative;
+        color: var(--text-primary);
+    }
+
+    .section-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+    }
+
+    .routine-table {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: none;
+        border: none;
+    }
+
+    .routine-table thead th {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .routine-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .routine-table tbody tr:hover {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.02));
+        transform: translateX(4px);
+    }
+
+    .routine-table td {
+        padding: 16px;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .day-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .day-monday { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+    .day-tuesday { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+    .day-wednesday { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+    .day-thursday { background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; }
+    .day-friday { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
+    .day-saturday { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
+    .day-sunday { background: linear-gradient(135deg, #ff9a9e, #fecfef); color: white; }
+
+    .time-badge {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+        color: var(--primary-color);
+        padding: 8px 14px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .subject-info {
+        text-align: left;
+    }
+
+    .subject-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .subject-code {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .semester-badge {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .btn-attendance {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+
+    .btn-attendance:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        color: white;
+    }
+
+    .custom-form {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.02));
+        border-radius: 16px;
+        padding: 30px;
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .custom-form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 12px 16px;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+    }
+
+    .btn-custom-attendance {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 14px 30px;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-custom-attendance:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-secondary);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+
+    .stats-row {
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-gradient);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>Select Class for Attendance</h2>
-
-    <!-- Routine Classes -->
-    <h4 class="mt-4">Routine Classes</h4>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Day</th>
-                <th>Time</th>
-                <th>Subject</th>
-                <th>Semester</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in routines %}
-            <tr>
-                <td>{{ r.get_day_of_week_display }}</td>
-                <td>{{ r.start_time }} - {{ r.end_time }}</td>
-                <td>{{ r.subject.name }}</td>
-                <td>Sem {{ r.semester.semester }}</td>
-                <td>
-                    <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" 
-                       class="btn btn-sm btn-success">Take Attendance</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" class="text-center">No routine classes assigned.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Custom Class -->
-    <h4 class="mt-4">Custom Class</h4>
-    <form method="get" action="{% url 'mark_attendance_custom' %}">
-        <div class="row">
-            <div class="col-md-6">
-                <label for="subject">Select Subject</label>
-                <select name="subject" class="form-control" required>
-                    <option value="">-- Select --</option>
-                    {% for s in subjects %}
-                    <option value="{{ s.id }}">{{ s.name }} (Sem {{ s.semester.semester }})</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">Take Attendance</button>
+<!-- Statistics Row -->
+<div class="stats-row">
+    <div class="row">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ routines|length }}</div>
+                <div class="stat-label">Routine Classes</div>
             </div>
         </div>
-    </form>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ subjects|length }}</div>
+                <div class="stat-label">Total Subjects</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Days/Week</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number">Today</div>
+                <div class="stat-label">{{ "now"|date:"D, M d" }}</div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Routine Classes Section -->
+<div class="attendance-card">
+    <div class="section-header">
+        <i class="fas fa-calendar-week me-2"></i>
+        Routine Classes Schedule
+        <small class="float-end text-muted" style="font-size: 0.85rem; font-weight: 400;">
+            <i class="fas fa-clock me-1"></i>Updated automatically
+        </small>
+    </div>
+    <div class="card-body p-0">
+        {% if routines %}
+        <div class="table-responsive">
+            <table class="table routine-table mb-0">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-calendar-day me-2"></i>Day</th>
+                        <th><i class="fas fa-clock me-2"></i>Time Slot</th>
+                        <th><i class="fas fa-book me-2"></i>Subject Details</th>
+                        <th><i class="fas fa-layer-group me-2"></i>Semester</th>
+                        <th><i class="fas fa-users-cog me-2"></i>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in routines %}
+                    <tr>
+                        <td>
+                            <span class="day-badge day-{{ r.get_day_of_week_display|lower }}">
+                                {{ r.get_day_of_week_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="time-badge">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ r.start_time|time:"H:i" }} - {{ r.end_time|time:"H:i" }}
+                            </span>
+                        </td>
+                        <td class="subject-info">
+                            <div class="subject-name">{{ r.subject.name }}</div>
+                            <div class="subject-code">Code: {{ r.subject.code|default:"N/A" }}</div>
+                        </td>
+                        <td>
+                            <span class="semester-badge">
+                                Semester {{ r.semester.semester }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" 
+                               class="btn btn-attendance">
+                                <i class="fas fa-user-check me-2"></i>Take Attendance
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-calendar-times empty-icon"></i>
+            <h4>No Routine Classes</h4>
+            <p>You don't have any routine classes assigned yet.</p>
+            <small class="text-muted">Contact administration to set up your class schedule.</small>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Custom Class Section -->
+<div class="attendance-card">
+    <div class="section-header">
+        <i class="fas fa-plus-circle me-2"></i>
+        Take Custom Attendance
+        <small class="float-end text-muted" style="font-size: 0.85rem; font-weight: 400;">
+            <i class="fas fa-info-circle me-1"></i>For extra classes or make-up sessions
+        </small>
+    </div>
+    <div class="card-body">
+        <div class="custom-form">
+            <form method="get" action="{% url 'mark_attendance_custom' %}">
+                <div class="row align-items-end">
+                    <div class="col-md-8 mb-3">
+                        <label for="subject" class="form-label">
+                            <i class="fas fa-book me-2"></i>Select Subject
+                        </label>
+                        <select name="subject" id="subject" class="form-select" required>
+                            <option value="">-- Choose a subject --</option>
+                            {% for s in subjects %}
+                            <option value="{{ s.id }}" data-semester="{{ s.semester.semester }}">
+                                {{ s.name }} (Semester {{ s.semester.semester }})
+                                {% if s.code %} - {{ s.code }}{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted mt-1">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Select any subject from your assigned courses
+                        </small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button type="submit" class="btn btn-custom-attendance w-100">
+                            <i class="fas fa-arrow-right me-2"></i>
+                            Proceed to Attendance
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="alert alert-info border-0" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.05)); border-radius: 12px;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle me-3" style="font-size: 1.2rem;"></i>
+                                <div>
+                                    <strong>Custom Attendance</strong><br>
+                                    <small>Use this option for extra classes, tutorials, or make-up sessions that are not part of your regular routine.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100" style="border-radius: 16px; border: 1px solid var(--border-color);">
+            <div class="card-body text-center">
+                <i class="fas fa-history text-primary mb-3" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                <h5>View Attendance History</h5>
+                <p class="text-muted">Check previous attendance records and analytics</p>
+                <a href="#" class="btn btn-outline-primary">
+                    <i class="fas fa-chart-line me-2"></i>View History
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100" style="border-radius: 16px; border: 1px solid var(--border-color);">
+            <div class="card-body text-center">
+                <i class="fas fa-file-export text-success mb-3" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                <h5>Export Reports</h5>
+                <p class="text-muted">Generate and download attendance reports</p>
+                <a href="#" class="btn btn-outline-success">
+                    <i class="fas fa-download me-2"></i>Generate Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add loading animation to attendance buttons
+    document.querySelectorAll('.btn-attendance, .btn-custom-attendance').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const originalHtml = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+            this.disabled = true;
+            
+            // Re-enable after 3 seconds (in case of slow loading)
+            setTimeout(() => {
+                this.innerHTML = originalHtml;
+                this.disabled = false;
+            }, 3000);
+        });
+    });
+
+    // Add today's date highlighting
+    const today = new Date().getDay();
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const currentDay = dayNames[today];
+    
+    // Highlight current day
+    document.querySelectorAll(`.day-${currentDay}`).forEach(badge => {
+        badge.style.transform = 'scale(1.1)';
+        badge.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+        badge.style.animation = 'pulse 2s infinite';
+    });
+
+    // Form validation
+    document.querySelector('.custom-form form').addEventListener('submit', function(e) {
+        const select = document.getElementById('subject');
+        if (!select.value) {
+            e.preventDefault();
+            select.focus();
+            select.style.borderColor = '#ef4444';
+            
+            // Reset border color after 3 seconds
+            setTimeout(() => {
+                select.style.borderColor = '';
+            }, 3000);
+        }
+    });
+
+    // Animate stats on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach((stat, index) => {
+            stat.style.opacity = '0';
+            stat.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                stat.style.transition = 'all 0.6s ease';
+                stat.style.opacity = '1';
+                stat.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
 {% endblock %}

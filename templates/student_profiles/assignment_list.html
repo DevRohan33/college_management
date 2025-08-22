@@ -19,8 +19,8 @@
                     
                     <p class="mb-1">
                         <strong>Due:</strong> 
-                        <span class="{% if assignment.submit_date < now %}text-danger{% endif %}">
-                            {{ assignment.submit_date|date:"Y-m-d H:i" }}
+                        <span class="{% if assignment.submit_last_date < now %}text-danger{% endif %}">
+                            {{ assignment.submit_last_date|date:"Y-m-d H:i" }}
                         </span>
                     </p>
                     

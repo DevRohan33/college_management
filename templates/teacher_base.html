@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Student Dashboard{% endblock %}</title>
+    <title>{% block title %}Teacher Dashboard{% endblock %}</title>
 
     <!-- Bootstrap & FontAwesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
@@ -522,6 +522,16 @@
         .stagger-2 { animation-delay: 0.2s; }
         .stagger-3 { animation-delay: 0.3s; }
         .stagger-4 { animation-delay: 0.4s; }
+
+        /* Footer styles */
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 20px 0;
+            margin-top: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -547,29 +557,35 @@
         <div class="sidebar-header">
             <a class="navbar-brand" href="/">
                 <div class="brand-icon">
-                    <i class="fas fa-graduation-cap"></i>
+                    <i class="fas fa-chalkboard-user"></i>
                 </div>
-                ECE Portal
+                Teacher Portal
             </a>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="{% url 'student_dashboard' %}" class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
-                <i class="fas fa-home icon"></i> Dashboard</a></li>
-            <li><a href="{% url 'student_courses' %}" class="{% if request.resolver_match.url_name == 'student_courses' %}active{% endif %}">
-                <i class="fas fa-book icon"></i> My Courses</a></li>
-            <li><a href="{% url 'student_assignment_list' %}">
-                <i class="fas fa-tasks icon"></i> Assignments</a></li>
-            <li><a href="{% url 'attendance' %}">
-                <i class="fas fa-user-check icon"></i> Attendance</a></li>
-            <li><a href="#">
-                <i class="fas fa-chart-bar icon"></i> Results</a></li>
-            <li><a href="{% url 'event_list' %}" class="{% if request.resolver_match.url_name == 'event_list' %}active{% endif %}">
-                <i class="fas fa-calendar-alt icon"></i> Events</a></li>
-            <li><a href="{% url 'edit_profile' %}" class="{% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+            <li><a href="#dashboard" class="{% if request.resolver_match.url_name == 'teacher_dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt icon"></i> Dashboard</a></li>
+            <li><a href="#profile" class="{% if request.resolver_match.url_name == 'teacher_profile' %}active{% endif %}">
                 <i class="fas fa-user icon"></i> My Profile</a></li>
+            <li><a href="#classes" class="{% if request.resolver_match.url_name == 'teacher_classes' %}active{% endif %}">
+                <i class="fas fa-chalkboard-user icon"></i> My Classes</a></li>
+            <li><a href="{% url 'take_attendance' %}" class="{% if request.resolver_match.url_name == 'take_attendance' %}active{% endif %}">
+                <i class="fas fa-user-check icon"></i> Attendance</a></li>
+            <li><a href="{% url 'assignment_list' %}" class="{% if request.resolver_match.url_name == 'assignment_list' %}active{% endif %}">
+                <i class="fas fa-tasks icon"></i> Assignments</a></li>
+            <li><a href="#grades" class="{% if request.resolver_match.url_name == 'teacher_grades' %}active{% endif %}">
+                <i class="fas fa-chart-bar icon"></i> Grades</a></li>
+            <li><a href="#students" class="{% if request.resolver_match.url_name == 'teacher_students' %}active{% endif %}">
+                <i class="fas fa-users icon"></i> Students</a></li>
+            <li><a href="{% url 'notice_create' %}" class="{% if request.resolver_match.url_name == 'notice_create' %}active{% endif %}">
+                <i class="fas fa-bullhorn icon"></i> Notice Board</a></li>
             
             <hr class="menu-divider">
             
+            <li><a href="#">
+                <i class="fas fa-calendar-alt icon"></i> Schedule</a></li>
+            <li><a href="#">
+                <i class="fas fa-file-alt icon"></i> Reports</a></li>
             <li><a href="#">
                 <i class="fas fa-cog icon"></i> Settings</a></li>
             <li><a href="#">
@@ -581,6 +597,20 @@
 
     <!-- Page Content -->
     <main class="main-content">
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="header-title">{% block page_title %}Teacher Dashboard{% endblock %}</h1>
+                <p class="header-subtitle">Welcome back, {{ user.first_name|default:user.username }}! Ready to inspire minds today?</p>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="me-3 text-end">
+                    <div class="fw-bold">{{ user.first_name }} {{ user.last_name }}</div>
+                    <small class="text-muted">Teacher ID: TCH-{{ user.id }}</small>
+                </div>
+                <img src="https://via.placeholder.com/50" class="rounded-circle" alt="User Avatar" width="50" height="50">
+            </div>
+        </div>
 
         <!-- Django messages -->
         {% if messages %}
@@ -595,6 +625,20 @@
         {% endif %}
 
         {% block content %}{% endblock %}
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="mb-0">&copy; 2024 Teacher Portal. All rights reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <small>Version 1.0 | Built with ❤️ for educators</small>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </main>
 
 </div>
@@ -673,6 +717,20 @@
 
     // Add smooth scroll behavior
     document.documentElement.style.scrollBehavior = 'smooth';
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
 </script>
 
 {% block extra_js %}{% endblock %}

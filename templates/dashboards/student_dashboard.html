@@ -1,6 +1,3 @@
-
-
-
 {% extends "Student_base.html" %}
 {% load static %}
 
@@ -8,244 +5,1048 @@
 
 {% block extra_css %}
 <style>
-    .progress-card .progress-bar {
+    /* Dashboard specific styles */
+    .welcome-card {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    .welcome-card .card-body {
+        position: relative;
+        z-index: 1;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.6s;
+    }
+
+    .stat-card:hover::before {
+        left: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .stat-icon.attendance { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.courses { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .stat-icon.assignments { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .stat-icon.gpa { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .profile-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-image {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border: 4px solid white;
+        margin-bottom: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+
+    .profile-image:hover {
+        transform: scale(1.05);
+    }
+
+    .profile-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 12px;
+    }
+
+    .details-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .details-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .details-item:last-child {
+        border-bottom: none;
+    }
+
+    .details-item:hover {
+        background: rgba(99, 102, 241, 0.02);
+        margin: 0 -24px;
+        padding: 12px 24px;
+    }
+
+    .details-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .details-value {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    /* Enhanced routine styles */
+    .routine-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .routine-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .routine-card:hover::before {
+        transform: scaleY(1);
+    }
+
+    .routine-card:hover {
+        background: rgba(99, 102, 241, 0.02);
+        border-color: rgba(99, 102, 241, 0.2);
+        transform: translateX(8px);
+    }
+
+    .routine-time {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .routine-subject {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 4px 0;
+    }
+
+    .routine-type {
+        display: inline-block;
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .subject-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .subject-item:last-child {
+        border-bottom: none;
+    }
+
+    .subject-item:hover {
+        background: rgba(99, 102, 241, 0.02);
+        margin: 0 -24px;
+        padding: 12px 24px;
+        border-radius: 8px;
+    }
+
+    .subject-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-gradient);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 16px;
+        font-size: 1.1rem;
+    }
+
+    .subject-info {
+        flex: 1;
+    }
+
+    .subject-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 2px;
+    }
+
+    .subject-code {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    /* Enhanced attendance chart */
+    .attendance-overview {
+        position: relative;
+        text-align: center;
+    }
+
+    .attendance-chart-container {
+        position: relative;
+        height: 200px;
+        margin: 20px 0;
+    }
+
+    .attendance-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .attendance-stat {
+        text-align: center;
+        padding: 16px;
+        border-radius: 12px;
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .attendance-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .attendance-stat-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .attendance-stat.present .attendance-stat-value { color: var(--success-color); }
+    .attendance-stat.absent .attendance-stat-value { color: var(--danger-color); }
+    .attendance-stat.total .attendance-stat-value { color: var(--primary-color); }
+
+    /* Enhanced notice styles */
+    .latest-notice {
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.05));
+        border: 1px solid rgba(6, 182, 212, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .latest-notice::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--accent-color);
+    }
+
+    .notice-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .notice-time {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .no-content-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+    }
+
+    .no-content-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    /* Club card styles */
+    .club-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .club-item:last-child {
+        border-bottom: none;
+    }
+
+    .club-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--secondary-color);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Enhanced buttons */
+    .btn-enhanced {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-enhanced:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        color: white;
+    }
+
+    .btn-outline-enhanced {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-enhanced:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Progress bars */
+    .progress-enhanced {
+        height: 8px;
+        border-radius: 4px;
+        background: var(--border-color);
+        overflow: hidden;
+        margin: 12px 0;
+    }
+
+    .progress-bar-enhanced {
+        height: 100%;
+        background: var(--primary-gradient);
+        border-radius: 4px;
+        transition: width 0.8s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar-enhanced::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    /* Responsive design enhancements */
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            padding: 20px 16px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+        }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+        }
+
+        .attendance-stats {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .routine-card {
+            margin-bottom: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .details-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .attendance-chart-container {
+            height: 150px;
+        }
+    }
+
+    /* Tab enhancements */
+    .nav-tabs {
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 24px;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-radius: 8px 8px 0 0;
+        color: var(--text-secondary);
+        font-weight: 600;
+        padding: 12px 20px;
+        margin-right: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: var(--primary-color);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .nav-tabs .nav-link.active {
+        color: var(--primary-color);
+        background: transparent;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .nav-tabs .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
         background: var(--primary-gradient);
     }
-    .profile-card { text-align: center; }
-    .profile-image {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border: 3px solid #e2e8f0;
-        margin-bottom: 15px;
-    }
-    .latest-notice {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 15px;
-        border-left: 4px solid var(--primary-color);
-    }
+
+    /* Animation delays for stagger effect */
+    .stagger-animation .card:nth-child(1) { animation-delay: 0.1s; }
+    .stagger-animation .card:nth-child(2) { animation-delay: 0.2s; }
+    .stagger-animation .card:nth-child(3) { animation-delay: 0.3s; }
+    .stagger-animation .card:nth-child(4) { animation-delay: 0.4s; }
+    .stagger-animation .card:nth-child(5) { animation-delay: 0.5s; }
+    .stagger-animation .card:nth-child(6) { animation-delay: 0.6s; }
 </style>
 {% endblock %}
 
 {% block content %}
-<header>
-    <div>
-        <h1 class="header-title">Welcome Back, {{ user.first_name|default:user.username }}!</h1>
-        <p class="text-muted">Here's what's happening today. Let's make it a productive one.</p>
-    </div>
-</header>
-
-<div class="row">
-    <!-- Left Column -->
-    <div class="col-lg-8">
-        
-        <!-- Personal Details -->
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Personal Details</span>
-                <a href="{% url 'edit_profile' %}" class="edit-btn"><i class="fas fa-edit"></i></a>
-            </div>
-            <div class="card-body">
-                <ul class="details-list">
-                    <li class="details-item"><strong>Name:</strong> {{ user.get_full_name }}</li>
-                    <li class="details-item"><strong>Roll No:</strong> {{ student.roll_no|default:'Not available' }}</li>
-                    <li class="details-item"><strong>Registration No:</strong> {{ student.registration_number|default:'Not available' }}</li>
-                    <li class="details-item"><strong>Department:</strong> {{ user.department.name }}</li>
-                    <li class="details-item"><strong>Semester:</strong> {{ user.semester.semester }}th</li>
-                    <li class="details-item"><strong>Email:</strong> {{ user.email }}</li>
-                    <li class="details-item"><strong>Mobile:</strong> {{ student.phone_number|default:'Not available' }}</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Routine -->
-        <div class="card mb-4">
-            <div class="card-header">📅 Class Routine</div>
-            <div class="card-body">
-            
-                <!-- Tabs -->
-                <ul class="nav nav-tabs mb-3" id="routineTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="today-tab" data-bs-toggle="tab" data-bs-target="#today" type="button" role="tab">
-                            Today
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly" type="button" role="tab">
-                            Weekly
-                        </button>
-                    </li>
-                </ul>
-            
-                <!-- Tab Content -->
-                <div class="tab-content" id="routineTabsContent">
-                
-                    <!-- Today Tab -->
-                    <div class="tab-pane fade show active" id="today" role="tabpanel">
-                        <ul class="list-group">
-                            {% for routine in todays_routines %}
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <div>
-                                        <strong>{{ routine.subject.name }}</strong><br>
-                                        <small class="text-muted">{{ routine.start_time|time:"h:i A" }} - {{ routine.end_time|time:"h:i A" }}</small>
-                                    </div>
-                                    <span class="badge bg-light text-dark">{{ routine.subject.get_subject_type_display }}</span>
-                                </li>
-                            {% empty %}
-                                <li class="list-group-item text-center text-muted">No classes today.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                
-                    <!-- Weekly Tab -->
-                    <div class="tab-pane fade" id="weekly" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-striped text-center align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Day</th>
-                                        <th>Time</th>
-                                        <th>Subject</th>
-                                        <th>Type</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% regroup weekly_routines by get_day_of_week_display as day_list %}
-                                    {% for day in day_list %}
-                                    <tr class="table-primary">
-                                        <td colspan="4" class="fw-bold">{{ day.grouper }}</td>
-                                    </tr>
-                                    {% for routine in day.list %}
-                                    <tr>
-                                        <td></td>
-                                        <td>{{ routine.start_time|time:"h:i A" }} - {{ routine.end_time|time:"h:i A" }}</td>
-                                        <td>{{ routine.subject.name }}</td>
-                                        <td>{{ routine.subject.get_subject_type_display }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+<div class="animate-fade-in-up">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card welcome-card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="header-title text-white mb-2">Welcome Back, {{ user.first_name|default:user.username }}! 👋</h1>
+                            <p class="header-subtitle text-white mb-0">Ready to make today productive? Let's dive into your academic journey.</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="d-none d-md-block">
+                                <i class="fas fa-graduation-cap" style="font-size: 4rem; opacity: 0.3;"></i>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid stagger-animation animate-fade-in-up">
+        <div class="stat-card animate-fade-in-up stagger-1">
+            <div class="stat-icon attendance">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="stat-value">{{ attendance_percent }}%</div>
+            <div class="stat-label">Attendance Rate</div>
+        </div>
+        
+        <div class="stat-card animate-fade-in-up stagger-2">
+            <div class="stat-icon courses">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-value">{{ subjects.count }}</div>
+            <div class="stat-label">Active Courses</div>
+        </div>
+        
+        <div class="stat-card animate-fade-in-up stagger-3">
+            <div class="stat-icon assignments">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-value">{{ pending_assignments|default:"0" }}</div>
+            <div class="stat-label">Pending Tasks</div>
+        </div>
+        
+        <div class="stat-card animate-fade-in-up stagger-4">
+            <div class="stat-icon gpa">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-value">{{ current_gpa|default:"N/A" }}</div>
+            <div class="stat-label">Current GPA</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-8">
+            
+            <!-- Personal Details -->
+            <div class="card mb-4 animate-fade-in-up stagger-1">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-user me-2"></i>Personal Details</span>
+                    <a href="{% url 'edit_profile' %}" class="btn btn-outline-enhanced btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+                <div class="card-body">
+                    <ul class="details-list">
+                        <li class="details-item">
+                            <span class="details-label">Full Name</span>
+                            <span class="details-value">{{ user.get_full_name }}</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Roll Number</span>
+                            <span class="details-value">{{ student.roll_no|default:'Not available' }}</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Registration No</span>
+                            <span class="details-value">{{ student.registration_number|default:'Not available' }}</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Department</span>
+                            <span class="details-value">{{ user.department.name }}</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Semester</span>
+                            <span class="details-value">{{ user.semester.semester }}th Semester</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Email Address</span>
+                            <span class="details-value">{{ user.email }}</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Mobile Number</span>
+                            <span class="details-value">{{ student.phone_number|default:'Not provided' }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Class Routine -->
+            <div class="card mb-4 animate-fade-in-up stagger-2">
+                <div class="card-header">
+                    <i class="fas fa-calendar-alt me-2"></i>Class Routine
+                </div>
+                <div class="card-body">
                 
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs" id="routineTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="today-tab" data-bs-toggle="tab" data-bs-target="#today" type="button" role="tab">
+                                <i class="fas fa-clock me-1"></i>Today
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly" type="button" role="tab">
+                                <i class="fas fa-calendar-week me-1"></i>Weekly
+                            </button>
+                        </li>
+                    </ul>
+                
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="routineTabsContent">
+                    
+                        <!-- Today Tab -->
+                        <div class="tab-pane fade show active" id="today" role="tabpanel">
+                            {% if todays_routines %}
+                                {% for routine in todays_routines %}
+                                    <div class="routine-card">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="flex-grow-1">
+                                                <div class="routine-subject">{{ routine.subject.name }}</div>
+                                                <div class="routine-time">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ routine.start_time|time:"h:i A" }} - {{ routine.end_time|time:"h:i A" }}
+                                                </div>
+                                            </div>
+                                            <span class="routine-type">{{ routine.subject.get_subject_type_display }}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="no-content-state">
+                                    <div class="no-content-icon">
+                                        <i class="fas fa-calendar-times"></i>
+                                    </div>
+                                    <p>No classes scheduled for today. Enjoy your free time! 🎉</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    
+                        <!-- Weekly Tab -->
+                        <div class="tab-pane fade" id="weekly" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 120px;">Day</th>
+                                            <th style="width: 150px;">Time</th>
+                                            <th>Subject</th>
+                                            <th style="width: 100px;">Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% regroup weekly_routines by get_day_of_week_display as day_list %}
+                                        {% for day in day_list %}
+                                        <tr class="table-light">
+                                            <td colspan="4" class="fw-bold text-primary">
+                                                <i class="fas fa-calendar-day me-2"></i>{{ day.grouper }}
+                                            </td>
+                                        </tr>
+                                        {% for routine in day.list %}
+                                        <tr class="routine-row">
+                                            <td></td>
+                                            <td class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>
+                                                {{ routine.start_time|time:"h:i A" }} - {{ routine.end_time|time:"h:i A" }}
+                                            </td>
+                                            <td>
+                                                <strong>{{ routine.subject.name }}</strong><br>
+                                                <small class="text-muted">{{ routine.subject.code }}</small>
+                                            </td>
+                                            <td><span class="routine-type">{{ routine.subject.get_subject_type_display }}</span></td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Subjects -->
+            <div class="card mb-4 animate-fade-in-up stagger-3">
+                <div class="card-header">
+                    <i class="fas fa-book-open me-2"></i>My Subjects
+                </div>
+                <div class="card-body">
+                    {% if subjects %}
+                        {% for subject in subjects %}
+                            <div class="subject-item">
+                                <div class="subject-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="subject-info">
+                                    <div class="subject-name">{{ subject.name }}</div>
+                                    <div class="subject-code">{{ subject.code }} • {{ subject.get_subject_type_display }}</div>
+                                </div>
+                                <div class="progress-enhanced">
+                                    <div class="progress-bar-enhanced" style="width: {{ subject.progress|default:75 }}%"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-content-state">
+                            <div class="no-content-icon">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <p>No subjects assigned yet. Check back later!</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Subjects -->
-        <div class="card mb-4">
-            <div class="card-header">My Subjects</div>
-            <div class="card-body">
-                {% for subject in subjects %}
-                    <div class="subject-item">
-                        <i class="fas fa-book text-primary me-2"></i>
-                        <span>{{ subject.name }} ({{ subject.code }})</span>
+        <!-- Right Column -->
+        <div class="col-lg-4">
+
+            <!-- Profile Card -->
+            <div class="card profile-card mb-4 animate-fade-in-up stagger-1">
+                <div class="card-body">
+                    {% if student.profile_image %}
+                        <img src="{{ student.profile_image.url }}" class="profile-image rounded-circle" alt="Profile">
+                    {% else %}
+                        <img src="https://via.placeholder.com/120x120/6366f1/ffffff?text={{ user.first_name|slice:':1'|upper }}{{ user.last_name|slice:':1'|upper }}" 
+                             class="profile-image rounded-circle" alt="Profile">
+                    {% endif %}
+                    
+                    <h5 class="mb-1">{{ user.get_full_name }}</h5>
+                    <p class="text-muted small mb-2">{{ user.department.name }} • Semester {{ user.semester.semester }}</p>
+                    
+                    <div class="profile-status">
+                        <i class="fas fa-circle"></i>
+                        Active Student
                     </div>
-                {% empty %}
-                    <p class="text-center text-muted">No subjects assigned.</p>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Right Column -->
-    <div class="col-lg-4">
-
-        <!-- Profile -->
-        <div class="card mb-4">
-            <div class="card-body text-center">
-                {% if student.profile_image %}
-                    <img src="{{ student.profile_image.url }}" class="profile-image rounded-circle">
-                {% else %}
-                    <img src="https://via.placeholder.com/150x150/667eea/ffffff?text={{ user.first_name|slice:':1'|upper }}{{ user.last_name|slice:':1'|upper }}" class="profile-image rounded-circle">
-                {% endif %}
-                <div><span class="badge bg-primary-light">ID: {{ student.roll_no|default:user.username }}</span></div>
-            </div>
-        </div>
-
-        <!-- Attendance Chart (Present vs Absent) -->
-        <div class="card mb-4">
-          <div class="card-header">📊 Attendance Overview</div>
-          <div class="card-body text-center">
-            <canvas id="attendanceDoughnut" style="max-height: 250px;"></canvas>
-            <p class="mt-3 mb-0">
-              <strong>{{ attendance_percent }}%</strong> Overall  
-              ({{ attendance_present }} Present / {{ attendance_absent }} Absent / {{ attendance_total }} Total)
-            </p>
-          </div>
-        </div>
-
-        <!-- Latest Notice -->
-        <div class="card mb-4">
-            <div class="card-header">📢 Latest Notice</div>
-            <div class="card-body">
-                {% if notices %}
-                    <div class="latest-notice">
-                        <h6 class="mb-1">{{ notices.0.title }}</h6>
-                        <small class="text-muted">{{ notices.0.created_at|timesince }} ago</small>
+                    
+                    <div class="mt-3">
+                        <span class="badge bg-light text-dark">ID: {{ student.roll_no|default:user.username }}</span>
                     </div>
-                {% else %}
-                    <p class="text-muted">No notices available.</p>
-                {% endif %}
+                </div>
             </div>
-        </div>
 
-        <!-- Clubs Section (dummy for now) -->
-        <div class="card mb-4">
-            <div class="card-header">🎭 My Clubs</div>
-            <div class="card-body">
-                {% if student.clubs.exists %}
-                    <ul>
+            <!-- Attendance Overview -->
+            <div class="card mb-4 animate-fade-in-up stagger-2">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie me-2"></i>Attendance Overview
+                </div>
+                <div class="card-body attendance-overview">
+                    <div class="attendance-chart-container">
+                        <canvas id="attendanceDoughnut"></canvas>
+                    </div>
+                    
+                    <div class="attendance-stats">
+                        <div class="attendance-stat present">
+                            <div class="attendance-stat-value">{{ attendance_present }}</div>
+                            <div class="attendance-stat-label">Present</div>
+                        </div>
+                        <div class="attendance-stat absent">
+                            <div class="attendance-stat-value">{{ attendance_absent }}</div>
+                            <div class="attendance-stat-label">Absent</div>
+                        </div>
+                        <div class="attendance-stat total">
+                            <div class="attendance-stat-value">{{ attendance_total }}</div>
+                            <div class="attendance-stat-label">Total</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <strong class="fs-4">{{ attendance_percent }}%</strong>
+                        <div class="small text-muted">Overall Attendance</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest Notice -->
+            <div class="card mb-4 animate-fade-in-up stagger-3">
+                <div class="card-header">
+                    <i class="fas fa-bullhorn me-2"></i>Latest Notice
+                </div>
+                <div class="card-body">
+                    {% if notices %}
+                        <div class="latest-notice">
+                            <div class="notice-title">{{ notices.0.title }}</div>
+                            <div class="notice-time">
+                                <i class="fas fa-clock"></i>
+                                {{ notices.0.created_at|timesince }} ago
+                            </div>
+                            <div class="mt-2">
+                                <a href="#" class="btn-outline-enhanced btn-sm">Read More</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="no-content-state">
+                            <div class="no-content-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <p>No recent notices. Stay tuned for updates!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- My Clubs -->
+            <div class="card mb-4 animate-fade-in-up stagger-4">
+                <div class="card-header">
+                    <i class="fas fa-users me-2"></i>My Clubs & Activities
+                </div>
+                <div class="card-body">
+                    {% if student.clubs.exists %}
                         {% for club in student.clubs.all %}
-                            <li>{{ club.name }}</li>
+                            <div class="club-item">
+                                <div class="club-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">{{ club.name }}</div>
+                                    <small class="text-muted">Active Member</small>
+                                </div>
+                            </div>
                         {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted">You haven't joined any clubs yet.</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Join a Club</a>
-                {% endif %}
+                    {% else %}
+                        <div class="no-content-state">
+                            <div class="no-content-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <p>You haven't joined any clubs yet.</p>
+                            <a href="#" class="btn-enhanced btn-sm mt-2">
+                                <i class="fas fa-plus"></i> Explore Clubs
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-        </div>
 
-        <!-- Results -->
-        <div class="card mb-4">
-            <div class="card-header">📊 Academic Results</div>
-            <div class="card-body text-center">
-                <a href="{% url 'student_results' %}" class="btn btn-primary w-100">
-                    <i class="fas fa-download me-2"></i> Download Latest Result
-                </a>
+            <!-- Quick Actions -->
+            <div class="card mb-4 animate-fade-in-up stagger-5">
+                <div class="card-header">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'student_results' %}" class="btn-enhanced">
+                            <i class="fas fa-download"></i>
+                            Download Results
+                        </a>
+                        <a href="{% url 'student_assignment_list' %}" class="btn-outline-enhanced">
+                            <i class="fas fa-tasks"></i>
+                            View Assignments
+                        </a>
+                        <a href="{% url 'attendance' %}" class="btn-outline-enhanced">
+                            <i class="fas fa-calendar-check"></i>
+                            Check Attendance
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </div>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-  const ctx = document.getElementById('attendanceDoughnut');
-  if (ctx) {
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Present', 'Absent'],
-        datasets: [{
-          data: [{{ attendance_present }}, {{ attendance_absent }}],
-          backgroundColor: ['#28a745', '#dc3545'],
-          borderWidth: 2
-        }]
-      },
-      options: {
-        cutout: '70%',
-        plugins: {
-          legend: { position: 'bottom' },
-          tooltip: { callbacks: { label: c => c.label + ': ' + c.parsed } }
-        }
-      }
-    });
-  }
-</script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced Attendance Doughnut Chart
+    const ctx = document.getElementById('attendanceDoughnut');
+    if (ctx) {
+        const chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Absent'],
+                datasets: [{
+                    data: [{{ attendance_present }}, {{ attendance_absent }}],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(239, 68, 68, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(239, 68, 68, 1)'
+                    ],
+                    borderWidth: 2,
+                    hoverBackgroundColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(239, 68, 68, 1)'
+                    ],
+                    hoverBorderColor: [
+                        '#ffffff',
+                        '#ffffff'
+                    ],
+                    hoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const total = {{ attendance_total }};
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    duration: 1000,
+                    easing: 'easeOutCubic'
+                }
+            }
+        });
 
+        // Add hover effects to stat cards
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Animate progress bars when they come into view
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBar = entry.target.querySelector('.progress-bar-enhanced');
+                    if (progressBar) {
+                        const width = progressBar.style.width;
+                        progressBar.style.width = '0%';
+                        setTimeout(() => {
+                            progressBar.style.width = width;
+                        }, 100);
+                    }
+                    observer.unobserve(entry.target);
+                }
+
+            });
+
+        }, observerOptions);
+        document.querySelectorAll('.subject-item').forEach(item => {
+            observer.observe(item);
+        });
+    }
+});
+</script>
 {% endblock %}

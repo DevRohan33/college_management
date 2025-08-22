@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Dashboard - College Management</title>
+
+    <!-- Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --accent-color: #06b6d4;
+            --background-color: #f8fafc;
+            --background-dark: #0f172a;
+            --card-bg: #ffffff;
+            --card-bg-dark: #1e293b;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #06b6d4;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #6366f1, #8b5cf6, #06b6d4, #10b981);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            opacity: 0.03;
+            z-index: -1;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: var(--shadow-md);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .sidebar-header {
+            padding: 25px 24px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: var(--primary-gradient);
+            border-radius: 1px;
+        }
+
+        .navbar-brand {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 24px 16px;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu li a .icon {
+            width: 20px;
+            margin-right: 14px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu li a:hover {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            transform: translateX(4px);
+        }
+
+        .sidebar-menu li a.active {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .menu-divider {
+            margin: 20px 16px;
+            border: none;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header-title {
+            font-weight: 700;
+            font-size: 2.25rem;
+            margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        /* Stats Cards */
+        .stats-card {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            height: 140px;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stats-card-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stats-card-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .stats-card-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .stats-card-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Section Cards */
+        .section-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 30px;
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.02));
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 24px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        /* Fee Cards */
+        .fee-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fee-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .fee-card.paid::before { background: var(--success-color); }
+        .fee-card.pending::before { background: var(--warning-color); }
+        .fee-card.overdue::before { background: var(--danger-color); }
+
+        .fee-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .chart-container canvas {
+            max-height: 300px;
+        }
+
+        /* Department Cards */
+        .department-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .department-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        /* Progress bars */
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .progress-bar {
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        /* Notice styles */
+        .notice-item {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            background: var(--card-bg);
+        }
+
+        .notice-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 80px 20px 32px;
+            }
+
+            .header-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        /* Animation classes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Mobile menu toggle -->
+<button class="mobile-menu-toggle" id="mobileMenuToggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a class="navbar-brand" href="/">
+                <div class="brand-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                Management Portal
+            </a>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active">
+                <i class="fas fa-tachometer-alt icon"></i> Dashboard</a></li>
+            
+            <!-- Financial Management -->
+            <li><a href="#student-fees">
+                <i class="fas fa-graduation-cap icon"></i> Student Fees</a></li>
+            <li><a href="#teacher-salaries">
+                <i class="fas fa-chalkboard-user icon"></i> Teacher Salaries</a></li>
+            <li><a href="#college-expenses">
+                <i class="fas fa-building icon"></i> College Expenses</a></li>
+            
+            <hr class="menu-divider">
+            
+            <!-- Personnel Management -->
+            <li><a href="#students">
+                <i class="fas fa-users icon"></i> Students</a></li>
+            <li><a href="#teachers">
+                <i class="fas fa-user-tie icon"></i> Teachers</a></li>
+            <li><a href="#hods">
+                <i class="fas fa-user-shield icon"></i> HODs</a></li>
+            
+            <hr class="menu-divider">
+            
+            <!-- Reports & Analytics -->
+            <li><a href="#financial-reports">
+                <i class="fas fa-chart-line icon"></i> Financial Reports</a></li>
+            <li><a href="#analytics">
+                <i class="fas fa-chart-pie icon"></i> Analytics</a></li>
+            <li><a href="#departments">
+                <i class="fas fa-sitemap icon"></i> Departments</a></li>
+            <li><a href="#notices">
+                <i class="fas fa-bullhorn icon"></i> Notices</a></li>
+            
+            <hr class="menu-divider">
+            
+            <li><a href="#settings">
+                <i class="fas fa-cog icon"></i> Settings</a></li>
+            <li><a href="#logout">
+                <i class="fas fa-sign-out-alt icon"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Page Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="header-title">Management Dashboard</h1>
+                <p class="header-subtitle">Comprehensive college management and financial overview</p>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="me-3 text-end">
+                    <div class="fw-bold">Admin Portal</div>
+                    <small class="text-muted">Management System</small>
+                </div>
+                <img src="https://via.placeholder.com/50" class="rounded-circle" alt="Admin Avatar" width="50" height="50">
+            </div>
+        </div>
+
+        <!-- Overview Stats -->
+        <div class="row mb-5">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card stats-card stats-card-primary">
+                    <div class="card-body position-relative">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-subtitle mb-2">Total Students</h6>
+                                <h2 class="card-title mb-0">1,247</h2>
+                                <small class="opacity-75">Enrolled</small>
+                            </div>
+                            <i class="fas fa-graduation-cap card-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card stats-card stats-card-success">
+                    <div class="card-body position-relative">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-subtitle mb-2">Total Teachers</h6>
+                                <h2 class="card-title mb-0">87</h2>
+                                <small class="opacity-75">Active</small>
+                            </div>
+                            <i class="fas fa-chalkboard-user card-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card stats-card stats-card-warning">
+                    <div class="card-body position-relative">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-subtitle mb-2">HODs</h6>
+                                <h2 class="card-title mb-0">12</h2>
+                                <small class="opacity-75">Department Heads</small>
+                            </div>
+                            <i class="fas fa-user-shield card-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card stats-card stats-card-danger">
+                    <div class="card-body position-relative">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-subtitle mb-2">Departments</h6>
+                                <h2 class="card-title mb-0">8</h2>
+                                <small class="opacity-75">Active</small>
+                            </div>
+                            <i class="fas fa-sitemap card-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Overview -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="card section-card">
+                    <div class="section-header">
+                        <i class="fas fa-chart-line me-2"></i>Financial Overview
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-success">₹47,85,000</h3>
+                                <p class="text-muted mb-0">Total Paid</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-warning">₹12,45,000</h3>
+                                <p class="text-muted mb-0">Amount Due</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-primary">₹60,30,000</h3>
+                                <p class="text-muted mb-0">Total Amount</p>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card section-card">
+                    <div class="section-header">
+                        <i class="fas fa-pie-chart me-2"></i>Fee Distribution
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="feeDistributionChart"></canvas>
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Collection Rate</span>
+                                <span class="fw-bold">79.3%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 79.3%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department-wise Fee Status -->
+        <div class="card section-card" id="departments">
+            <div class="section-header">
+                <i class="fas fa-university me-2"></i>Department-wise Fee Status
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="department-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Computer Science</h6>
+                                <span class="badge bg-success">₹8,45,000</span>
+                            </div>
+                            <p class="text-muted mb-2">Due: ₹2,15,000</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: 79.7%"></div>
+                            </div>
+                            <small class="text-muted">245 students • 79.7% collected</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="department-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Electronics</h6>
+                                <span class="badge bg-warning text-dark">₹6,25,000</span>
+                            </div>
+                            <p class="text-muted mb-2">Due: ₹3,10,000</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-warning" style="width: 66.8%"></div>
+                            </div>
+                            <small class="text-muted">180 students • 66.8% collected</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="department-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Mechanical</h6>
+                                <span class="badge bg-info">₹7,80,000</span>
+                            </div>
+                            <p class="text-muted mb-2">Due: ₹1,95,000</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-info" style="width: 80%"></div>
+                            </div>
+                            <small class="text-muted">220 students • 80% collected</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="department-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Civil Engineering</h6>
+                                <span class="badge bg-primary">₹5,95,000</span>
+                            </div>
+                            <p class="text-muted mb-2">Due: ₹2,85,000</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-primary" style="width: 67.6%"></div>
+                            </div>
+                            <small class="text-muted">165 students • 67.6% collected</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="department-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">MBA</h6>
+                                <span class="badge bg-success">₹12,50,000</span>
+                            </div>
+                            <p class="text-muted mb-2">Due: ₹1,50,000</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: 89.3%"></div>
+                            </div>
+                            <small class="text-muted">85 students • 89.3% collected</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="department-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">MCA</h6>
+                                <span class="badge bg-secondary">₹4,25,000</span>
+                            </div>
+                            <p class="text-muted mb-2">Due: ₹90,000</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-secondary" style="width: 82.5%"></div>
+                            </div>
+                            <small class="text-muted">52 students • 82.5% collected</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Fees Section -->
+        <div class="card section-card" id="student-fees">
+            <div class="section-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-graduation-cap me-2"></i>Student Fees Management
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-sm me-2">
+                        <i class="fas fa-plus me-1"></i>Add Fee
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Total Fee</th>
+                                <th>Paid</th>
+                                <th>Due</th>
+                                <th>Status</th>
+                                <th>Last Payment</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>STD001</td>
+                                <td>John Doe</td>
+                                <td>Computer Science</td>
+                                <td>₹85,000</td>
+                                <td>₹85,000</td>
+                                <td>₹0</td>
+                                <td><span class="badge bg-success">Paid</span></td>
+                                <td>15 Oct 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>STD002</td>
+                                <td>Jane Smith</td>
+                                <td>Electronics</td>
+                                <td>₹80,000</td>
+                                <td>₹45,000</td>
+                                <td>₹35,000</td>
+                                <td><span class="badge bg-warning">Partial</span></td>
+                                <td>8 Oct 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>STD003</td>
+                                <td>Mike Johnson</td>
+                                <td>Mechanical</td>
+                                <td>₹75,000</td>
+                                <td>₹0</td>
+                                <td>₹75,000</td>
+                                <td><span class="badge bg-danger">Overdue</span></td>
+                                <td>Never</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>STD004</td>
+                                <td>Sarah Wilson</td>
+                                <td>MBA</td>
+                                <td>₹1,50,000</td>
+                                <td>₹1,50,000</td>
+                                <td>₹0</td>
+                                <td><span class="badge bg-success">Paid</span></td>
+                                <td>20 Oct 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>STD005</td>
+                                <td>David Brown</td>
+                                <td>Civil</td>
+                                <td>₹70,000</td>
+                                <td>₹25,000</td>
+                                <td>₹45,000</td>
+                                <td><span class="badge bg-warning">Partial</span></td>
+                                <td>5 Oct 2024</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- College Expenses Section -->
+        <div class="card section-card" id="college-expenses">
+            <div class="section-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-building me-2"></i>College Expenses
+                </div>
+                <div>
+                    <button class="btn btn-success btn-sm me-2">
+                        <i class="fas fa-plus me-1"></i>Add Expense
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-filter me-1"></i>Filter
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="fee-card">
+                            <h6 class="text-primary mb-1">Infrastructure</h6>
+                            <h4 class="mb-1">₹15,75,000</h4>
+                            <small class="text-muted">This month</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="fee-card">
+                            <h6 class="text-success mb-1">Salaries</h6>
+                            <h4 class="mb-1">₹28,50,000</h4>
+                            <small class="text-muted">This month</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="fee-card">
+                            <h6 class="text-warning mb-1">Utilities</h6>
+                            <h4 class="mb-1">₹3,25,000</h4>
+                            <small class="text-muted">This month</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="fee-card">
+                            <h6 class="text-info mb-1">Equipment</h6>
+                            <h4 class="mb-1">₹8,90,000</h4>
+                            <small class="text-muted">This month</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-success">
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Department</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Approved By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>22 Oct 2024</td>
+                                <td>Infrastructure</td>
+                                <td>Lab Equipment Purchase</td>
+                                <td>Computer Science</td>
+                                <td>₹2,50,000</td>
+                                <td><span class="badge bg-success">Approved</span></td>
+                                <td>Dr. Admin</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>21 Oct 2024</td>
+                                <td>Utilities</td>
+                                <td>Electricity Bill</td>
+                                <td>Administration</td>
+                                <td>₹85,000</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>-</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success me-1">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>20 Oct 2024</td>
+                                <td>Maintenance</td>
+                                <td>Building Renovation</td>
+                                <td>Civil</td>
+                                <td>₹5,75,000</td>
+                                <td><span class="badge bg-info">In Progress</span></td>
+                                <td>Dr. Admin</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>19 Oct 2024</td>
+                                <td>Salaries</td>
+                                <td>Faculty Salary - October</td>
+                                <td>All Departments</td>
+                                <td>₹28,50,000</td>
+                                <td><span class="badge bg-success">Paid</span></td>
+                                <td>Dr. Admin</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notice Section -->
+        <div class="card section-card" id="notices">
+            <div class="section-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-bullhorn me-2"></i>Management Notices
+                </div>
+                <button class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-1"></i>Post Notice
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="notice-item">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-0 text-primary">Fee Payment Deadline Extended</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>2 hours ago
+                        </small>
+                    </div>
+                    <p class="mb-2 text-muted">The deadline for semester fee payment has been extended to November 15th, 2024. Students are requested to clear their dues at the earliest.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-secondary">
+                            <i class="fas fa-user me-1"></i>Posted by Administration
+                        </small>
+                        <div>
+                            <span class="badge bg-info me-2">High Priority</span>
+                            <button class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notice-item">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-0 text-primary">New Lab Equipment Installation</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>1 day ago
+                        </small>
+                    </div>
+                    <p class="mb-2 text-muted">New computer lab equipment has been installed in the CS department. Classes will resume from tomorrow with updated infrastructure.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-secondary">
+                            <i class="fas fa-user me-1"></i>Posted by IT Department
+                        </small>
+                        <div>
+                            <span class="badge bg-success me-2">General</span>
+                            <button class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notice-item">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-0 text-primary">Monthly Financial Report Available</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>3 days ago
+                        </small>
+                    </div>
+                    <p class="mb-2 text-muted">The monthly financial report for October 2024 is now available for download. HODs can access the department-wise breakdown.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-secondary">
+                            <i class="fas fa-user me-1"></i>Posted by Finance Department
+                        </small>
+                        <div>
+                            <span class="badge bg-warning me-2">Department Heads</span>
+                            <button class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card section-card">
+            <div class="section-header">
+                <i class="fas fa-history me-2"></i>Recent Activity
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success rounded-circle p-2" style="width: 40px; height: 40px;">
+                                <i class="fas fa-rupee-sign text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">Fee payment received</h6>
+                            <p class="text-muted mb-0">₹85,000 received from John Doe (STD001)</p>
+                            <small class="text-muted">30 minutes ago</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="bg-warning rounded-circle p-2" style="width: 40px; height: 40px;">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">Expense approval pending</h6>
+                            <p class="text-muted mb-0">₹85,000 electricity bill awaiting approval</p>
+                            <small class="text-muted">2 hours ago</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary rounded-circle p-2" style="width: 40px; height: 40px;">
+                                <i class="fas fa-user-plus text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">New student enrolled</h6>
+                            <p class="text-muted mb-0">Emma Davis joined MBA program</p>
+                            <small class="text-muted">4 hours ago</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <div class="bg-info rounded-circle p-2" style="width: 40px; height: 40px;">
+                                <i class="fas fa-bullhorn text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">Notice published</h6>
+                            <p class="text-muted mb-0">Fee deadline extension notice posted</p>
+                            <small class="text-muted">6 hours ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Chart.js for graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Mobile menu functionality
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    mobileMenuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+    });
+
+    // Close mobile menu when resizing to desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        }
+    });
+
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+            datasets: [{
+                label: 'Fee Collection',
+                data: [450000, 520000, 480000, 580000, 620000, 490000, 550000, 590000, 640000, 478500],
+                borderColor: 'rgb(99, 102, 241)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Expenses',
+                data: [320000, 340000, 360000, 380000, 350000, 370000, 390000, 360000, 380000, 562500],
+                borderColor: 'rgb(239, 68, 68)',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Financial Overview'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₹' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Fee Distribution Chart
+    const feeCtx = document.getElementById('feeDistributionChart').getContext('2d');
+    const feeChart = new Chart(feeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Paid', 'Pending', 'Overdue'],
+            datasets: [{
+                data: [4785000, 945000, 300000],
+                backgroundColor: [
+                    'rgb(16, 185, 129)',
+                    'rgb(245, 158, 11)',
+                    'rgb(239, 68, 68)'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed;
+                            return context.label + ': ₹' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Animate cards on load
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.stats-card, .section-card');
+        cards.forEach((card, index) => {
+            card.classList.add('animate-fade-in-up');
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Add loading states for buttons
+    document.querySelectorAll('.btn').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!this.classList.contains('no-loading')) {
+                const originalContent = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Loading...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalContent;
+                    this.disabled = false;
+                }, 1000);
+            }
+        });
+    });
+
+    // Update progress bars with animation
+    document.querySelectorAll('.progress-bar').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.transition = 'width 1s ease-in-out';
+            bar.style.width = width;
+        }, 500);
+    });
+</script>
+
+</body>
+</html>

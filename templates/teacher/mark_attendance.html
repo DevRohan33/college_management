@@ -1,40 +1,745 @@
-{% extends "base.html" %}
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}Mark Attendance - {{ subject.name }} - Teacher Portal{% endblock %}
+
+{% block page_title %}Mark Attendance{% endblock %}
+
+{% block extra_css %}
+<style>
+    .attendance-header {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .attendance-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
+
+    .subject-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .subject-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--primary-gradient);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+
+    .subject-details h2 {
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .subject-meta {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .meta-badge {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .attendance-controls {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .bulk-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .btn-bulk {
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-mark-all-present {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+        color: white;
+    }
+
+    .btn-mark-all-present:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        color: white;
+    }
+
+    .btn-mark-all-absent {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border: none;
+        color: white;
+    }
+
+    .btn-mark-all-absent:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        color: white;
+    }
+
+    .btn-reset {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        border: none;
+        color: white;
+    }
+
+    .btn-reset:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(107, 114, 128, 0.3);
+        color: white;
+    }
+
+    .attendance-summary {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .summary-item {
+        text-align: center;
+        padding: 12px 20px;
+        border-radius: 12px;
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        min-width: 100px;
+    }
+
+    .summary-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .summary-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .present-count { color: #10b981; }
+    .absent-count { color: #ef4444; }
+    .total-count { color: var(--primary-color); }
+
+    .student-table {
+        background: var(--card-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+    }
+
+    .table-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 20px 24px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .student-row {
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        background: var(--card-bg);
+    }
+
+    .student-row:hover {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.02));
+    }
+
+    .student-row:last-child {
+        border-bottom: none;
+    }
+
+    .student-info {
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .student-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .student-details h5 {
+        margin: 0 0 4px 0;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .student-reg {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .status-controls {
+        padding: 20px 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .status-toggle {
+        display: flex;
+        background: var(--background-color);
+        border-radius: 30px;
+        padding: 4px;
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .status-option {
+        padding: 12px 20px;
+        border: none;
+        background: transparent;
+        border-radius: 26px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 0.9rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .status-option.present {
+        color: var(--text-secondary);
+    }
+
+    .status-option.present.active {
+        color: white;
+        background: linear-gradient(135deg, #10b981, #059669);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .status-option.absent {
+        color: var(--text-secondary);
+    }
+
+    .status-option.absent.active {
+        color: white;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .form-actions {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        margin-top: 30px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-save-attendance {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 16px 40px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        margin-right: 15px;
+    }
+
+    .btn-save-attendance:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        color: white;
+    }
+
+    .btn-cancel {
+        background: transparent;
+        border: 2px solid var(--border-color);
+        color: var(--text-secondary);
+        padding: 14px 30px;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-cancel:hover {
+        border-color: var(--text-secondary);
+        color: var(--text-primary);
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text-secondary);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 24px;
+        opacity: 0.3;
+    }
+
+    .search-filter {
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        border: 2px solid var(--border-color);
+        border-radius: 25px;
+        padding: 12px 20px;
+        width: 100%;
+        max-width: 300px;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        outline: none;
+    }
+
+    @media (max-width: 768px) {
+        .subject-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .subject-meta {
+            justify-content: center;
+        }
+
+        .bulk-actions {
+            justify-content: center;
+        }
+
+        .attendance-summary {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .student-info {
+            padding: 16px;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .status-controls {
+            padding: 16px;
+        }
+
+        .btn-save-attendance {
+            width: 100%;
+            margin-bottom: 15px;
+            margin-right: 0;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>Mark Attendance - {{ subject.name }} (Sem {{ semester.semester }})</h2>
-
-    <form method="post">
-        {% csrf_token %}
-        <table class="table table-bordered mt-3">
-            <thead>
-                <tr>
-                    <th>Student</th>
-                    <th>Registration No</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for student in students %}
-                <tr>
-                    <td>{{ student.get_full_name }}</td>
-                    <td>{{ student.registration_number }}</td>
-                    <td>
-                        <select name="status_{{ student.id }}" class="form-control">
-                            <option value="present"
-                                {% if attendance.entries.all|dictsort:"student_id"|default_if_none:''|yesno:"present,absent" == "present" %}
-                                selected
-                                {% endif %}
-                            >Present</option>
-                            <option value="absent">Absent</option>
-                        </select>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <button type="submit" class="btn btn-success">Save Attendance</button>
-        <a href="{% url 'take_attendance' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+<!-- Attendance Header -->
+<div class="attendance-header">
+    <div class="subject-info">
+        <div class="subject-icon">
+            <i class="fas fa-book"></i>
+        </div>
+        <div class="subject-details flex-grow-1">
+            <h2>{{ subject.name }}</h2>
+            <div class="subject-meta">
+                <span class="meta-badge">
+                    <i class="fas fa-layer-group me-1"></i>
+                    Semester {{ semester.semester }}
+                </span>
+                <span class="meta-badge">
+                    <i class="fas fa-code me-1"></i>
+                    {{ subject.code|default:"N/A" }}
+                </span>
+                <span class="meta-badge">
+                    <i class="fas fa-calendar me-1"></i>
+                    {{ "now"|date:"D, M d, Y" }}
+                </span>
+                <span class="meta-badge">
+                    <i class="fas fa-clock me-1"></i>
+                    {{ "now"|date:"H:i" }}
+                </span>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Attendance Controls -->
+<div class="attendance-controls">
+    <div class="row">
+        <div class="col-md-8">
+            <h5 class="mb-3">
+                <i class="fas fa-tools me-2"></i>Quick Actions
+            </h5>
+            <div class="bulk-actions">
+                <button type="button" class="btn btn-bulk btn-mark-all-present" id="markAllPresent">
+                    <i class="fas fa-check-double me-2"></i>Mark All Present
+                </button>
+                <button type="button" class="btn btn-bulk btn-mark-all-absent" id="markAllAbsent">
+                    <i class="fas fa-times-circle me-2"></i>Mark All Absent
+                </button>
+                <button type="button" class="btn btn-bulk btn-reset" id="resetAll">
+                    <i class="fas fa-undo me-2"></i>Reset All
+                </button>
+            </div>
+            
+            <div class="search-filter">
+                <input type="text" class="search-input" id="studentSearch" placeholder="🔍 Search students by name or registration...">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h5 class="mb-3">
+                <i class="fas fa-chart-pie me-2"></i>Summary
+            </h5>
+            <div class="attendance-summary">
+                <div class="summary-item">
+                    <div class="summary-number present-count" id="presentCount">0</div>
+                    <div class="summary-label">Present</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number absent-count" id="absentCount">0</div>
+                    <div class="summary-label">Absent</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number total-count" id="totalCount">{{ students|length }}</div>
+                    <div class="summary-label">Total</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Form -->
+<form method="post" id="attendanceForm">
+    {% csrf_token %}
+    
+    <div class="student-table">
+        <div class="table-header">
+            <i class="fas fa-users me-2"></i>
+            Student Attendance - {{ students|length }} student{{ students|length|pluralize }}
+        </div>
+        
+        {% if students %}
+            {% for student in students %}
+            <div class="student-row" data-student-name="{{ student.get_full_name|lower }}" data-student-reg="{{ student.registration_number|lower }}">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="student-info">
+                            <div class="student-avatar">
+                                {{ student.first_name|first|upper }}{{ student.last_name|first|upper }}
+                            </div>
+                            <div class="student-details">
+                                <h5>{{ student.get_full_name }}</h5>
+                                <div class="student-reg">
+                                    <i class="fas fa-id-card me-1"></i>
+                                    Registration: {{ student.registration_number }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="status-controls">
+                            <div class="status-toggle">
+                                <button type="button" 
+                                        class="status-option present active" 
+                                        data-student="{{ student.id }}" 
+                                        data-status="present">
+                                    <i class="fas fa-check me-1"></i>Present
+                                </button>
+                                <button type="button" 
+                                        class="status-option absent" 
+                                        data-student="{{ student.id }}" 
+                                        data-status="absent">
+                                    <i class="fas fa-times me-1"></i>Absent
+                                </button>
+                            </div>
+                            <input type="hidden" name="status_{{ student.id }}" value="present" id="status_{{ student.id }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-user-slash empty-icon"></i>
+                <h4>No Students Found</h4>
+                <p>There are no students enrolled in this subject for the selected semester.</p>
+                <small class="text-muted">Please check with the administration or course coordinator.</small>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if students %}
+    <div class="form-actions">
+        <div class="mb-3">
+            <h5>
+                <i class="fas fa-save me-2"></i>Ready to Save Attendance?
+            </h5>
+            <p class="text-muted mb-4">
+                Please review the attendance before saving. This action will record attendance for {{ "now"|date:"D, M d, Y" }} at {{ "now"|date:"H:i" }}.
+            </p>
+        </div>
+        
+        <button type="submit" class="btn btn-save-attendance" id="saveButton">
+            <i class="fas fa-save me-2"></i>Save Attendance
+        </button>
+        <a href="{% url 'take_attendance' %}" class="btn btn-cancel">
+            <i class="fas fa-arrow-left me-2"></i>Cancel & Go Back
+        </a>
+        
+        <div class="mt-3">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Attendance will be saved with current timestamp and cannot be modified later.
+            </small>
+        </div>
+    </div>
+    {% endif %}
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Status toggle functionality
+        document.querySelectorAll('.status-option').forEach(button => {
+            button.addEventListener('click', function() {
+                const studentId = this.dataset.student;
+                const status = this.dataset.status;
+                const toggleGroup = this.parentElement;
+                const hiddenInput = document.getElementById(`status_${studentId}`);
+                
+                // Remove active class from siblings
+                toggleGroup.querySelectorAll('.status-option').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Update hidden input value
+                hiddenInput.value = status;
+                
+                // Add animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+                
+                // Update summary
+                updateSummary();
+            });
+        });
+
+        // Bulk actions
+        document.getElementById('markAllPresent').addEventListener('click', function() {
+            setAllStatus('present');
+            showNotification('All students marked as Present', 'success');
+        });
+
+        document.getElementById('markAllAbsent').addEventListener('click', function() {
+            setAllStatus('absent');
+            showNotification('All students marked as Absent', 'warning');
+        });
+
+        document.getElementById('resetAll').addEventListener('click', function() {
+            setAllStatus('present');
+            showNotification('All attendance reset to Present', 'info');
+        });
+
+        // Search functionality
+        document.getElementById('studentSearch').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const studentRows = document.querySelectorAll('.student-row');
+            let visibleCount = 0;
+
+            studentRows.forEach(row => {
+                const studentName = row.dataset.studentName;
+                const studentReg = row.dataset.studentReg;
+                
+                if (studentName.includes(searchTerm) || studentReg.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update header count
+            const header = document.querySelector('.table-header');
+            const totalStudents = studentRows.length;
+            if (searchTerm) {
+                header.innerHTML = `<i class="fas fa-search me-2"></i>Showing ${visibleCount} of ${totalStudents} students`;
+            } else {
+                header.innerHTML = `<i class="fas fa-users me-2"></i>Student Attendance - ${totalStudents} student${totalStudents !== 1 ? 's' : ''}`;
+            }
+        });
+
+        // Form submission with loading state
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            const saveButton = document.getElementById('saveButton');
+            const originalText = saveButton.innerHTML;
+            
+            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+            saveButton.disabled = true;
+            
+            // Show confirmation
+            if (!confirm('Are you sure you want to save this attendance? This action cannot be undone.')) {
+                e.preventDefault();
+                saveButton.innerHTML = originalText;
+                saveButton.disabled = false;
+            }
+        });
+
+        // Initialize summary
+        updateSummary();
+
+        // Functions
+        function setAllStatus(status) {
+            document.querySelectorAll('.status-option').forEach(button => {
+                if (button.dataset.status === status) {
+                    button.click();
+                }
+            });
+        }
+
+        function updateSummary() {
+            const presentInputs = document.querySelectorAll('input[name^="status_"][value="present"]');
+            const absentInputs = document.querySelectorAll('input[name^="status_"][value="absent"]');
+            const totalInputs = document.querySelectorAll('input[name^="status_"]');
+
+            document.getElementById('presentCount').textContent = presentInputs.length;
+            document.getElementById('absentCount').textContent = absentInputs.length;
+            document.getElementById('totalCount').textContent = totalInputs.length;
+
+            // Add animation to numbers
+            [document.getElementById('presentCount'), document.getElementById('absentCount')].forEach(el => {
+                el.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    el.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                border: none;
+                border-radius: 12px;
+            `;
+            
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        document.getElementById('saveButton').click();
+                        break;
+                    case 'a':
+                        e.preventDefault();
+                        document.getElementById('markAllPresent').click();
+                        break;
+                    case 'x':
+                        e.preventDefault();
+                        document.getElementById('markAllAbsent').click();
+                        break;
+                }
+            }
+        });
+
+        // Add tooltips for keyboard shortcuts
+        const shortcuts = [
+            { element: document.getElementById('saveButton'), shortcut: 'Ctrl+S' },
+            { element: document.getElementById('markAllPresent'), shortcut: 'Ctrl+A' },
+            { element: document.getElementById('markAllAbsent'), shortcut: 'Ctrl+X' }
+        ];
+
+        shortcuts.forEach(({ element, shortcut }) => {
+            if (element) {
+                element.title = `${element.textContent.trim()} (${shortcut})`;
+            }
+        });
+    });
+</script>
 {% endblock %}
