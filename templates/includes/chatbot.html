@@ -1,0 +1,529 @@
+<!-- START: ECE AI Assistant Chat Widget -->
+<!-- Instructions: Copy this entire block and paste it right before the closing </body> tag of your website. -->
+<div id="ece-chat-widget-container">
+  <!-- The HTML structure for the chat widget -->
+  <button class="chat-toggle" id="ece-chat-toggle" aria-label="Open chat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+    </svg>
+  </button>
+
+  <section class="chat" id="ece-chat-window" aria-live="polite" aria-label="Chat window">
+    <header class="chat__header">
+      <div class="brand">
+        <div class="brand__logo" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12h16m-8-8v16M12 4l4 4-4 4M12 20l-4-4 4-4"/>
+          </svg>
+        </div>
+        <div class="brand__title">
+          <b>ECE AI Assistant</b>
+          <div class="status">Elitte College Of Engineering • Online</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="ece-chat-close" aria-label="Close chat">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="chat__messages" id="ece-chat-messages">
+      <!-- Messages are injected here by the script -->
+    </main>
+
+    <footer class="chat__footer">
+      <div class="quick" id="ece-chat-quick">
+        <button class="chip">Course Details</button>
+        <button class="chip">Placement</button>
+        <button class="chip">Fees</button>
+        <button class="chip">Communication Systems</button>
+      </div>
+      <div class="inputbar">
+        <input id="ece-chat-input" type="text" placeholder="Ask about ECE topics, courses, or projects..." autocomplete="off" />
+        <button class="send" id="ece-chat-send" aria-label="Send message">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  </section>
+</div>
+
+<style>
+  /* Professional ECE AI Assistant Chat Widget Styles */
+  #ece-chat-widget-container {
+    /* Professional Color Palette */
+    --primary-900: 210 25% 8%;
+    --primary-800: 214 25% 12%;
+    --primary-700: 217 25% 16%;
+    --primary-600: 220 15% 25%;
+    --primary-500: 220 10% 35%;
+    --primary-400: 220 8% 50%;
+    --blue-600: 217 91% 60%;
+    --blue-500: 217 91% 65%;
+    --blue-400: 217 91% 70%;
+    --accent-orange: 25 95% 53%;
+    --accent-green: 142 76% 36%;
+    --text-primary: 210 11% 15%;
+    --text-secondary: 215 14% 34%;
+    --text-muted: 215 16% 47%;
+    --text-white: 0 0% 98%;
+    --bg-white: 0 0% 100%;
+    --bg-gray-50: 210 20% 98%;
+    --bg-gray-100: 220 14% 96%;
+    --border-light: 220 13% 91%;
+    --border-medium: 217 12% 84%;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --radius: 12px;
+    --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Typography */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* TOGGLE BUTTON */
+  #ece-chat-widget-container .chat-toggle {
+    position: fixed; 
+    z-index: 9999;
+    right: 24px; 
+    bottom: 24px;
+    width: 60px; 
+    height: 60px;
+    border: 1px solid hsl(var(--border-light));
+    border-radius: 50%;
+    background: linear-gradient(135deg, hsl(var(--primary-800)), hsl(var(--primary-700)));
+    box-shadow: var(--shadow-lg);
+    color: hsl(var(--text-white));
+    display: grid; 
+    place-items: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #ece-chat-widget-container .chat-toggle:hover { 
+    transform: translateY(-3px) scale(1.05); 
+    box-shadow: var(--shadow-xl);
+    background: linear-gradient(135deg, hsl(var(--primary-700)), hsl(var(--primary-600)));
+  }
+  #ece-chat-widget-container .chat-toggle:active { 
+    transform: translateY(-1px) scale(1.02); 
+  }
+  #ece-chat-widget-container .chat-toggle svg { 
+    width: 28px; 
+    height: 28px; 
+  }
+
+  /* CHAT WINDOW */
+  #ece-chat-widget-container .chat {
+    position: fixed; 
+    z-index: 9999;
+    right: 24px; 
+    bottom: 96px;
+    width: min(90vw, 380px);
+    height: 520px;
+    display: flex; 
+    flex-direction: column;
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border-light));
+    background: hsl(var(--bg-white));
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    opacity: 0; 
+    transform: translateY(20px) scale(0.95);
+    pointer-events: none;
+    transition: all var(--transition);
+  }
+  #ece-chat-widget-container .chat.open { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+    pointer-events: auto; 
+  }
+  
+  /* HEADER */
+  #ece-chat-widget-container .chat__header {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid hsl(var(--border-light));
+    background: linear-gradient(135deg, hsl(var(--bg-gray-50)), hsl(var(--bg-white)));
+    flex-shrink: 0;
+  }
+  #ece-chat-widget-container .brand { 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+  }
+  #ece-chat-widget-container .brand__logo {
+    width: 36px; 
+    height: 36px; 
+    border-radius: 10px;
+    display: grid; 
+    place-items: center; 
+    color: hsl(var(--text-white));
+    background: linear-gradient(135deg, hsl(var(--blue-600)), hsl(var(--blue-500)));
+    box-shadow: var(--shadow-md);
+  }
+  #ece-chat-widget-container .brand__title { 
+    line-height: 1.2; 
+    font-size: 16px; 
+    color: hsl(var(--text-primary));
+  }
+  #ece-chat-widget-container .brand__title b { 
+    font-weight: 600; 
+    display: block;
+  }
+  #ece-chat-widget-container .status { 
+    font-size: 12px; 
+    color: hsl(var(--text-muted));
+    font-weight: 400;
+  }
+  
+  /* MESSAGES */
+  #ece-chat-widget-container .chat__messages {
+    flex: 1; 
+    padding: 20px; 
+    overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px;
+    background: hsl(var(--bg-gray-50));
+    scrollbar-width: thin; 
+    scrollbar-color: hsl(var(--primary-400)) transparent;
+  }
+  #ece-chat-widget-container .chat__messages::-webkit-scrollbar { 
+    width: 6px; 
+  }
+  #ece-chat-widget-container .chat__messages::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary-400));
+    border-radius: 3px;
+  }
+  #ece-chat-widget-container .msg {
+    max-width: 85%; 
+    display: flex; 
+    gap: 8px;
+    animation: ece-slideIn 0.3s ease-out both;
+  }
+  #ece-chat-widget-container .msg--bot { 
+    align-self: flex-start; 
+  }
+  #ece-chat-widget-container .msg--user { 
+    align-self: flex-end; 
+    flex-direction: row-reverse; 
+  }
+  #ece-chat-widget-container .bubble {
+    padding: 12px 16px; 
+    border-radius: 18px;
+    font-size: 14px; 
+    line-height: 1.5;
+    font-weight: 400;
+    word-wrap: break-word;
+    box-shadow: var(--shadow-sm);
+  }
+  #ece-chat-widget-container .msg--bot .bubble {
+    color: hsl(var(--text-white));
+    background: linear-gradient(135deg, hsl(var(--primary-700)), hsl(var(--primary-600)));
+    border-bottom-left-radius: 6px;
+  }
+  #ece-chat-widget-container .msg--user .bubble {
+    color: hsl(var(--text-primary));
+    background: hsl(var(--bg-white));
+    border: 1px solid hsl(var(--border-light));
+    border-bottom-right-radius: 6px;
+  }
+  
+  /* FOOTER & INPUT */
+  #ece-chat-widget-container .chat__footer {
+    border-top: 1px solid hsl(var(--border-light));
+    padding: 16px 20px; 
+    display: grid; 
+    gap: 12px;
+    background: hsl(var(--bg-white));
+    flex-shrink: 0;
+  }
+  #ece-chat-widget-container .quick { 
+    display: flex; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+  }
+  #ece-chat-widget-container .chip {
+    font-size: 12px; 
+    font-weight: 500;
+    padding: 6px 12px; 
+    border-radius: 20px;
+    border: 1px solid hsl(var(--border-medium));
+    background: hsl(var(--bg-gray-50));
+    color: hsl(var(--text-secondary));
+    cursor: pointer;
+    transition: all var(--transition);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #ece-chat-widget-container .chip:hover { 
+    transform: translateY(-1px); 
+    background: hsl(var(--blue-500));
+    color: hsl(var(--text-white));
+    border-color: hsl(var(--blue-500));
+    box-shadow: var(--shadow-sm);
+  }
+  #ece-chat-widget-container .inputbar {
+    display: flex; 
+    gap: 8px; 
+    align-items: center;
+    background: hsl(var(--bg-gray-50));
+    border: 1px solid hsl(var(--border-medium));
+    border-radius: var(--radius); 
+    padding: 8px 12px;
+    transition: border-color var(--transition);
+  }
+  #ece-chat-widget-container .inputbar:focus-within {
+    border-color: hsl(var(--blue-500));
+    box-shadow: 0 0 0 3px hsl(var(--blue-500) / 0.1);
+  }
+  #ece-chat-widget-container .inputbar input {
+    all: unset;
+    flex: 1; 
+    min-width: 0;
+    color: hsl(var(--text-primary)); 
+    font-size: 14px; 
+    padding: 4px 8px;
+    font-weight: 400;
+  }
+  #ece-chat-widget-container .inputbar input::placeholder { 
+    color: hsl(var(--text-muted)); 
+  }
+  #ece-chat-widget-container .send {
+    display: grid; 
+    place-items: center;
+    width: 36px; 
+    height: 36px; 
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, hsl(var(--blue-600)), hsl(var(--blue-500)));
+    color: hsl(var(--text-white)); 
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #ece-chat-widget-container .send:hover { 
+    transform: translateY(-1px); 
+    box-shadow: var(--shadow-md);
+    background: linear-gradient(135deg, hsl(var(--blue-500)), hsl(var(--blue-400)));
+  }
+  #ece-chat-widget-container .send:active { 
+    transform: translateY(0); 
+  }
+  #ece-chat-widget-container .send svg { 
+    width: 16px; 
+    height: 16px; 
+  }
+  #ece-chat-widget-container .icon-btn {
+    background: transparent; 
+    border: 1px solid hsl(var(--border-medium));
+    color: hsl(var(--text-muted)); 
+    border-radius: 8px; 
+    width: 32px; 
+    height: 32px;
+    display: grid; 
+    place-items: center; 
+    cursor: pointer;
+    transition: all var(--transition);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #ece-chat-widget-container .icon-btn:hover { 
+    background: hsl(var(--bg-gray-100)); 
+    color: hsl(var(--text-secondary));
+    transform: translateY(-1px); 
+  }
+
+  @keyframes ece-slideIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(12px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+  
+  @media (max-width: 480px) {
+    #ece-chat-widget-container .chat {
+      right: 16px; 
+      left: 16px; 
+      width: auto; 
+      height: min(80vh, 520px); 
+      bottom: 88px;
+    }
+    #ece-chat-widget-container .chat-toggle { 
+      right: 16px; 
+      bottom: 16px; 
+    }
+    #ece-chat-widget-container .chat__header {
+      padding: 12px 16px;
+    }
+    #ece-chat-widget-container .chat__messages {
+      padding: 16px;
+    }
+    #ece-chat-widget-container .chat__footer {
+      padding: 12px 16px;
+    }
+  }
+</style>
+
+<script>
+  // ECE AI Assistant Chat Widget Script
+  (() => {
+    // ECE-specific replies
+    const eceReplies = [
+      "Welcome to Elitte College of Engineering — Approved by AICTE and Affiliated to MAKAUT, West Bengal.",
+      "Elitte College of Engineering, established in 2015 by Pinnacle Educational Trust, is one of the best private B.Tech colleges in Kolkata.",
+      "Our college is accredited with 'B+' Grade by NAAC (effective from 31/10/2024).",
+      "Located at Karnamadhabpur, Sodepur, Kolkata - 700113, we provide a vibrant campus environment for learning and growth.",
+      "We offer AICTE-approved B.Tech programs across various engineering and management disciplines with a focus on hands-on learning and industry exposure.",
+      "Elitte College of Engineering ensures students are well-prepared for successful careers and top placements in leading companies.",
+      "Want to know more? Elitte is widely recognized as one of the best B.Tech colleges in Kolkata for quality education and opportunities."
+    ];
+
+
+    const elements = {
+      toggle: document.getElementById('ece-chat-toggle'),
+      chat: document.getElementById('ece-chat-window'),
+      close: document.getElementById('ece-chat-close'),
+      messages: document.getElementById('ece-chat-messages'),
+      input: document.getElementById('ece-chat-input'),
+      send: document.getElementById('ece-chat-send'),
+      quick: document.getElementById('ece-chat-quick'),
+    };
+
+    const openChat = () => { 
+      elements.chat.classList.add('open'); 
+      elements.input.focus(); 
+    };
+    const closeChat = () => elements.chat.classList.remove('open');
+    
+    elements.toggle.addEventListener('click', () => {
+      const isOpen = elements.chat.classList.toggle('open');
+      if (isOpen) elements.input.focus();
+    });
+    elements.close.addEventListener('click', closeChat);
+
+    elements.quick.addEventListener('click', (e) => {
+      if (e.target.matches('.chip')) {
+        elements.input.value = `Tell me about ${e.target.textContent}`;
+        sendMessage();
+      }
+    });
+
+    elements.send.addEventListener('click', sendMessage);
+    elements.input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    function sendMessage() {
+      const text = elements.input.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      elements.input.value = '';
+      
+      // Show typing indicator
+      setTimeout(() => {
+        const reply = generateECEReply(text);
+        addMessage(reply, 'bot');
+      }, 800);
+    }
+    
+    function generateECEReply(userText) {
+      const text = userText.toLowerCase();
+
+      // Course Details
+      if (text.includes("course") || text.includes("btech") || text.includes("program") || text.includes("department")) {
+        return "Elitte College of Engineering offers AICTE-approved B.Tech programs in multiple engineering disciplines such as Computer Science, Electronics, Electrical, Mechanical, and Civil Engineering. All programs are affiliated with MAKAUT, West Bengal.";
+      }
+
+      // Placement
+      if (text.includes("placement") || text.includes("job") || text.includes("career") || text.includes("company")) {
+        return "Our Training & Placement Cell actively collaborates with leading companies. Students receive training in soft skills, aptitude, and technical skills, ensuring excellent placement opportunities in IT, core engineering, and management sectors.";
+      }
+
+      // Fees
+      if (text.includes("fee") || text.includes("fees") || text.includes("admission") || text.includes("structure")) {
+        return "Elitte College of Engineering provides quality education at affordable fees, following MAKAUT and AICTE guidelines. For the latest fee structure and admission details, please visit the official college website or contact the admission cell.";
+      }
+
+      // Communication Systems (keep as a sample academic query)
+      if (text.includes("communication") || text.includes("wireless") || text.includes("network")) {
+        return "In our Electronics & Communication department, students learn topics like analog/digital communication, wireless systems, signal processing, and antenna design — preparing them for careers in telecom and networking industries.";
+      }
+
+      // Location / Address
+      if (text.includes("where") || text.includes("location") || text.includes("address") || text.includes("map")) {
+        return "Elitte College of Engineering is located at PO: Karnamadhabpur, PS: Ghola, Sodepur, Kolkata - 700113. The campus is easily accessible by road and public transport.";
+      }
+
+      // About College
+      if (text.includes("about") || text.includes("info") || text.includes("college") || text.includes("elitte")) {
+        return "Elitte College of Engineering (established in 2015 by Pinnacle Educational Trust) is a reputed private engineering college in Kolkata. Approved by AICTE and affiliated with MAKAUT, it is accredited with 'B+' Grade by NAAC (since 31/10/2024).";
+      }
+
+      // Greetings
+      if (text.includes("hello") || text.includes("hi") || text.includes("hey") || text.includes("good")) {
+        return "Hello! Welcome to Elitte College of Engineering — one of the best B.Tech colleges in Kolkata. How can I assist you today?";
+      }
+
+      // Thanks
+      if (text.includes("thank") || text.includes("thanks")) {
+        return "You're welcome! Feel free to ask about courses, admissions, placements, or any other details about Elitte College of Engineering.";
+      }
+
+      // Default
+      return eceReplies[Math.floor(Math.random() * eceReplies.length)];
+    }
+
+
+    function addMessage(text, sender) {
+      const messageWrapper = document.createElement('div');
+      messageWrapper.className = 'msg ' + (sender === 'bot' ? 'msg--bot' : 'msg--user');
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      
+      messageWrapper.appendChild(bubble);
+      elements.messages.appendChild(messageWrapper);
+      scrollToBottom();
+    }
+
+    function scrollToBottom() {
+      elements.messages.scrollTop = elements.messages.scrollHeight;
+    }
+    
+    // Initial welcome message
+    setTimeout(() => {
+      addMessage(
+        "Welcome to Elitte College of Engineering AI Assistant! I can help you with information about our B.Tech courses, admissions, fees, placements, campus details, and more. What would you like to know?",
+        'bot'
+      );
+    }, 1000);
+
+  })();
+</script>
+
+<!-- END: ECE AI Assistant Chat Widget -->

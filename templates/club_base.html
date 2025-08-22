@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Club System{% endblock %}</title>
+  
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    /* Club Header */
+    .club-header {
+        background: linear-gradient(135deg, #4e73df, #1cc88a);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem 1rem 0 0;
+    }
+    .club-header h2 {
+        font-weight: 700;
+    }
+
+    /* Avatar Badge */
+    .member-avatar {
+        background: #6c757d;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Cards */
+    .card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    }
+
+    /* Chat */
+    .chat-container {
+        overflow-y: auto;
+    }
+    .chat-message {
+        background: #f8f9fc;
+        padding: 0.6rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.6rem;
+    }
+
+    /* Sidebar */
+    .sidebar-stats h4 {
+        font-weight: 700;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 0.75rem;
+    }
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* Section headers */
+    .card-header {
+        background: #f8f9fc;
+        font-weight: 600;
+        border-bottom: none;
+        border-radius: 1rem 1rem 0 0 !important;
+    }
+    :root {
+      --brand-gradient: linear-gradient(45deg, #6366f1, #8b5cf6);
+      --primary-color: #6366f1;
+      --secondary-color: #8b5cf6;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --dark-color: #1f2937;
+      --light-color: #f8fafc;
+    }
+
+    body {
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f9fafc 0%, #eef2ff 100%);
+  background-attachment: fixed;
+}
+
+
+    /* Navbar */
+    .navbar {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .navbar .nav-link.active {
+      font-weight: 600;
+      color: var(--primary-color) !important;
+    }
+
+    .main-content {
+      margin-top: 20px;
+      margin-bottom: 40px;
+    }
+
+    /* Card styles */
+    .card {
+      border: none;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .club-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    /* Buttons */
+    .btn {
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-primary {
+      background: var(--brand-gradient);
+      border: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Alerts */
+    .alert {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Club card headers */
+    .club-header {
+      background: var(--brand-gradient);
+      color: white;
+      padding: 20px;
+    }
+
+    /* Chat area */
+    .chat-container {
+      height: 400px;
+      overflow-y: auto;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 15px;
+    }
+    .chat-message {
+      margin-bottom: 15px;
+      animation: fadeInUp 0.3s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Floating action button */
+    .floating-action-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--brand-gradient);
+      color: white;
+      border: none;
+      font-size: 24px;
+      box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+      transition: all 0.3s ease;
+    }
+    .floating-action-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 15px 40px rgba(99,102,241,0.6);
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- Navbar -->
+  <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'club:club_list' %}">
+      <i class="fas fa-users me-2"></i>ClubHub
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <!-- NEW Home link -->
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}" href="{% url 'student_dashboard' %}">
+            <i class="fas fa-home me-1"></i>Home
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'club_list' %}active{% endif %}" href="{% url 'club:club_list' %}">
+            <i class="fas fa-users me-1"></i>All Clubs
+          </a>
+        </li>
+      </ul>
+
+
+        <!-- Right menu -->
+        <ul class="navbar-nav">
+          {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                  {% if user.student_profile.profile_image %}
+                    <img src="{{ user.student_profile.profile_image.url }}" 
+                         alt="{{ user.get_full_name|default:user.username }}" 
+                         class="rounded-circle" 
+                         style="width: 30px; height: 30px; object-fit: cover;">
+                  {% else %}
+                    <i class="fas fa-user"></i>
+                  {% endif %}
+                </div>
+                {{ user.username }}
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash messages -->
+  {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main -->
+  <div class="container main-content">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Bootstrap scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Auto-dismiss alerts
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.alert').forEach(alert => {
+        setTimeout(() => {
+          alert.classList.remove('show');
+          setTimeout(() => alert.remove(), 500);
+        }, 4000);
+      });
+    });
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

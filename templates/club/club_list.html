@@ -1,0 +1,168 @@
+{% extends "student_base.html" %}
+{% block title %}Discover Clubs - ClubHub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0 fw-bold text-dark">
+                    <i class="fas fa-users me-2 text-primary"></i>Discover Clubs
+                </h2>
+                <a href="{% url 'club:create_club' %}" class="btn btn-primary rounded-pill shadow-sm">
+                    <i class="fas fa-plus me-2"></i>Create Club
+                </a>
+            </div>
+
+            <!-- Search -->
+            <form method="get" class="mb-4">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        class="form-control rounded-start-pill" 
+                        placeholder="Search clubs by name, ID, or description..." 
+                        value="{{ query }}"
+                    >
+                    <button class="btn btn-outline-secondary rounded-end-pill" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- My Clubs -->
+            {% if user_clubs %}
+            <div class="mb-5">
+                <h5 class="fw-semibold mb-3 text-dark">
+                    <i class="fas fa-star me-2 text-warning"></i>My Clubs
+                </h5>
+                <div class="row g-3">
+                    {% for club in user_clubs %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-3 club-card">
+                            <div class="card-header bg-light border-0 text-center rounded-top-3">
+                                <h6 class="fw-semibold mb-1">{{ club.name }}</h6>
+                                <small class="text-muted">ID: {{ club.unique_id }}</small>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <p class="text-muted small flex-grow-1">
+                                    {{ club.description|default:"No description"|truncatechars:80 }}
+                                </p>
+                                <div class="d-flex justify-content-between mt-auto">
+                                    <a href="{% url 'club:club_detail' club.unique_id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye me-1"></i>Open
+                                    </a>
+                                    <a href="{% url 'club:club_chat' club.unique_id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-comments me-1"></i>Chat
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- All Clubs -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-semibold text-dark mb-0">
+                    <i class="fas fa-globe me-2 text-secondary"></i>All Clubs
+                    {% if query %}
+                        <small class="text-muted">- Results for "{{ query }}"</small>
+                    {% endif %}
+                </h5>
+                <span class="badge bg-secondary rounded-pill px-3 py-2">
+                    {{ clubs.paginator.count }} total
+                </span>
+            </div>
+
+            <div class="row g-4">
+                {% for club in clubs %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 club-card">
+                        <div class="card-body d-flex flex-column">
+                            <!-- Club Header -->
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="fw-semibold mb-1">{{ club.name }}</h6>
+                                    <small class="text-muted">ID: {{ club.unique_id }}</small>
+                                </div>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="fas fa-users me-1"></i>{{ club.member_count }}
+                                </span>
+                            </div>
+
+                            <!-- Description -->
+                            <p class="text-muted small flex-grow-1">
+                                {{ club.description|default:"No description available"|truncatechars:100 }}
+                            </p>
+
+                            <!-- Footer -->
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between small text-muted mb-2">
+                                    <span><i class="fas fa-calendar me-1"></i>{{ club.created_at|date:"M d, Y" }}</span>
+                                    <span>by {{ club.created_by.username }}</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'club:club_detail' club.unique_id %}" class="btn btn-primary btn-sm flex-grow-1">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                    <a href="{% url 'club:send_join_request' club.unique_id %}" class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-plus me-1"></i>Join
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No clubs found</h5>
+                        {% if query %}
+                            <p class="text-muted">Try adjusting your search terms</p>
+                            <a href="{% url 'club:club_list' %}" class="btn btn-outline-primary rounded-pill">View All Clubs</a>
+                        {% else %}
+                            <p class="text-muted">Be the first to create a club!</p>
+                            <a href="{% url 'club:create_club' %}" class="btn btn-primary rounded-pill">
+                                <i class="fas fa-plus me-2"></i>Create First Club
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if clubs.has_other_pages %}
+            <nav aria-label="Club pagination" class="mt-4">
+                <ul class="pagination justify-content-center pagination-sm">
+                    {% if clubs.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}"><i class="fas fa-angle-double-left"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ clubs.previous_page_number }}{% if query %}&q={{ query }}{% endif %}"><i class="fas fa-angle-left"></i></a></li>
+                    {% endif %}
+
+                    {% for num in clubs.paginator.page_range %}
+                        {% if clubs.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > clubs.number|add:'-3' and num < clubs.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if clubs.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ clubs.next_page_number }}{% if query %}&q={{ query }}{% endif %}"><i class="fas fa-angle-right"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ clubs.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}"><i class="fas fa-angle-double-right"></i></a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

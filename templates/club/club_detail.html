@@ -1,0 +1,304 @@
+{% extends "club_base.html" %}
+{% block title %}{{ club.name }} - ClubHub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Main Club Info -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="club-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="mb-1">{{ club.name }}</h2>
+                        <p class="mb-2 opacity-75">
+                            <i class="fas fa-hashtag me-1"></i>{{ club.unique_id }} • 
+                            <i class="fas fa-calendar me-1"></i>Created {{ club.created_at|date:"M d, Y" }}
+                        </p>
+                        <p class="mb-0">
+                            <i class="fas fa-user me-1"></i>Founded by {{ club.created_by.username }}
+                        </p>
+                    </div>
+                    <div class="col-auto">
+                        <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                  {% if club.created_by.student_profile.profile_image %}
+                    <img src="{{ club.created_by.student_profile.profile_image.url }}" 
+                         alt="{{ club.created_by.get_full_name|default:club.created_by.username }}" 
+                         class="rounded-circle" 
+                         style="width: 30px; height: 30px; object-fit: cover;">
+                  {% else %}
+                    <i class="fas fa-user"></i>
+                  {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                {% if club.description %}
+                    <h5><i class="fas fa-info-circle me-2"></i>About</h5>
+                    <p class="text-muted">{{ club.description }}</p>
+                {% endif %}
+
+                <!-- Membership Status -->
+                <div class="mt-4">
+                    {% if is_admin %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-crown me-2"></i>
+                            <strong>Admin Access</strong> - You have administrative privileges in this club.
+                        </div>
+                        
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <a href="{% url 'club:manage_members' club.unique_id %}" class="btn btn-primary">
+                                <i class="fas fa-users-cog me-2"></i>Manage Members
+                                {% if member_stats.pending_requests > 0 %}
+                                    <span class="badge bg-light text-dark ms-1">{{ member_stats.pending_requests }}</span>
+                                {% endif %}
+                            </a>
+                            <a href="{% url 'club:club_activities' club.unique_id %}" class="btn btn-outline-primary">
+                                <i class="fas fa-bullhorn me-2"></i>Activities
+                            </a>
+                            <a href="{% url 'club:club_events' club.unique_id %}" class="btn btn-outline-primary">
+                                <i class="fas fa-calendar-plus me-2"></i>Events
+                            </a>
+                            <button class="btn btn-outline-warning">
+                                <i class="fas fa-edit me-2"></i>Edit Club
+                            </button>
+                        </div>
+                        
+                    {% elif is_member %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Welcome Member!</strong> You're part of this amazing club.
+                            <span class="badge bg-primary ms-2">{{ membership.role|title }}</span>
+                            <span class="badge bg-warning text-dark ms-1">{{ membership.badge|title }}</span>
+                        </div>
+                        
+                    {% else %}
+                        <div class="alert alert-light border">
+                            <i class="fas fa-user-plus me-2"></i>
+                            <strong>Join This Club</strong> - Connect with like-minded people!
+                        </div>
+                        
+                        <a href="{% url 'club:send_join_request' club.unique_id %}" class="btn btn-success btn-lg">
+                            <i class="fas fa-plus-circle me-2"></i>Request to Join
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Member-only Features -->
+                {% if is_member %}
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'club:club_chat' club.unique_id %}" class="card h-100 text-decoration-none">
+                            <div class="card-body text-center">
+                                <i class="fas fa-comments fa-2x text-primary mb-2"></i>
+                                <h6>Club Chat</h6>
+                                <small class="text-muted">Real-time messaging</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'club:club_activities' club.unique_id %}" class="card h-100 text-decoration-none">
+                            <div class="card-body text-center">
+                                <i class="fas fa-bullhorn fa-2x text-success mb-2"></i>
+                                <h6>Activities</h6>
+                                <small class="text-muted">Club updates & announcements</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'club:club_events' club.unique_id %}" class="card h-100 text-decoration-none">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar fa-2x text-warning mb-2"></i>
+                                <h6>Events</h6>
+                                <small class="text-muted">Upcoming gatherings</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        {% if recent_activities and is_member %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bullhorn me-2"></i>Recent Activities
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for activity in recent_activities %}
+                <div class="d-flex mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                    <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                      {% if activity.created_by.student_profile.profile_image %}
+                        <img src="{{ activity.created_by.student_profile.profile_image.url }}" 
+                             alt="{{ activity.created_by.get_full_name|default:activity.created_by.username }}" 
+                             class="rounded-circle" 
+                             style="width: 30px; height: 30px; object-fit: cover;">
+                      {% else %}
+                        <i class="fas fa-user"></i>
+                      {% endif %}
+                            {{ activity.created_by.username|first|upper }}
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ activity.created_by.username }}</strong>
+                            <small class="text-muted">{{ activity.created_at|timesince }} ago</small>
+                        </div>
+                        <p class="mb-0 text-muted">{{ activity.content }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted mb-0">No recent activities</p>
+                {% endfor %}
+                
+                {% if recent_activities %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'club:club_activities' club.unique_id %}" class="btn btn-outline-primary btn-sm">
+                        View All Activities <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Chat Preview -->
+        {% if recent_chats and is_member %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-comments me-2"></i>Recent Chat
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chat-container" style="height: 200px;">
+                    {% for chat in recent_chats %}
+                    <div class="chat-message">
+                        <div class="d-flex">
+                            <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                  {% if chat.sender.student_profile.profile_image %}
+                    <img src="{{ chat.sender.student_profile.profile_image.url }}" 
+                         alt="{{ chat.sender.get_full_name|default:chat.sender.username }}" 
+                         class="rounded-circle" 
+                         style="width: 30px; height: 30px; object-fit: cover;">
+                  {% else %}
+                    <i class="fas fa-user"></i>
+                  {% endif %}
+                                {{ chat.sender.username|first|upper }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <small class="fw-bold">{{ chat.sender.username }}</small>
+                                    <small class="text-muted">{{ chat.created_at|date:"H:i" }}</small>
+                                </div>
+                                <p class="mb-0">{{ chat.message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted text-center">No messages yet. Be the first to say hello! 👋</p>
+                    {% endfor %}
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="{% url 'club:club_chat' club.unique_id %}" class="btn btn-primary">
+                        <i class="fas fa-comments me-2"></i>Join Chat
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Club Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Club Statistics</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 border-end">
+                        <h4 class="text-primary mb-0">{{ member_stats.total_members }}</h4>
+                        <small class="text-muted">Members</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success mb-0">{{ club.created_at|timesince }}</h4>
+                        <small class="text-muted">Age</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        {% if upcoming_events and is_member %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-calendar me-2"></i>Upcoming Events</h6>
+            </div>
+            <div class="card-body">
+                {% for event in upcoming_events %}
+                <div class="d-flex justify-content-between align-items-start mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                    <div>
+                        <h6 class="mb-1">{{ event.title }}</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>{{ event.event_date|date:"M d, H:i" }}
+                        </small>
+                    </div>
+                    <span class="badge bg-primary">Event</span>
+                </div>
+                {% empty %}
+                <p class="text-muted mb-0">No upcoming events</p>
+                {% endfor %}
+                
+                {% if upcoming_events %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'club:club_events' club.unique_id %}" class="btn btn-outline-primary btn-sm">
+                        View All Events <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Actions -->
+        {% if is_member %}
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'club:club_chat' club.unique_id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-comments me-2"></i>Open Chat
+                    </a>
+                    {% if is_admin %}
+                    <a href="{% url 'club:club_activities' club.unique_id %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-plus me-2"></i>Post Activity
+                    </a>
+                    <a href="{% url 'club:club_events' club.unique_id %}" class="btn btn-outline-warning btn-sm">
+                        <i class="fas fa-calendar-plus me-2"></i>Create Event
+                    </a>
+                    {% endif %}
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-share me-2"></i>Invite Friends
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Back Button -->
+<div class="text-center mt-4">
+    <a href="{% url 'club:club_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to All Clubs
+    </a>
+</div>
+{% endblock %}

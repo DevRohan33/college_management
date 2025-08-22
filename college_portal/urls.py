@@ -14,6 +14,7 @@ urlpatterns = [
     path("", include("portal_admin.urls")),
     path("", include("attendance.urls")),
     path("", include("assignment.urls")),
+    path('clubs/', include("club.urls")),
 
 
 ]

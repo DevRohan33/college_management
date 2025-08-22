@@ -1,0 +1,356 @@
+{% extends 'club_base.html' %}
+{% block title %}{{ club.name }} Events - ClubHub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="card mb-4">
+            <div class="club-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1">
+                            <i class="fas fa-calendar me-2"></i>Club Events
+                        </h3>
+                        <p class="mb-0 opacity-75">{{ club.name }} • Upcoming & Past Events</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'club:club_detail' club.unique_id %}" class="btn btn-light">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Club
+                        </a>
+                        <a href="{% url 'club:club_activities' club.unique_id %}" class="btn btn-outline-light">
+                            <i class="fas fa-bullhorn me-1"></i>Activities
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Create New Event (Admin Only) -->
+            {% if is_admin %}
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calendar-plus me-2"></i>Create New Event
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">Event Title *</label>
+                                    {{ form.title }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.event_date.id_for_label }}" class="form-label">Event Date & Time *</label>
+                                    {{ form.event_date }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Event Description</label>
+                                {{ form.description }}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    All club members will be notified about new events
+                                </small>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-calendar-plus me-2"></i>Create Event
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Upcoming Events -->
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock text-primary me-2"></i>Upcoming Events
+                            {% if upcoming_events %}
+                                <span class="badge bg-primary">{{ upcoming_events|length }}</span>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% for event in upcoming_events %}
+                        <div class="event-card border rounded p-4 mb-4 {% if not forloop.last %}border-bottom{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h5 class="mb-0 me-3">{{ event.title }}</h5>
+                                        <span class="badge bg-success">Upcoming</span>
+                                    </div>
+                                    
+                                    <div class="text-muted mb-2">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        {{ event.event_date|date:"l, F d, Y" }}
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-clock me-2"></i>
+                                        {{ event.event_date|date:"g:i A" }}
+                                    </div>
+                                    
+                                    <div class="text-muted mb-3">
+                                        <i class="fas fa-user me-2"></i>
+                                        Organized by {{ event.created_by.username }}
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-calendar-plus me-2"></i>
+                                        Created {{ event.created_at|timesince }} ago
+                                    </div>
+                                    
+                                    {% if event.description %}
+                                    <p class="text-muted mb-3">{{ event.description|linebreaks }}</p>
+                                    {% endif %}
+                                    
+                                    <!-- Event Countdown -->
+                                    <div class="alert alert-info mb-3">
+                                        <i class="fas fa-hourglass-half me-2"></i>
+                                        <strong>Starts in:</strong> 
+                                        <span id="countdown-{{ event.id }}">{{ event.event_date|timeuntil }}</span>
+                                    </div>
+                                </div>
+                                
+                                {% if is_admin and event.created_by == user %}
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" 
+                                            type="button" 
+                                            data-bs-toggle="dropdown">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="editEvent({{ event.id }})">
+                                            <i class="fas fa-edit me-2"></i>Edit Event
+                                        </a></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteEvent({{ event.id }})">
+                                            <i class="fas fa-trash me-2"></i>Delete Event
+                                        </a></li>
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Event Actions -->
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button class="btn btn-primary btn-sm" onclick="rsvpEvent({{ event.id }}, 'yes')">
+                                    <i class="fas fa-check me-1"></i>I'm Going
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="rsvpEvent({{ event.id }}, 'maybe')">
+                                    <i class="fas fa-question me-1"></i>Maybe
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="rsvpEvent({{ event.id }}, 'no')">
+                                    <i class="fas fa-times me-1"></i>Can't Go
+                                </button>
+                                <button class="btn btn-outline-info btn-sm" onclick="shareEvent({{ event.id }})">
+                                    <i class="fas fa-share me-1"></i>Share
+                                </button>
+                            </div>
+                            
+                            <!-- RSVP Summary -->
+                            <div class="mt-3 p-3 bg-light rounded">
+                                <small class="text-muted">
+                                    <i class="fas fa-users me-2"></i>
+                                    <span class="text-success">0 Going</span> • 
+                                    <span class="text-warning">0 Maybe</span> • 
+                                    <span class="text-danger">0 Can't Go</span>
+                                </small>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No upcoming events</h5>
+                            {% if is_admin %}
+                                <p class="text-muted">Create your first event to bring the club together!</p>
+                                <button class="btn btn-success" onclick="document.querySelector('#id_title').focus()">
+                                    <i class="fas fa-plus me-2"></i>Create First Event
+                                </button>
+                            {% else %}
+                                <p class="text-muted">Check back later for exciting club events.</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Quick Stats -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Event Statistics
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6 border-end">
+                                <h4 class="text-primary mb-0">{{ upcoming_events|length }}</h4>
+                                <small class="text-muted">Upcoming</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-secondary mb-0">{{ past_events|length }}</h4>
+                                <small class="text-muted">Past Events</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar Widget -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-calendar me-2"></i>Quick Calendar
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="mini-calendar" class="text-center">
+                            <!-- Mini calendar would go here -->
+                            <div class="alert alert-light border-dashed">
+                                <i class="fas fa-calendar-alt fa-2x text-muted mb-2"></i>
+                                <p class="small text-muted mb-0">Calendar widget coming soon</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Past Events -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-history me-2"></i>Recent Past Events
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% for event in past_events %}
+                        <div class="d-flex justify-content-between align-items-start mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                            <div>
+                                <h6 class="mb-1">{{ event.title }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>{{ event.event_date|date:"M d, Y" }}
+                                </small>
+                            </div>
+                            <span class="badge bg-secondary">Past</span>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted text-center mb-0">No past events yet</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-md-4 mb-2">
+                <a href="{% url 'club:club_chat' club.unique_id %}" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-comments me-2"></i>Club Chat
+                </a>
+            </div>
+            <div class="col-md-4 mb-2">
+                <a href="{% url 'club:club_activities' club.unique_id %}" class="btn btn-outline-success w-100">
+                    <i class="fas fa-bullhorn me-2"></i>Activities
+                </a>
+            </div>
+            <div class="col-md-4 mb-2">
+                {% if is_admin %}
+                <a href="{% url 'club:manage_members' club.unique_id %}" class="btn btn-outline-warning w-100">
+                    <i class="fas fa-users-cog me-2"></i>Manage Members
+                </a>
+                {% else %}
+                <button class="btn btn-outline-secondary w-100" onclick="shareClub()">
+                    <i class="fas fa-share me-2"></i>Share Club
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update countdowns every minute
+    setInterval(updateCountdowns, 60000);
+    
+    // Set minimum date for event creation to today
+    const eventDateInput = document.querySelector('#id_event_date');
+    if (eventDateInput) {
+        const now = new Date();
+        const minDate = now.toISOString().slice(0, 16);
+        eventDateInput.min = minDate;
+    }
+});
+
+function updateCountdowns() {
+    // Update countdown timers for events
+    const countdownElements = document.querySelectorAll('[id^="countdown-"]');
+    countdownElements.forEach(element => {
+        // This would calculate and update the countdown
+        // Implementation depends on your specific needs
+    });
+}
+
+// RSVP to event
+function rsvpEvent(eventId, response) {
+    // This would make an AJAX request to update RSVP status
+    alert(`RSVP feature coming soon! You selected: ${response}`);
+}
+
+// Share event
+function shareEvent(eventId) {
+    const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
+    const shareText = `Check out this event from {{ club.name }}!`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Club Event - {{ club.name }}',
+            text: shareText,
+            url: clubUrl
+        });
+    } else {
+        navigator.clipboard.writeText(clubUrl).then(() => {
+            alert('Event link copied to clipboard!');
+        });
+    }
+}
+
+// Edit event
+function editEvent(eventId) {
+    alert('Edit event feature coming soon!');
+}
+
+// Delete event
+function deleteEvent(eventId) {
+    if (confirm('Are you sure you want to delete this event?')) {
+        alert('Delete event feature coming soon!');
+    }
+}
+
+// Share club
+function shareClub() {
+    const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
+    const shareText = `Check out this club: {{ club.name }} ({{ club.unique_id }})`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ club.name }} - ClubHub',
+            text: shareText,
+            url: clubUrl
+        });
+    } else {
+        navigator.clipboard.writeText(clubUrl).then(() => {
+            alert('Club link copied to clipboard!');
+        });
+    }
+}
+</script>
+{% endblock %}
+{% endblock %}

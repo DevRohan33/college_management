@@ -570,8 +570,8 @@
             
             <hr class="menu-divider">
             
-            <li><a href="#">
-                <i class="fas fa-cog icon"></i> Settings</a></li>
+            <li><a href="{% url 'club:club_list' %}">
+                <i class="fas fa-cog icon"></i> Club</a></li>
             <li><a href="#">
                 <i class="fas fa-question-circle icon"></i> Help & Support</a></li>
             <li><a href="{% url 'logout' %}">
@@ -677,5 +677,6 @@
 
 {% block extra_js %}{% endblock %}
 
+{% include 'includes/chatbot.html' %}
 </body>
 </html>
