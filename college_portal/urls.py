@@ -7,13 +7,13 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('account.urls')),
-    path('', include('student.urls')),
-    path('', include('events.urls')),
-    path('', include('routine.urls')),
-    path("", include("hod.urls")),
-    path("", include("portal_admin.urls")),
-    path("", include("attendance.urls")),
-    path("", include("assignment.urls")),
+    path('student', include('student.urls')),
+    path('event', include('events.urls')),
+    path('routine', include('routine.urls')),
+    path('hod', include("hod.urls")),
+    path('portal_admin', include("portal_admin.urls")),
+    path('attendence', include("attendance.urls")),
+    path('assignment', include("assignment.urls")),
     path('clubs/', include("club.urls")),
 
 

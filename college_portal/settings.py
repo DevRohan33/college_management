@@ -77,6 +77,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'college_portal.urls'
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://college-management-d16p.onrender.com',
+]
+
+
 ALLOWED_HOSTS = ['*']
 
 TEMPLATES = [
