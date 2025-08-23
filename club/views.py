@@ -15,7 +15,6 @@ import json
 from django.core.cache import cache
 from django.utils.timezone import now
 
-
 # ------------------ FORMS ------------------
 class ClubForm(forms.ModelForm):
     class Meta:
@@ -197,9 +196,7 @@ def manage_members(request, unique_id):
     })
 
 
-from django.views.decorators.http import require_http_methods
-from django.core.cache import cache
-import time
+#-------------------- Club Chat ------------------
 
 @login_required
 def club_chat(request, unique_id):
@@ -232,66 +229,63 @@ def club_chat(request, unique_id):
         "membership": membership
     })
 
-
-@login_required
-@csrf_exempt
-def send_chat_message(request, unique_id):
-    """AJAX endpoint for sending chat messages"""
-    if request.method == 'POST':
-        club = get_object_or_404(Club, unique_id=unique_id)
+# @login_required
+# @csrf_exempt
+# def send_chat_message(request, unique_id):
+#     """AJAX endpoint for sending chat messages"""
+#     if request.method == 'POST':
+#         club = get_object_or_404(Club, unique_id=unique_id)
         
-        # Check membership
-        membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
-        if not membership:
-            return JsonResponse({'error': 'Not authorized'}, status=403)
+#         # Check membership
+#         membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
+#         if not membership:
+#             return JsonResponse({'error': 'Not authorized'}, status=403)
 
-        data = json.loads(request.body)
-        message_text = data.get('message', '').strip()
+#         data = json.loads(request.body)
+#         message_text = data.get('message', '').strip()
         
-        if message_text:
-            chat_message = ClubChat.objects.create(
-                club=club,
-                sender=request.user,
-                message=message_text
-            )
+#         if message_text:
+#             chat_message = ClubChat.objects.create(
+#                 club=club,
+#                 sender=request.user,
+#                 message=message_text
+#             )
             
-            return JsonResponse({
-                'success': True,
-                'message': {
-                    'id': chat_message.id,
-                    'sender': request.user.username,
-                    'message': chat_message.message,
-                    'created_at': chat_message.created_at.strftime('%H:%M')
-                }
-            })
+#             return JsonResponse({
+#                 'success': True,
+#                 'message': {
+#                     'id': chat_message.id,
+#                     'sender': request.user.username,
+#                     'message': chat_message.message,
+#                     'created_at': chat_message.created_at.strftime('%H:%M')
+#                 }
+#             })
     
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-
-@login_required
-@csrf_exempt
-@require_http_methods(["POST"])
-def typing_indicator(request, unique_id):
-    """Handle typing indicators for real-time chat"""
-    club = get_object_or_404(Club, unique_id=unique_id)
+# @login_required
+# @csrf_exempt
+# @require_http_methods(["POST"])
+# def typing_indicator(request, unique_id):
+#     """Handle typing indicators for real-time chat"""
+#     club = get_object_or_404(Club, unique_id=unique_id)
     
-    # Check membership
-    membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
-    if not membership:
-        return JsonResponse({'error': 'Not authorized'}, status=403)
+#     # Check membership
+#     membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
+#     if not membership:
+#         return JsonResponse({'error': 'Not authorized'}, status=403)
     
-    data = json.loads(request.body)
-    is_typing = data.get('typing', False)
+#     data = json.loads(request.body)
+#     is_typing = data.get('typing', False)
     
-    # Store typing status in cache (expires in 3 seconds)
-    cache_key = f'typing_{club.id}_{request.user.id}'
-    if is_typing:
-        cache.set(cache_key, True, timeout=3)
-    else:
-        cache.delete(cache_key)
+#     # Store typing status in cache (expires in 3 seconds)
+#     cache_key = f'typing_{club.id}_{request.user.id}'
+#     if is_typing:
+#         cache.set(cache_key, True, timeout=3)
+#     else:
+#         cache.delete(cache_key)
     
-    return JsonResponse({'success': True})
-
+#     return JsonResponse({'success': True})
 
 @login_required
 def online_members(request, unique_id):
@@ -328,47 +322,36 @@ def online_members(request, unique_id):
         'members': members_data
     })
 
-
 @login_required
 @csrf_exempt
 @require_http_methods(["POST"])
 def create_poll(request, unique_id):
     """Create a poll in the chat"""
     club = get_object_or_404(Club, unique_id=unique_id)
-    
-    # Check membership
     membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
     if not membership:
         return JsonResponse({'error': 'Not authorized'}, status=403)
-    
+
     data = json.loads(request.body)
     question = data.get('question', '').strip()
     options = data.get('options', [])
-    
+
     if not question or len(options) < 2:
         return JsonResponse({'error': 'Poll must have a question and at least 2 options'}, status=400)
-    
+
     # Create poll message
     poll_message = ClubChat.objects.create(
         club=club,
         sender=request.user,
         message=f"POLL: {question}",
-        is_poll=True,
-        poll_question=json.dumps({
-            'question': question,
-            'options': [{'text': opt, 'votes': 0, 'percentage': 0} for opt in options],
-            'total_votes': 0,
-            'voters': []
-        })
+        is_poll=True
     )
-    
-    # Create poll options
+
+    poll_options = []
     for option_text in options:
-        PollOption.objects.create(
-            chat=poll_message,
-            option_text=option_text
-        )
-    
+        opt = PollOption.objects.create(chat=poll_message, option_text=option_text)
+        poll_options.append({'id': opt.id, 'text': opt.option_text, 'votes': 0, 'percentage': 0})
+
     return JsonResponse({
         'success': True,
         'message': {
@@ -378,12 +361,11 @@ def create_poll(request, unique_id):
             'is_poll': True,
             'poll_data': {
                 'question': question,
-                'options': [{'text': opt, 'votes': 0, 'percentage': 0} for opt in options],
+                'options': poll_options,
                 'total_votes': 0
             }
         }
     })
-
 
 @login_required
 @csrf_exempt
@@ -391,112 +373,150 @@ def create_poll(request, unique_id):
 def vote_poll(request, unique_id):
     """Vote on a poll"""
     club = get_object_or_404(Club, unique_id=unique_id)
-    
-    # Check membership
     membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
     if not membership:
         return JsonResponse({'error': 'Not authorized'}, status=403)
-    
+
     data = json.loads(request.body)
     message_id = data.get('message_id')
     option_id = data.get('option_id')
-    
+
     try:
         poll_message = ClubChat.objects.get(id=message_id, club=club, is_poll=True)
         poll_option = PollOption.objects.get(id=option_id, chat=poll_message)
-        
-        # Check if user already voted
+
+        # Prevent multiple votes per poll
         if PollVote.objects.filter(user=request.user, poll_option__chat=poll_message).exists():
             return JsonResponse({'error': 'You have already voted on this poll'}, status=400)
-        
-        # Create vote
+
         PollVote.objects.create(user=request.user, poll_option=poll_option)
-        
-        # Update vote count
-        poll_option.votes += 1
+        poll_option.votes = PollVote.objects.filter(poll_option=poll_option).count()
         poll_option.save()
-        
-        # Get updated poll data
+
+        # Build updated results
         total_votes = PollVote.objects.filter(poll_option__chat=poll_message).count()
         options = []
-        
-        for option in PollOption.objects.filter(chat=poll_message):
-            percentage = round((option.votes / total_votes) * 100) if total_votes > 0 else 0
+        for opt in PollOption.objects.filter(chat=poll_message):
+            percentage = round((opt.votes / total_votes) * 100) if total_votes > 0 else 0
             options.append({
-                'id': option.id,
-                'text': option.option_text,
-                'votes': option.votes,
+                'id': opt.id,
+                'text': opt.option_text,
+                'votes': opt.votes,
                 'percentage': percentage
             })
-        
-        # Update poll question with new data
-        poll_data = {
-            'question': poll_message.message.replace('POLL: ', ''),
-            'options': options,
-            'total_votes': total_votes
-        }
-        
-        poll_message.poll_question = json.dumps(poll_data)
-        poll_message.save()
-        
+
         return JsonResponse({
             'success': True,
-            'poll_data': poll_data
+            'poll_data': {
+                'question': poll_message.message.replace("POLL: ", ""),
+                'options': options,
+                'total_votes': total_votes
+            }
         })
-        
+
     except (ClubChat.DoesNotExist, PollOption.DoesNotExist):
         return JsonResponse({'error': 'Poll or option not found'}, status=404)
 
+# @login_required
+# def get_new_messages(request, unique_id):
+#     """Get new messages since last check"""
+#     club = get_object_or_404(Club, unique_id=unique_id)
+    
+#     # Check membership
+#     membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
+#     if not membership:
+#         return JsonResponse({'error': 'Not authorized'}, status=403)
+    
+#     last_id = request.GET.get('last_id', 0)
+    
+#     try:
+#         last_id = int(last_id)
+#     except (ValueError, TypeError):
+#         last_id = 0
+    
+#     # Get messages newer than last_id
+#     new_messages = ClubChat.objects.filter(
+#         club=club, 
+#         id__gt=last_id
+#     ).order_by('created_at')[:50]
+    
+#     # Format messages for JSON response
+#     messages_data = []
+#     for msg in new_messages:
+#         message_data = {
+#             'id': msg.id,
+#             'sender': {
+#                 'id': msg.sender.id,
+#                 'username': msg.sender.username
+#             },
+#             'message': msg.message,
+#             'created_at': msg.created_at.strftime('%H:%M'),
+#             'is_poll': msg.is_poll
+#         }
+        
+#         if msg.is_poll:
+#             try:
+#                 poll_data = json.loads(msg.poll_question)
+#                 message_data['poll_data'] = poll_data
+#             except (ValueError, TypeError):
+#                 message_data['is_poll'] = False
+        
+#         messages_data.append(message_data)
+    
+#     return JsonResponse({
+#         'messages': messages_data
+#     })
 
 @login_required
-def get_new_messages(request, unique_id):
-    """Get new messages since last check"""
+@csrf_exempt
+@require_http_methods(["POST"])
+def toggle_reaction(request, unique_id):
+    """Add or remove emoji reaction on a message"""
     club = get_object_or_404(Club, unique_id=unique_id)
-    
-    # Check membership
     membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
     if not membership:
         return JsonResponse({'error': 'Not authorized'}, status=403)
-    
-    last_id = request.GET.get('last_id', 0)
-    
+
+    data = json.loads(request.body)
+    message_id = data.get('message_id')
+    emoji = data.get('emoji')
+
     try:
-        last_id = int(last_id)
-    except (ValueError, TypeError):
-        last_id = 0
-    
-    # Get messages newer than last_id
-    new_messages = ClubChat.objects.filter(
-        club=club, 
-        id__gt=last_id
-    ).order_by('created_at')[:50]
-    
-    # Format messages for JSON response
-    messages_data = []
-    for msg in new_messages:
-        message_data = {
-            'id': msg.id,
-            'sender': {
-                'id': msg.sender.id,
-                'username': msg.sender.username
-            },
-            'message': msg.message,
-            'created_at': msg.created_at.strftime('%H:%M'),
-            'is_poll': msg.is_poll
-        }
-        
-        if msg.is_poll:
-            try:
-                poll_data = json.loads(msg.poll_question)
-                message_data['poll_data'] = poll_data
-            except (ValueError, TypeError):
-                message_data['is_poll'] = False
-        
-        messages_data.append(message_data)
-    
+        chat_message = ClubChat.objects.get(id=message_id, club=club)
+    except ClubChat.DoesNotExist:
+        return JsonResponse({'error': 'Message not found'}, status=404)
+
+    from .models import ClubChatReaction
+
+    # Check if reaction exists
+    reaction, created = ClubChatReaction.objects.get_or_create(
+        chat=chat_message,
+        user=request.user,
+        emoji=emoji
+    )
+
+    if not created:  
+        # remove reaction if already exists
+        reaction.delete()
+        action = "removed"
+    else:
+        action = "added"
+
+    # Get updated reactions
+    reactions_summary = (
+        ClubChatReaction.objects.filter(chat=chat_message)
+        .values("emoji")
+        .annotate(count=Count("id"))
+    )
+
     return JsonResponse({
-        'messages': messages_data
+        "success": True,
+        "action": action,
+        "reactions": list(reactions_summary)
     })
+
+
+#-------------------- Club Activities & Events ------------------
 
 @login_required
 def club_activities(request, unique_id):
@@ -530,7 +550,6 @@ def club_activities(request, unique_id):
         "is_admin": is_admin,
         "membership": membership
     })
-
 
 @login_required
 def club_events(request, unique_id):
@@ -567,8 +586,6 @@ def club_events(request, unique_id):
         "membership": membership
     })
 
-
-# Keep existing approve_request, reject_request, remove_member functions as they are
 @login_required
 def approve_request(request, unique_id, member_id):
     """Approve a pending join request"""
@@ -584,7 +601,6 @@ def approve_request(request, unique_id, member_id):
     membership.save()
     messages.success(request, f"✅ {membership.user.username} has been approved!")
     return redirect("club:manage_members", unique_id=unique_id)
-
 
 @login_required
 def reject_request(request, unique_id, member_id):

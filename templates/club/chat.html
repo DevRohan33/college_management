@@ -417,25 +417,27 @@
                 
                 <div class="message-bubble {% if message.sender == user %}own{% else %}other{% endif %}">
                   {% if message.is_poll %}
-                    <!-- Poll Display -->
-                    <div class="poll-container">
-                      <h6>{{ message.poll_question }}</h6>
-                      {% for option in message.poll_options %}
-                        <div class="poll-option" data-option-id="{{ forloop.counter0 }}">
-                          <div class="d-flex justify-content-between">
-                            <span>{{ option.text }}</span>
-                            <span class="badge bg-light text-dark">{{ option.votes }} votes</span>
-                          </div>
-                          <div class="poll-progress mt-1">
-                            <div class="poll-progress-bar" style="width: {{ option.percentage }}%"></div>
+                  <div class="poll-container" data-message-id="{{ message.id }}">
+                    <h6>{{ message.message|cut:"POLL: " }}</h6>
+                    {% for option in message.poll_options.all %}
+                      <div class="poll-option" data-option-id="{{ option.id }}">
+                        <div class="d-flex justify-content-between">
+                          <span>{{ option.option_text }}</span>
+                          <span class="badge bg-light text-dark">{{ option.votes }} votes</span>
+                        </div>
+                        <div class="poll-progress mt-1">
+                          <div class="poll-progress-bar" style="width: 
+                            {% if message.total_votes %}{{ option.votes|floatformat:0|divisibleby:message.total_votes }}%{% else %}0%{% endif %}">
                           </div>
                         </div>
-                      {% endfor %}
-                      <small class="text-muted">Total votes: {{ message.total_votes }}</small>
-                    </div>
-                  {% else %}
-                    {{ message.message }}
-                  {% endif %}
+                      </div>
+                    {% endfor %}
+                    <small class="text-muted">Total votes: {{ message.poll_options.count }}</small>
+                  </div>
+                {% else %}
+                  {{ message.message }}
+                {% endif %}
+                
                 </div>
                 
                 <!-- Message Actions -->
@@ -454,6 +456,17 @@
                 <h5 class="text-muted">No messages yet</h5>
                 <p class="text-muted">Be the first to start the conversation! 🎉</p>
               </div>
+              {% endfor %}
+            </div>
+
+            <!-- Reactions -->
+            <div class="reactions mt-1" id="reactions-{{ message.id }}">
+              {% for reaction in message.reactions.all %}
+                <button class="btn btn-light btn-sm reaction-btn" 
+                        data-message-id="{{ message.id }}" 
+                        data-emoji="{{ reaction.emoji }}">
+                  {{ reaction.emoji }} <span class="badge bg-secondary">{{ reaction.count }}</span>
+                </button>
               {% endfor %}
             </div>
 
@@ -596,97 +609,90 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <!-- Emoji Picker -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.min.js"></script>
-  
-  {% block extra_js %}
-<script>
+  <script>
 document.addEventListener('DOMContentLoaded', function() {
     const chatForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message-input');
     const chatMessages = document.getElementById('chat-messages');
     const charCount = document.getElementById('char-count');
+
+    // --- Emoji Picker ---
     const emojiButton = document.getElementById('emoji-button');
     const emojiPicker = document.getElementById('emoji-picker');
     const emojiPickerContainer = document.querySelector('.emoji-picker-container');
-    
-    // Initialize emoji picker
-    const picker = new EmojiPicker();
-    emojiPicker.appendChild(picker);
-    
-    // Toggle emoji picker
-    emojiButton.addEventListener('click', function() {
-        if (emojiPickerContainer.style.display === 'block') {
-            emojiPickerContainer.style.display = 'none';
-        } else {
-            emojiPickerContainer.style.display = 'block';
-        }
+
+    emojiButton.addEventListener('click', () => {
+      emojiPickerContainer.style.display = 
+        emojiPickerContainer.style.display === 'block' ? 'none' : 'block';
     });
-    
-    // Insert emoji into message input
-    picker.addEventListener('emoji-click', event => {
-        messageInput.value += event.detail.unicode;
-        messageInput.focus();
-        emojiPickerContainer.style.display = 'none';
+
+    emojiPicker.addEventListener('emoji-click', event => {
+      messageInput.value += event.detail.unicode;
+      messageInput.focus();
+      emojiPickerContainer.style.display = 'none';
     });
-    
-    // Close emoji picker when clicking outside
+
     document.addEventListener('click', function(event) {
         if (!emojiButton.contains(event.target) && !emojiPickerContainer.contains(event.target)) {
             emojiPickerContainer.style.display = 'none';
         }
     });
-    
-    // Auto-scroll to bottom
-    function scrollToBottom() {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // --- WebSocket Chat ---
+    const chatSocket = new WebSocket(
+        `ws://${window.location.host}/ws/club/{{ club.unique_id }}/`
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+
+        if (data.type === "chat_message") {
+            addMessageToChat(
+                data.message, 
+                data.user, 
+                new Date(), 
+                data.user === "{{ user.username }}"
+            );
+        } else if (data.type === "typing") {
+            showTyping(data.user);
+        } else if (data.type === "system") {
+            console.log("SYSTEM:", data.message);
+        }
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    // Typing indicator
+    function showTyping(username) {
+        const indicator = document.getElementById('typing-indicator');
+        if (!indicator) return;
+        indicator.style.display = "block";
+        setTimeout(() => {
+            indicator.style.display = "none";
+        }, 2000);
     }
-    
-    // Update character count
-    messageInput.addEventListener('input', function() {
-        charCount.textContent = messageInput.value.length;
-    });
-    
-    // Handle form submission
+
+    // Send message
     chatForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
         const message = messageInput.value.trim();
         if (!message) return;
-        
-        // Add message to chat immediately (optimistic UI)
-        addMessageToChat(message, '{{ user.username }}', new Date(), true);
+
+        chatSocket.send(JSON.stringify({
+            type: "chat_message",
+            message: message
+        }));
+
         messageInput.value = '';
         charCount.textContent = '0';
-        scrollToBottom();
-        
-        // Send message to server
-        fetch('{% url "club:send_chat_message" club.unique_id %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: JSON.stringify({ message: message })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                console.error('Failed to send message');
-                // Remove optimistic message on error
-                const lastMessage = chatMessages.lastElementChild;
-                if (lastMessage && lastMessage.classList.contains('temp-message')) {
-                    lastMessage.remove();
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
     });
-    
+
     // Add message to chat UI
     function addMessageToChat(message, username, timestamp, isOwn = false) {
         const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${isOwn ? 'own' : ''} temp-message`;
+        messageDiv.className = `chat-message ${isOwn ? 'own' : ''}`;
         
         const time = timestamp instanceof Date ? 
             timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 
@@ -695,7 +701,8 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.innerHTML = `
             ${!isOwn ? `
                 <div class="message-info">
-                    <div class="member-avatar d-inline-block me-2" style="width: 25px; height: 25px; font-size: 11px;">
+                    <div class="member-avatar d-inline-block me-2" 
+                        style="width: 25px; height: 25px; font-size: 11px;">
                         ${username.charAt(0).toUpperCase()}
                     </div>
                     <strong>${username}</strong>
@@ -713,34 +720,111 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-    
-    // Focus on message input
-    messageInput.focus();
-    
-    // Initial scroll to bottom
-    setTimeout(scrollToBottom, 100);
-});
 
-// Share club function
-function shareClub() {
-    const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
-    const shareText = `Check out this club: {{ club.name }} ({{ club.unique_id }})`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: '{{ club.name }} - ClubHub',
-            text: shareText,
-            url: clubUrl
+    // Update character count & send typing
+    messageInput.addEventListener('input', function() {
+        charCount.textContent = messageInput.value.length;
+        chatSocket.send(JSON.stringify({ type: "typing" }));
+    });
+
+    // --- Reactions ---
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.react-btn')) {
+        const msgId = e.target.closest('.react-btn').dataset.messageId;
+        const emoji = prompt("Enter emoji (e.g. 👍 ❤️ 😂)");  // temporary
+        if (!emoji) return;
+
+        fetch(`/clubs/{{ club.unique_id }}/chat/react/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: JSON.stringify({ message_id: msgId, emoji: emoji })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const reactionDiv = document.getElementById(`reactions-${msgId}`);
+            if (reactionDiv) {
+              reactionDiv.innerHTML = "";
+              data.reactions.forEach(r => {
+                reactionDiv.innerHTML += `
+                  <button class="btn btn-light btn-sm reaction-btn" 
+                    data-message-id="${msgId}" data-emoji="${r.emoji}">
+                    ${r.emoji} <span class="badge bg-secondary">${r.count}</span>
+                  </button>`;
+              });
+            }
+          }
         });
-    } else {
-        // Fallback - copy to clipboard
-        navigator.clipboard.writeText(clubUrl).then(() => {
-            alert('Club link copied to clipboard!');
+      }
+    });
+
+    // --- Poll Voting ---
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.poll-option')) {
+        const optionDiv = e.target.closest('.poll-option');
+        const optionId = optionDiv.dataset.optionId;
+        const messageId = optionDiv.closest('.poll-container').dataset.messageId;
+
+        fetch(`/clubs/{{ club.unique_id }}/chat/poll/vote/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: JSON.stringify({ message_id: messageId, option_id: optionId })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const pollContainer = optionDiv.closest('.poll-container');
+            pollContainer.innerHTML = `<h6>${data.poll_data.question}</h6>`;
+            data.poll_data.options.forEach(opt => {
+              pollContainer.innerHTML += `
+                <div class="poll-option" data-option-id="${opt.id}">
+                  <div class="d-flex justify-content-between">
+                    <span>${opt.text}</span>
+                    <span class="badge bg-light text-dark">${opt.votes} votes</span>
+                  </div>
+                  <div class="poll-progress mt-1">
+                    <div class="poll-progress-bar" style="width: ${opt.percentage}%"></div>
+                  </div>
+                </div>`;
+            });
+            pollContainer.innerHTML += `<small class="text-muted">Total votes: ${data.poll_data.total_votes}</small>`;
+          } else {
+            alert(data.error || "Vote failed");
+          }
         });
-    }
-}
+      }
+    });
+
+    // --- Share Club ---
+    window.shareClub = function() {
+        const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
+        const shareText = `Check out this club: {{ club.name }} ({{ club.unique_id }})`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ club.name }} - ClubHub',
+                text: shareText,
+                url: clubUrl
+            });
+        } else {
+            navigator.clipboard.writeText(clubUrl).then(() => {
+                alert('Club link copied to clipboard!');
+            });
+        }
+    };
+});
 </script>
+
+  {% block extra_js %}
+
 {% endblock %}
 
 </body>

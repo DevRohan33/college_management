@@ -23,7 +23,6 @@ class Club(models.Model):
     def __str__(self):
         return f"{self.name} ({self.unique_id})"
 
-
 class ClubMember(models.Model):
     """Membership model with roles, status, and badges"""
     ROLE_CHOICES = [
@@ -59,6 +58,37 @@ class ClubMember(models.Model):
 
     def __str__(self):
         return f"{self.user.username} in {self.club.name} ({self.role})"
+
+class ClubActivity(models.Model):
+    """Activity feed for posts/announcements"""
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="activities")
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Activity in {self.club.name} by {self.created_by.username}"
+
+class ClubEvent(models.Model):
+    """Events inside a club"""
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="events")
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    event_date = models.DateTimeField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["event_date"]
+
+    def __str__(self):
+        return f"{self.title} ({self.club.name})"
+
+
+#------------------club chat models------------------
 
 
 class ClubChat(models.Model):
@@ -102,33 +132,16 @@ class PollVote(models.Model):
     
     def __str__(self):
         return f"{self.user.username} voted for {self.poll_option.option_text}"
+    
 
-
-class ClubActivity(models.Model):
-    """Activity feed for posts/announcements"""
-    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="activities")
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
+class ClubChatReaction(models.Model):
+    chat = models.ForeignKey(ClubChat, on_delete=models.CASCADE, related_name="reactions")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    emoji = models.CharField(max_length=10)  #  👍, ❤️, 😂
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        unique_together = ("chat", "user", "emoji")  # one emoji per user per chat
 
     def __str__(self):
-        return f"Activity in {self.club.name} by {self.created_by.username}"
-
-
-class ClubEvent(models.Model):
-    """Events inside a club"""
-    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="events")
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    event_date = models.DateTimeField()
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["event_date"]
-
-    def __str__(self):
-        return f"{self.title} ({self.club.name})"
+        return f"{self.user.username} reacted {self.emoji} to {self.chat.id}"

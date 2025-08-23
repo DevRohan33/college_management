@@ -70,7 +70,15 @@
                     <div class="card-body">
                         {% for activity in activities %}
                         <div class="activity-item d-flex mb-4 {% if not forloop.last %}border-bottom pb-4{% endif %}">
-                            <div class="member-avatar me-3 flex-shrink-0">
+                            <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                            {% if activity.created_by.student_profile.profile_image %}
+                              <img src="{{ activity.created_by.student_profile.profile_image.url }}" 
+                                   alt="{{ activity.created_by.get_full_name|default:activity.created_by.username }}" 
+                                   class="rounded-circle" 
+                                   style="width: 30px; height: 30px; object-fit: cover;">
+                            {% else %}
+                              <i class="fas fa-user"></i>
+                            {% endif %}
                                 {{ activity.created_by.username|first|upper }}
                             </div>
                             

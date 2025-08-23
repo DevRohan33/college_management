@@ -18,12 +18,15 @@ urlpatterns = [
     
     # Club features
     path('<str:unique_id>/chat/', views.club_chat, name='club_chat'),
-    path('<str:unique_id>/chat/send/', views.send_chat_message, name='send_chat_message'),
-    path('<str:unique_id>/chat/typing/', views.typing_indicator, name='typing_indicator'),
+    # path('<str:unique_id>/chat/send/', views.send_chat_message, name='send_chat_message'),
+    # path('<str:unique_id>/chat/typing/', views.typing_indicator, name='typing_indicator'),
     path('<str:unique_id>/chat/poll/create/', views.create_poll, name='create_poll'),
     path('<str:unique_id>/chat/poll/vote/', views.vote_poll, name='vote_poll'),
     path('<str:unique_id>/chat/online/', views.online_members, name='online_members'),
-    path('<str:unique_id>/chat/messages/', views.get_new_messages, name='get_new_messages'),
+    # path('<str:unique_id>/chat/messages/', views.get_new_messages, name='get_new_messages'),
+    path("<str:unique_id>/chat/react/", views.toggle_reaction, name="react_message"),
+
+
     path("<str:unique_id>/activities/", views.club_activities, name="club_activities"),
     path("<str:unique_id>/events/", views.club_events, name="club_events"),
 ]

@@ -45,7 +45,15 @@
                         {% for req in pending_requests %}
                         <div class="d-flex align-items-center justify-content-between p-3 mb-3 bg-light rounded">
                             <div class="d-flex align-items-center">
-                                <div class="member-avatar me-3">
+                                <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                                    {% if req.user.student_profile.profile_image %}
+                                      <img src="{{ req.user.student_profile.profile_image.url }}" 
+                                           alt="{{ req.user.get_full_name|default:req.user.username }}" 
+                                           class="rounded-circle" 
+                                           style="width: 30px; height: 30px; object-fit: cover;">
+                                    {% else %}
+                                      <i class="fas fa-user"></i>
+                                    {% endif %}
                                     {{ req.user.username|first|upper }}
                                 </div>
                                 <div>
@@ -107,7 +115,15 @@
                             {% for member in active_members %}
                             <div class="member-item d-flex align-items-center justify-content-between p-3 mb-3 bg-light rounded">
                                 <div class="d-flex align-items-center">
-                                    <div class="member-avatar me-3">
+                                    <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                                    {% if member.user.student_profile.profile_image %}
+                                      <img src="{{ member.user.student_profile.profile_image.url }}" 
+                                           alt="{{ member.user.get_full_name|default:member.user.username }}" 
+                                           class="rounded-circle" 
+                                           style="width: 30px; height: 30px; object-fit: cover;">
+                                    {% else %}
+                                      <i class="fas fa-user"></i>
+                                    {% endif %}
                                         {{ member.user.username|first|upper }}
                                     </div>
                                     <div>
