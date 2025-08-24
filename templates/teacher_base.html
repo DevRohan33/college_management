@@ -54,6 +54,381 @@
             overflow-x: hidden;
         }
 
+        /* Enhanced Footer Styles */
+    .enhanced-footer {
+        background: var(--card-bg);
+        border-top: 1px solid var(--border-color);
+        margin-top: 60px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .enhanced-footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-gradient);
+    }
+    
+    .enhanced-footer::after {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    
+    .footer-content {
+        padding: 40px 0 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Footer Brand Section */
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .footer-logo {
+        width: 50px;
+        height: 50px;
+        background: var(--primary-gradient);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.4rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+    }
+    
+    .footer-logo:hover {
+        transform: scale(1.05) rotate(5deg);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .footer-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .footer-tagline {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    
+    /* Footer Links */
+    .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .footer-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(99, 102, 241, 0.05);
+        border: 1px solid transparent;
+    }
+    
+    .footer-link:hover {
+        color: var(--primary-color);
+        background: rgba(99, 102, 241, 0.1);
+        border-color: rgba(99, 102, 241, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .footer-link i {
+        font-size: 0.8rem;
+    }
+    
+    /* Social Links */
+    .footer-social {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .social-link {
+        width: 36px;
+        height: 36px;
+        background: var(--text-muted);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .social-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: var(--primary-gradient);
+        transition: left 0.3s ease;
+    }
+    
+    .social-link:hover::before {
+        left: 0;
+    }
+    
+    .social-link i {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .social-link:hover {
+        transform: translateY(-3px) scale(1.1);
+        box-shadow: var(--shadow-md);
+    }
+    
+    /* Version Text */
+    .version-text {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        padding: 4px 12px;
+        background: rgba(99, 102, 241, 0.05);
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        font-weight: 500;
+    }
+    
+    /* Footer Bottom */
+    .footer-bottom {
+        border-top: 1px solid var(--border-color);
+        padding-top: 20px;
+        margin-top: 30px;
+    }
+    
+    .copyright-text {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .developer-credit {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .developer-credit i.fa-code {
+        color: var(--primary-color);
+        font-size: 0.8rem;
+    }
+    
+    .developer-name {
+        color: var(--primary-color);
+        font-weight: 600;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+    }
+    
+    .developer-name::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .developer-credit:hover .developer-name::after {
+        transform: scaleX(1);
+    }
+    
+    .tech-stack {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: 8px;
+        padding-left: 8px;
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .tech-stack i {
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    .tech-stack i.fa-python {
+        color: #3776ab;
+    }
+    
+    .tech-stack i.fa-html5 {
+        color: #e34f26;
+    }
+    
+    .tech-stack i.fa-bootstrap {
+        color: #7952b3;
+    }
+    
+    .tech-stack i:hover {
+        transform: scale(1.2);
+    }
+    
+    /* Decorative Elements */
+    .footer-decoration {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.3;
+    }
+    
+    .decoration-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        animation: pulse 2s infinite alternate;
+    }
+    
+    .decoration-line {
+        width: 30px;
+        height: 1px;
+        background: var(--primary-gradient);
+    }
+    
+    .decoration-dot:nth-child(1) {
+        animation-delay: 0s;
+    }
+    
+    .decoration-dot:nth-child(3) {
+        animation-delay: 1s;
+    }
+    
+    /* Dark Mode Adjustments */
+    [data-theme="dark"] .enhanced-footer {
+        background: var(--card-bg-dark);
+    }
+    
+    [data-theme="dark"] .footer-link {
+        background: rgba(99, 102, 241, 0.1);
+    }
+    
+    [data-theme="dark"] .footer-link:hover {
+        background: rgba(99, 102, 241, 0.2);
+    }
+    
+    [data-theme="dark"] .version-text {
+        background: rgba(99, 102, 241, 0.1);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .footer-content {
+            padding: 30px 0 15px;
+        }
+
+        .footer-brand {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .footer-links {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .footer-link {
+            width: fit-content;
+        }
+
+        .developer-credit {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .tech-stack {
+            margin-left: 0;
+            padding-left: 0;
+            border-left: none;
+            border-top: 1px solid var(--border-color);
+            padding-top: 8px;
+            margin-top: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .footer-brand {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-logo {
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+        }
+
+        .footer-social {
+            gap: 8px;
+        }
+
+        .social-link {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+    }
         /* Dark mode styles */
         [data-theme="dark"] {
             --background-color: var(--background-dark);
@@ -627,18 +1002,97 @@
         {% block content %}{% endblock %}
 
         <!-- Footer -->
-        <footer class="footer">
-            <div class="container-fluid">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <p class="mb-0">&copy; 2024 Teacher Portal. All rights reserved.</p>
+        <!-- Enhanced Footer -->
+<footer class="enhanced-footer">
+    <div class="footer-content">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <!-- Left Section -->
+                <div class="col-lg-4 col-md-6 mb-3 mb-lg-0">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <i class="fas fa-chalkboard-user"></i>
+                        </div>
+                        <div class="footer-text">
+                            <h6 class="footer-title">College Portal</h6>
+                            <p class="footer-tagline">Empowering Education</p>
+                        </div>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <small>Version 1.0 | Built with ❤️ for educators</small>
+                </div>
+                
+                <!-- Center Section -->
+                <div class="col-lg-4 col-md-6 mb-3 mb-lg-0 text-center">
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-question-circle"></i>
+                            Help Center
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-shield-alt"></i>
+                            Privacy Policy
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fas fa-file-contract"></i>
+                            Terms of Service
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Right Section -->
+                <div class="col-lg-4 col-md-12 text-lg-end text-center">
+                    <div class="footer-info">
+                        <div class="footer-social mb-2">
+                            <a href="#" class="social-link" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link" title="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="social-link" title="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                        <div class="footer-version">
+                            <small class="version-text">Version 1.0.0</small>
+                        </div>
                     </div>
                 </div>
             </div>
-        </footer>
+            
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p class="copyright-text mb-0">
+                            &copy; 2025 College Portal. All rights reserved.
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <p class="developer-credit mb-0">
+                            <i class="fas fa-code"></i>
+                            Created by <span class="developer-name">Rohan </span>
+                            <span class="tech-stack">
+                                <i class="fab fa-python"></i> | Django
+                                <i class="fab fa-html5"></i> HTML
+                                <i class="fab fa-bootstrap"></i> Bootstrap
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Decorative Elements -->
+    <div class="footer-decoration">
+        <div class="decoration-dot"></div>
+        <div class="decoration-line"></div>
+        <div class="decoration-dot"></div>
+    </div>
+</footer>
     </main>
 
 </div>

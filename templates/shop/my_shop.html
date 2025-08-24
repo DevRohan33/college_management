@@ -1,0 +1,91 @@
+{% extends 'student_base.html' %}
+{% block title %}My Shop{% endblock %}
+{% block page_title %}My Shop{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card"><div class="card-body"><div>Total Products</div><div class="h4 mb-0">{{ total_products }}</div></div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card"><div class="card-body"><div>Total Orders</div><div class="h4 mb-0">{{ total_orders }}</div></div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card"><div class="card-body"><div>Total Amount Sold</div><div class="h4 mb-0">₹{{ total_amount }}</div></div></div>
+  </div>
+</div>
+
+<div class="card mt-3 mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div><i class="fas fa-credit-card me-2"></i>Owner Payment Details</div>
+    {% if profile.upi_id or profile.qr_code %}
+      <a href="?edit=1" class="btn btn-sm btn-outline-primary">Change</a>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    {% if profile.upi_id or profile.qr_code %}
+      {% if not edit_mode %}
+        <div class="row g-3">
+          <div class="col-md-6"><strong>UPI ID:</strong> {{ profile.upi_id|default:'-' }}</div>
+          <div class="col-md-6">
+            <strong>QR Code:</strong><br>
+            {% if profile.qr_code %}
+              <img src="{{ profile.qr_code.url }}" style="max-width:150px;"/>
+            {% else %}-{% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    {% if not profile.upi_id and not profile.qr_code or edit_mode %}
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">UPI ID</label>
+          <input type="text" name="upi_id" class="form-control" value="{{ profile.upi_id|default:'' }}" placeholder="e.g., name@upi">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">QR Code</label>
+          <input type="file" name="qr_code" class="form-control" accept="image/*">
+          {% if profile.qr_code %}
+            <img src="{{ profile.qr_code.url }}" class="mt-2" style="max-width:150px;"/>
+          {% endif %}
+        </div>
+      </div>
+      <div class="text-end mt-3">
+        <button class="btn btn-primary">Save</button>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div>My Products</div>
+    <a class="btn btn-primary btn-sm" href="{% url 'shop_add_product' %}"><i class="fas fa-plus"></i> Add</a>
+  </div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      {% for p in products %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <a href="{% url 'shop_product_manage' p.id %}" class="text-decoration-none flex-grow-1">
+          {{ p.title }}
+        </a>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted small me-3">Orders: {{ p.orders.count }}</span>
+          <form method="post" action="{% url 'shop_product_delete' p.id %}" onsubmit="return confirm('Delete this product? This cannot be undone.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% empty %}
+      <div class="p-3 text-muted">No products yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

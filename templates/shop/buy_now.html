@@ -1,0 +1,55 @@
+{% extends 'student_base.html' %}
+{% block title %}Buy Now{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h3>Buy Now - {{ product.title }}</h3>
+  <div class="row mt-3">
+    <div class="col-md-7">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Payment Method</label>
+          <select id="payment_method" name="payment_method" class="form-select" required>
+            <option value="COD">Cash on Delivery</option>
+            <option value="ONLINE">Online</option>
+          </select>
+        </div>
+
+        <div id="codNote" class="alert alert-info">Cash on Delivery selected. Please pay at delivery.</div>
+
+        <div id="onlineDetails" class="card p-3 mb-3" style="display:none;">
+          <h6>Online Payment Details</h6>
+          <div>UPI ID: {{ seller_profile.upi_id|default:'- Not set -' }}</div>
+          {% if seller_profile.qr_code %}
+          <img src="{{ seller_profile.qr_code.url }}" alt="QR" style="max-width:200px;"/>
+          {% endif %}
+          <div>Amount: ₹{{ product.price }}</div>
+          <div class="row g-2 mt-2">
+            <div class="col-md-6"><input type="text" name="transaction_id" class="form-control" placeholder="Transaction ID"></div>
+            <div class="col-md-6"><input type="text" name="payment_person_name" class="form-control" placeholder="Payment Person Name"></div>
+          </div>
+          <small class="text-muted d-block mt-2">Payment must be verified by the seller before delivery. If multiple payments use the same transaction ID, the first verified is valid.</small>
+        </div>
+
+        <button class="btn btn-primary">Place Order</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const methodSel = document.getElementById('payment_method');
+    const onlineBox = document.getElementById('onlineDetails');
+    const codNote = document.getElementById('codNote');
+    function togglePayment() {
+      const val = methodSel.value;
+      const online = val === 'ONLINE';
+      onlineBox.style.display = online ? '' : 'none';
+      codNote.style.display = online ? 'none' : '';
+    }
+    methodSel.addEventListener('change', togglePayment);
+    togglePayment(); // init
+  })();
+</script>
+{% endblock %}

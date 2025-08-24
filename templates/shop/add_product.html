@@ -1,0 +1,40 @@
+{% extends 'student_base.html' %}
+{% block title %}Add Product{% endblock %}
+{% block page_title %}Add Product{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="card p-3" style="border:1px solid var(--border-color);border-radius:12px;">
+  {% csrf_token %}
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Product Name</label>
+      <input type="text" name="title" class="form-control" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Price</label>
+      <input type="number" step="0.01" name="price" class="form-control" required>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Description</label>
+      <textarea name="description" class="form-control" rows="4" required></textarea>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Default Image</label>
+      <input type="file" name="default_image" class="form-control" accept="image/*">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">More Images</label>
+      <input type="file" name="images" class="form-control" multiple accept="image/*">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Category</label>
+      <select name="category" class="form-select">
+        <option value="">-</option>
+        {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="text-end mt-3">
+    <button class="btn btn-primary">Save</button>
+  </div>
+</form>
+{% endblock %}

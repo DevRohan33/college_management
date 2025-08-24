@@ -1,0 +1,48 @@
+{% extends 'student_base.html' %}
+{% block title %}Manage Product{% endblock %}
+{% block page_title %}Manage Product{% endblock %}
+{% block content %}
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="mb-0">{{ product.title }}</h5>
+    <div class="text-muted">Orders: {{ orders|length }}</div>
+  </div>
+</div>
+
+<form method="post" class="card">
+  {% csrf_token %}
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead><tr><th>Customer</th><th>Method</th><th>Txn ID</th><th>Payer</th><th>Status</th><th>Delivery Date</th><th></th></tr></thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td>{{ o.buyer.get_full_name|default:o.buyer.username }}</td>
+          <td>{{ o.get_payment_method_display }}</td>
+          <td>{{ o.transaction_id|default:'-' }}</td>
+          <td>{{ o.payment_person_name|default:'-' }}</td>
+          <td>
+            <select name="status_{{ o.id }}" class="form-select form-select-sm">
+              <option value="REQUESTED" {% if o.status == 'REQUESTED' %}selected{% endif %}>Order Request Sent</option>
+              <option value="DELIVERY_DAY" {% if o.status == 'DELIVERY_DAY' %}selected{% endif %}>Delivery Day</option>
+              <option value="DELIVERED" {% if o.status == 'DELIVERED' %}selected{% endif %}>Delivered</option>
+            </select>
+          </td>
+          <td><input type="date" name="delivery_{% if o.id %}{{ o.id }}{% endif %}" value="{{ o.delivery_date|date:'Y-m-d' }}" class="form-control form-control-sm"></td>
+          <td>
+            {% if o.status != 'CANCELLED' %}
+              <a href="{% url 'shop_order_cancel' o.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this order?')">Cancel</a>
+            {% else %}
+              <span class="badge bg-secondary">Cancelled</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="text-end p-3">
+    <button class="btn btn-primary">Save</button>
+  </div>
+</form>
+{% endblock %}

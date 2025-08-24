@@ -1,0 +1,23 @@
+{% extends 'student_base.html' %}
+{% block title %}My Cart{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h3>My Cart</h3>
+  <div class="list-group mt-3">
+    {% for c in items %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-semibold">{{ c.product.title }}</div>
+          <div class="text-muted small">₹{{ c.product.price }}</div>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="{% url 'shop_buy_now' c.product.id %}" class="btn btn-sm btn-primary">Buy Now</a>
+          <a href="{% url 'shop_cart_delete' c.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this item from cart?')">Delete</a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="text-muted">Your cart is empty.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

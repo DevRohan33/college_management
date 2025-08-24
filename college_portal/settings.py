@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'club',
     'widget_tweaks',
     'teacher',
+    'shop',
 ]
 
 AUTH_USER_MODEL = 'account.User'
@@ -95,6 +96,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'shop.context_processors.shop_counts',
             ],
         },
     },
