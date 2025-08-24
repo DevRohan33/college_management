@@ -142,9 +142,10 @@
         }
 
         .sidebar-header {
-            padding: 25px 24px;
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: #fff; /* You can make this transparent if needed */
         }
 
         .sidebar-header::after {
@@ -549,7 +550,7 @@
                 <div class="brand-icon">
                     <i class="fas fa-graduation-cap"></i>
                 </div>
-                ECE Portal
+                ECE
             </a>
         </div>
         <ul class="sidebar-menu">
@@ -561,17 +562,16 @@
                 <i class="fas fa-tasks icon"></i> Assignments</a></li>
             <li><a href="{% url 'attendance' %}">
                 <i class="fas fa-user-check icon"></i> Attendance</a></li>
-            <li><a href="#">
-                <i class="fas fa-chart-bar icon"></i> Results</a></li>
+            <li><a href="{% url 'student_results_page' %}" class="{% if request.resolver_match.url_name == 'student_results_page' %}active{% endif %}">
+                <i class="fas fa-graduation-cap icon"></i> Results</a></li>
             <li><a href="{% url 'event_list' %}" class="{% if request.resolver_match.url_name == 'event_list' %}active{% endif %}">
                 <i class="fas fa-calendar-alt icon"></i> Events</a></li>
+            <li><a href="{% url 'club:club_list' %}">
+                <i class="fas fa-users icon"></i> Club</a></li>
             <li><a href="{% url 'edit_profile' %}" class="{% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
                 <i class="fas fa-user icon"></i> My Profile</a></li>
-            
+
             <hr class="menu-divider">
-            
-            <li><a href="{% url 'club:club_list' %}">
-                <i class="fas fa-cog icon"></i> Club</a></li>
             <li><a href="#">
                 <i class="fas fa-question-circle icon"></i> Help & Support</a></li>
             <li><a href="{% url 'logout' %}">

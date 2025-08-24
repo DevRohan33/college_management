@@ -296,69 +296,122 @@
     </div>
 </div>
 
-<!-- Routine Classes Section -->
+<!-- Today's Classes Section -->
+<div class="attendance-card">
+    <div class="section-header">
+        <i class="fas fa-bolt me-2"></i>
+        Today's Classes
+        <small class="float-end text-muted" style="font-size: 0.85rem; font-weight: 400;">
+            <i class="fas fa-calendar-day me-1"></i>{{ "now"|date:"D, M d" }}
+        </small>
+    </div>
+    <div class="card-body">
+        {% with todays=routines|dictsort:'start_time' %}
+        {% for r in routines %}
+            {% if r.day_of_week == today_code %}
+                <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                    <div>
+                        <div class="subject-name mb-1"><i class="fas fa-book me-2"></i>{{ r.subject.name }}</div>
+                        <div class="text-muted small">Semester {{ r.semester.semester }} • {{ r.subject.code|default:"N/A" }}</div>
+                    </div>
+                    <div class="text-end">
+                        <span class="time-badge me-2">
+                            <i class="fas fa-clock me-1"></i>{{ r.start_time|time:"H:i" }} - {{ r.end_time|time:"H:i" }}
+                        </span>
+                        {% with sid=r.subject.id|stringformat:"s" semid=r.semester.id|stringformat:"s" %}
+                            {% with key=sid|add:"-"|add:semid %}
+                                {% if key in taken_keys %}
+                                    <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" class="btn btn-attendance btn-sm">
+                                        <i class="fas fa-edit me-1"></i>Edit Attendance
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" class="btn btn-attendance btn-sm">
+                                        <i class="fas fa-user-check me-1"></i>Take Attendance
+                                    </a>
+                                {% endif %}
+                            {% endwith %}
+                        {% endwith %}
+                    </div>
+                </div>
+            {% endif %}
+        {% empty %}{% endfor %}
+        {% endwith %}
+        {% if not routines %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times empty-icon"></i>
+                <h4>No Routine Classes</h4>
+                <p>You don't have any routine classes assigned yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Classes By Day Section -->
 <div class="attendance-card">
     <div class="section-header">
         <i class="fas fa-calendar-week me-2"></i>
-        Routine Classes Schedule
+        Weekly Classes (Day-wise)
         <small class="float-end text-muted" style="font-size: 0.85rem; font-weight: 400;">
             <i class="fas fa-clock me-1"></i>Updated automatically
         </small>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body">
         {% if routines %}
-        <div class="table-responsive">
-            <table class="table routine-table mb-0">
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-calendar-day me-2"></i>Day</th>
-                        <th><i class="fas fa-clock me-2"></i>Time Slot</th>
-                        <th><i class="fas fa-book me-2"></i>Subject Details</th>
-                        <th><i class="fas fa-layer-group me-2"></i>Semester</th>
-                        <th><i class="fas fa-users-cog me-2"></i>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for r in routines %}
-                    <tr>
-                        <td>
-                            <span class="day-badge day-{{ r.get_day_of_week_display|lower }}">
-                                {{ r.get_day_of_week_display }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="time-badge">
-                                <i class="fas fa-clock me-1"></i>
-                                {{ r.start_time|time:"H:i" }} - {{ r.end_time|time:"H:i" }}
-                            </span>
-                        </td>
-                        <td class="subject-info">
-                            <div class="subject-name">{{ r.subject.name }}</div>
-                            <div class="subject-code">Code: {{ r.subject.code|default:"N/A" }}</div>
-                        </td>
-                        <td>
-                            <span class="semester-badge">
-                                Semester {{ r.semester.semester }}
-                            </span>
-                        </td>
-                        <td>
-                            <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" 
-                               class="btn btn-attendance">
-                                <i class="fas fa-user-check me-2"></i>Take Attendance
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            {% regroup routines by day_of_week as day_groups %}
+            {% for group in day_groups %}
+                {% with first=group.list.0 %}
+                <div class="mb-3">
+                    <h6 class="mb-3">
+                        <span class="day-badge day-{{ first.get_day_of_week_display|lower }}">
+                            {{ first.get_day_of_week_display }}
+                        </span>
+                        {% if first.day_of_week == today_code %}
+                            <span class="small text-success ms-2"><i class="fas fa-check-circle"></i> Today</span>
+                        {% endif %}
+                    </h6>
+                    <div class="list-group">
+                        {% for r in group.list %}
+                        <div class="list-group-item d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="subject-name mb-1">{{ r.subject.name }}</div>
+                                <div class="text-muted small">Semester {{ r.semester.semester }} • Code: {{ r.subject.code|default:"N/A" }}</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="time-badge me-2">
+                                    <i class="fas fa-clock me-1"></i>{{ r.start_time|time:"H:i" }} - {{ r.end_time|time:"H:i" }}
+                                </span>
+                                {% with sid=r.subject.id|stringformat:"s" semid=r.semester.id|stringformat:"s" %}
+                                    {% with key=sid|add:"-"|add:semid %}
+                                        {% if r.day_of_week == today_code %}
+                                            {% if key in taken_keys %}
+                                                <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" class="btn btn-attendance btn-sm">
+                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" class="btn btn-attendance btn-sm">
+                                                    <i class="fas fa-user-check me-1"></i>Take
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <button class="btn btn-secondary btn-sm" disabled title="Available on scheduled day only">
+                                                <i class="fas fa-lock me-1"></i>Locked
+                                            </button>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endwith %}
+            {% endfor %}
         {% else %}
-        <div class="empty-state">
-            <i class="fas fa-calendar-times empty-icon"></i>
-            <h4>No Routine Classes</h4>
-            <p>You don't have any routine classes assigned yet.</p>
-            <small class="text-muted">Contact administration to set up your class schedule.</small>
-        </div>
+            <div class="empty-state">
+                <i class="fas fa-calendar-times empty-icon"></i>
+                <h4>No Routine Classes</h4>
+                <p>You don't have any routine classes assigned yet.</p>
+            </div>
         {% endif %}
     </div>
 </div>
@@ -376,14 +429,14 @@
         <div class="custom-form">
             <form method="get" action="{% url 'mark_attendance_custom' %}">
                 <div class="row align-items-end">
-                    <div class="col-md-8 mb-3">
+                    <div class="col-md-5 mb-3">
                         <label for="subject" class="form-label">
                             <i class="fas fa-book me-2"></i>Select Subject
                         </label>
                         <select name="subject" id="subject" class="form-select" required>
                             <option value="">-- Choose a subject --</option>
                             {% for s in subjects %}
-                            <option value="{{ s.id }}" data-semester="{{ s.semester.semester }}">
+                            <option value="{{ s.id }}" data-semester-id="{{ s.semester.id }}" data-semester-num="{{ s.semester.semester }}">
                                 {{ s.name }} (Semester {{ s.semester.semester }})
                                 {% if s.code %} - {{ s.code }}{% endif %}
                             </option>
@@ -392,6 +445,18 @@
                         <small class="text-muted mt-1">
                             <i class="fas fa-lightbulb me-1"></i>
                             Select any subject from your assigned courses
+                        </small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="semester" class="form-label">
+                            <i class="fas fa-layer-group me-2"></i>Select Semester
+                        </label>
+                        <select name="semester" id="semester" class="form-select">
+                            <option value="">-- Choose a semester --</option>
+                        </select>
+                        <small class="text-muted mt-1">
+                            <i class="fas fa-magic me-1"></i>
+                            Auto-filled from the selected subject
                         </small>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -428,7 +493,7 @@
                 <i class="fas fa-history text-primary mb-3" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 <h5>View Attendance History</h5>
                 <p class="text-muted">Check previous attendance records and analytics</p>
-                <a href="#" class="btn btn-outline-primary">
+                <a href="{% url 'teacher_attendance_history' %}" class="btn btn-outline-primary">
                     <i class="fas fa-chart-line me-2"></i>View History
                 </a>
             </div>
@@ -440,7 +505,7 @@
                 <i class="fas fa-file-export text-success mb-3" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 <h5>Export Reports</h5>
                 <p class="text-muted">Generate and download attendance reports</p>
-                <a href="#" class="btn btn-outline-success">
+                <a href="{% url 'export_attendance_report' %}" class="btn btn-outline-success">
                     <i class="fas fa-download me-2"></i>Generate Report
                 </a>
             </div>
@@ -451,17 +516,14 @@
 
 {% block extra_js %}
 <script>
-    // Add loading animation to attendance buttons
-    document.querySelectorAll('.btn-attendance, .btn-custom-attendance').forEach(btn => {
+    // Add loading animation to routine action buttons only (avoid breaking form submit)
+    document.querySelectorAll('.btn-attendance').forEach(btn => {
         btn.addEventListener('click', function() {
             const originalHtml = this.innerHTML;
             this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
-            this.disabled = true;
-            
-            // Re-enable after 3 seconds (in case of slow loading)
+            // don't disable anchors, just show spinner text
             setTimeout(() => {
                 this.innerHTML = originalHtml;
-                this.disabled = false;
             }, 3000);
         });
     });
@@ -478,18 +540,43 @@
         badge.style.animation = 'pulse 2s infinite';
     });
 
-    // Form validation
-    document.querySelector('.custom-form form').addEventListener('submit', function(e) {
-        const select = document.getElementById('subject');
-        if (!select.value) {
+    // Auto-select semester based on chosen subject
+    const subjectSelect = document.getElementById('subject');
+    const semesterSelect = document.getElementById('semester');
+    if (subjectSelect && semesterSelect) {
+        subjectSelect.addEventListener('change', function() {
+            const opt = this.options[this.selectedIndex];
+            const semId = opt ? opt.getAttribute('data-semester-id') : '';
+            const semNum = opt ? opt.getAttribute('data-semester-num') : '';
+            // Reset options
+            semesterSelect.innerHTML = '<option value="">-- Choose a semester --</option>';
+            if (semId) {
+                const newOpt = document.createElement('option');
+                newOpt.value = semId;
+                newOpt.selected = true;
+                newOpt.textContent = `Semester ${semNum}`;
+                semesterSelect.appendChild(newOpt);
+            }
+        });
+    }
+
+    // Form submit: validate subject and then show spinner on the submit button
+    const customForm = document.querySelector('.custom-form form');
+    customForm.addEventListener('submit', function(e) {
+        const subjectEl = document.getElementById('subject');
+        if (!subjectEl.value) {
             e.preventDefault();
-            select.focus();
-            select.style.borderColor = '#ef4444';
-            
-            // Reset border color after 3 seconds
+            subjectEl.focus();
+            subjectEl.style.borderColor = '#ef4444';
             setTimeout(() => {
-                select.style.borderColor = '';
+                subjectEl.style.borderColor = '';
             }, 3000);
+            return;
+        }
+        const submitBtn = customForm.querySelector('.btn-custom-attendance');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+            submitBtn.disabled = true; // safe to disable during submit
         }
     });
 

@@ -565,17 +565,17 @@
         <ul class="sidebar-menu">
             <li><a href="#dashboard" class="{% if request.resolver_match.url_name == 'teacher_dashboard' %}active{% endif %}">
                 <i class="fas fa-tachometer-alt icon"></i> Dashboard</a></li>
-            <li><a href="#profile" class="{% if request.resolver_match.url_name == 'teacher_profile' %}active{% endif %}">
+            <li><a href="{% url 'teacher_profile' %}" class="{% if request.resolver_match.url_name == 'teacher_profile' %}active{% endif %}">
                 <i class="fas fa-user icon"></i> My Profile</a></li>
-            <li><a href="#classes" class="{% if request.resolver_match.url_name == 'teacher_classes' %}active{% endif %}">
+            <li><a href="{% url 'teacher_classes' %}" class="{% if request.resolver_match.url_name == 'teacher_classes' %}active{% endif %}">
                 <i class="fas fa-chalkboard-user icon"></i> My Classes</a></li>
             <li><a href="{% url 'take_attendance' %}" class="{% if request.resolver_match.url_name == 'take_attendance' %}active{% endif %}">
                 <i class="fas fa-user-check icon"></i> Attendance</a></li>
             <li><a href="{% url 'assignment_list' %}" class="{% if request.resolver_match.url_name == 'assignment_list' %}active{% endif %}">
                 <i class="fas fa-tasks icon"></i> Assignments</a></li>
-            <li><a href="#grades" class="{% if request.resolver_match.url_name == 'teacher_grades' %}active{% endif %}">
+            <li><a href="{% url 'teacher_grades' %}" class="{% if request.resolver_match.url_name == 'teacher_grades' %}active{% endif %}">
                 <i class="fas fa-chart-bar icon"></i> Grades</a></li>
-            <li><a href="#students" class="{% if request.resolver_match.url_name == 'teacher_students' %}active{% endif %}">
+            <li><a href="{% url 'teacher_students' %}" class="{% if request.resolver_match.url_name == 'teacher_students' %}active{% endif %}">
                 <i class="fas fa-users icon"></i> Students</a></li>
             <li><a href="{% url 'notice_create' %}" class="{% if request.resolver_match.url_name == 'notice_create' %}active{% endif %}">
                 <i class="fas fa-bullhorn icon"></i> Notice Board</a></li>

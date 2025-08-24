@@ -14,6 +14,7 @@ class Attendance(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
+    taken_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.subject.name} - {self.department.name} - {self.semester.semester} - {self.date}"

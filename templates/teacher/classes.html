@@ -1,0 +1,113 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}My Classes - Teacher{% endblock %}
+{% block page_title %}My Classes{% endblock %}
+
+{% block extra_css %}
+<style>
+    .day-section {
+        margin-bottom: 24px;
+    }
+    .cls-badge {
+        background: var(--primary-gradient);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+    .today-chip {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        margin-left: 8px;
+    }
+    .time-chip {
+        border: 1px solid var(--border-color);
+        padding: 6px 10px;
+        border-radius: 16px;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.05));
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Today's Classes -->
+<div class="card mb-4">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+            <i class="fas fa-bolt me-2"></i>Today's Classes
+        </div>
+        <small class="text-muted"><i class="fas fa-calendar-day me-1"></i>{{ "now"|date:"D, M d" }}</small>
+    </div>
+    <div class="card-body">
+        {% with count=0 %}{% endwith %}
+        {% for r in routines %}
+            {% if r.day_of_week == today_code %}
+                <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                    <div>
+                        <div class="fw-bold">{{ r.subject.name }}</div>
+                        <div class="text-muted small">Semester {{ r.semester.semester }}{% if r.subject.code %} • {{ r.subject.code }}{% endif %}</div>
+                    </div>
+                    <div>
+                        <span class="time-chip me-2"><i class="fas fa-clock me-1"></i>{{ r.start_time|time:"H:i" }} - {{ r.end_time|time:"H:i" }}</span>
+                        <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" class="btn btn-sm btn-primary"><i class="fas fa-user-check me-1"></i>Attendance</a>
+                    </div>
+                </div>
+            {% endif %}
+        {% empty %}{% endfor %}
+        {% if not routines %}
+            <div class="text-center text-muted py-4">No routine classes found.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Weekly Classes Grouped by Day -->
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-calendar-week me-2"></i>Weekly Schedule
+    </div>
+    <div class="card-body">
+        {% if routines %}
+            {% regroup routines by day_of_week as day_groups %}
+            {% for group in day_groups %}
+                {% with first=group.list.0 %}
+                <div class="day-section">
+                    <h6 class="mb-3">
+                        <span class="cls-badge">{{ first.get_day_of_week_display }}</span>
+                        {% if first.day_of_week == today_code %}<span class="today-chip"><i class="fas fa-check-circle me-1"></i>Today</span>{% endif %}
+                    </h6>
+                    <div class="list-group">
+                        {% for r in group.list %}
+                        <div class="list-group-item d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="fw-semibold">{{ r.subject.name }}</div>
+                                <div class="text-muted small">Semester {{ r.semester.semester }}{% if r.subject.code %} • {{ r.subject.code }}{% endif %}</div>
+                            </div>
+                            <div>
+                                <span class="time-chip me-2"><i class="fas fa-clock me-1"></i>{{ r.start_time|time:"H:i" }} - {{ r.end_time|time:"H:i" }}</span>
+                                {% if r.day_of_week == today_code %}
+                                    <a href="{% url 'mark_attendance' r.subject.id r.semester.id %}" class="btn btn-sm btn-success"><i class="fas fa-user-check me-1"></i>Take Attendance</a>
+                                {% else %}
+                                    <button class="btn btn-sm btn-secondary" disabled title="Available on scheduled day only"><i class="fas fa-lock me-1"></i>Locked</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endwith %}
+            {% endfor %}
+        {% else %}
+            <div class="text-center text-muted py-4">No routine classes found.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "teacher_base.html" %}
+{% block title %}{{ subject.name }} - History{% endblock %}
+{% block page_title %}{{ subject.name }} - Semester {{ semester.semester }} History{% endblock %}
+{% block content %}
+<div class="card" style="border-radius: 16px; border: 1px solid var(--border-color);">
+  <div class="card-header">
+    <i class="fas fa-list me-2"></i>Sessions
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in sessions %}
+          <tr>
+            <td>{{ s.date }}</td>
+            <td>{{ s.present_count }}</td>
+            <td>{{ s.absent_count }}</td>
+            <td>{{ s.total_count }}</td>
+            <td>
+              <a class="btn btn-outline-primary btn-sm" href="{% url 'teacher_attendance_detail' s.id %}">Details</a>
+              <a class="btn btn-outline-success btn-sm" href="{% url 'export_class_attendance' s.id %}">Export</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">No sessions found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "channels",
     'club',
     'widget_tweaks',
+    'teacher',
 ]
 
 AUTH_USER_MODEL = 'account.User'

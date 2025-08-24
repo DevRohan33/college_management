@@ -7,7 +7,15 @@
         {% for subject in subjects %}
         <div class="mb-3">
             <h6>{{ subject.name }} ({{ subject.code }})</h6>
-            <small class="text-muted">Instructor: {{ subject.teacher.get_full_name }}</small>
+            <small class="text-muted">
+                Instructor: 
+                {% for teacher in subject.teachers.all %}
+                    {{ teacher.get_full_name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    N/A
+                {% endfor %}
+            </small>
+            
         </div>
         {% empty %}
         <p class="text-muted">No courses assigned yet.</p>

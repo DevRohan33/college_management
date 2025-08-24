@@ -1,0 +1,98 @@
+{% extends 'teacher_base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Teacher{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-card { border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; }
+    .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }
+    .label { font-weight: 600; color: var(--text-secondary); }
+    .value { color: var(--text-primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card profile-card">
+            <div class="card-body text-center">
+                {% if profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}" class="avatar mb-3" alt="Profile">
+                {% else %}
+                    <div class="avatar mb-3 d-inline-flex align-items-center justify-content-center bg-primary text-white">
+                        <i class="fas fa-user fa-2x"></i>
+                    </div>
+                {% endif %}
+                <h5 class="mb-1">{{ request.user.get_full_name|default:request.user.username }}</h5>
+                <small class="text-muted">{{ request.user.department.name|default:'Department N/A' }}</small>
+                <div class="mt-3">
+                    <span class="badge bg-primary">Teacher</span>
+                </div>
+            </div>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item">
+                    <div class="label">Email</div>
+                    <div class="value">{{ request.user.email }}</div>
+                </div>
+                <div class="list-group-item">
+                    <div class="label">Phone</div>
+                    <div class="value">{{ profile.phone_number|default:'-' }}</div>
+                </div>
+                <div class="list-group-item">
+                    <div class="label">Address</div>
+                    <div class="value">{{ profile.address|default:'-' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card profile-card mb-4">
+            <div class="card-header"><i class="fas fa-id-card me-2"></i>Professional Details</div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="label">Degree</div>
+                        <div class="value">{{ profile.degree|default:'-' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="label">Primary Subject</div>
+                        <div class="value">{{ profile.primary_subject|default:'-' }}</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="label">Ability Subjects</div>
+                    <div class="value">{{ profile.ability_subjects|default:'-' }}</div>
+                </div>
+                <div>
+                    <div class="label">Bio</div>
+                    <div class="value">{{ profile.bio|default:'-' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card profile-card">
+            <div class="card-header"><i class="fas fa-pen me-2"></i>Edit Profile</div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ form.profile_image.label_tag }}{{ form.profile_image }}</div>
+                        <div class="col-md-6">{{ form.phone_number.label_tag }}{{ form.phone_number }}</div>
+                        <div class="col-12">{{ form.address.label_tag }}{{ form.address }}</div>
+                        <div class="col-md-4">{{ form.degree.label_tag }}{{ form.degree }}</div>
+                        <div class="col-md-4">{{ form.primary_subject.label_tag }}{{ form.primary_subject }}</div>
+                        <div class="col-md-4">{{ form.ability_subjects.label_tag }}{{ form.ability_subjects }}</div>
+                        <div class="col-12">{{ form.bio.label_tag }}{{ form.bio }}</div>
+                    </div>
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

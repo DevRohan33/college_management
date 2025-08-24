@@ -30,6 +30,7 @@
         50% { transform: translateY(-20px) rotate(180deg); }
     }
 
+    
     .welcome-card .card-body {
         position: relative;
         z-index: 1;
@@ -563,6 +564,347 @@
     .stagger-animation .card:nth-child(4) { animation-delay: 0.4s; }
     .stagger-animation .card:nth-child(5) { animation-delay: 0.5s; }
     .stagger-animation .card:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Enhanced Clubs Section Styles */
+.clubs-card {
+    border: none;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.clubs-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.clubs-card .card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 12px 12px 0 0;
+    padding: 1rem 1.25rem;
+}
+
+.clubs-card .header-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.club-count-badge {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Clubs List Styles */
+.clubs-list {
+    margin: 0.5rem 0;
+}
+
+.club-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.club-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.05), rgba(0, 123, 255, 0.02));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.club-item:hover::before {
+    opacity: 1;
+}
+
+.club-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 3px 15px rgba(0, 123, 255, 0.15);
+}
+
+.club-item:last-child {
+    margin-bottom: 0;
+}
+
+.club-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.club-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.club-details {
+    flex: 1;
+}
+
+.club-name {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.club-status {
+    color: #28a745;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.club-actions .club-menu-btn {
+    border: none;
+    background: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.club-actions .club-menu-btn:hover {
+    background: rgba(108, 117, 125, 0.2);
+    transform: scale(1.1);
+}
+
+/* More clubs indicator */
+.more-clubs-indicator {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 123, 255, 0.05);
+    border-radius: 8px;
+    margin-top: 1rem;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.view-all-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.view-all-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Club actions section */
+.club-actions-section {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-join-club {
+    border-radius: 8px;
+    padding: 0.6rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-join-club:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
+
+/* Enhanced Empty State */
+.no-content-state {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.no-content-illustration {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #e9ecef, #f8f9fa);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.empty-state-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(0, 123, 255, 0.1), transparent);
+    transform: rotate(-45deg);
+    animation: shimmer 2s infinite;
+}
+
+.empty-state-icon i {
+    font-size: 2rem;
+    color: #6c757d;
+    z-index: 1;
+}
+
+.empty-state-decoration {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.decoration-dot {
+    width: 6px;
+    height: 6px;
+    background: #dee2e6;
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+}
+
+.decoration-dot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.decoration-dot:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.empty-title {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-description {
+    color: #6c757d;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.no-content-action {
+    margin-top: 1.5rem;
+}
+
+.btn-explore-clubs {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-explore-clubs::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-explore-clubs:hover::before {
+    left: 100%;
+}
+
+.btn-explore-clubs:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* Animations */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(-45deg);
+    }
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(-45deg);
+    }
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .clubs-card .card-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .club-item {
+        padding: 0.75rem;
+    }
+    
+    .club-icon {
+        width: 35px;
+        height: 35px;
+        margin-right: 0.75rem;
+    }
+    
+    .club-name {
+        font-size: 0.95rem;
+    }
+    
+    .empty-state-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .empty-state-icon i {
+        font-size: 1.5rem;
+    }
+}
 </style>
 {% endblock %}
 
@@ -885,37 +1227,93 @@
                 </div>
             </div>
 
-            <!-- My Clubs -->
-            <div class="card mb-4 animate-fade-in-up stagger-4">
-                <div class="card-header">
-                    <i class="fas fa-users me-2"></i>My Clubs & Activities
-                </div>
-                <div class="card-body">
-                    {% if student.clubs.exists %}
-                        {% for club in student.clubs.all %}
-                            <div class="club-item">
+       <!-- My Clubs -->
+<div class="card mb-4 animate-fade-in-up stagger-4 clubs-card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <div class="header-title">
+            <i class="fas fa-users me-2 text-primary"></i>My Clubs
+        </div>
+        {% if user_clubs %}
+            <span class="club-count-badge">{{ user_clubs|length }}</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if user_clubs %}
+            {% with user_clubs|length as total_clubs %}
+                
+                <!-- Show up to 3 clubs -->
+                <div class="clubs-list">
+                    {% for club in user_clubs|slice:":3" %}
+                    <a href="{% url 'club:club_detail' club.unique_id %}" class="text-decoration-none">
+                        <div class="club-item">
+                            <div class="club-content">
                                 <div class="club-icon">
                                     <i class="fas fa-star"></i>
                                 </div>
-                                <div>
-                                    <div class="fw-semibold">{{ club.name }}</div>
-                                    <small class="text-muted">Active Member</small>
+                                <div class="club-details">
+                                    <div class="club-name">{{ club.name }}</div>
+                                    <div class="club-status">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        Active Member
+                                    </div>
                                 </div>
                             </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="no-content-state">
-                            <div class="no-content-icon">
-                                <i class="fas fa-users"></i>
+                            <div class="club-actions">
+                                <button class="btn btn-sm btn-outline-secondary club-menu-btn" title="More options">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
                             </div>
-                            <p>You haven't joined any clubs yet.</p>
-                            <a href="#" class="btn-enhanced btn-sm mt-2">
-                                <i class="fas fa-plus"></i> Explore Clubs
-                            </a>
                         </div>
-                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Show "+X more clubs" if there are more than 3 -->
+                {% if total_clubs > 3 %}
+                    <div class="more-clubs-indicator">
+                        <i class="fas fa-plus-circle me-1"></i>
+                        <span>{{ total_clubs|add:"-3" }} more club{{ total_clubs|add:"-3"|pluralize }}</span>
+                        <a href="{% url 'club:club_list' %}" class="view-all-link ms-2">View All</a>
+                    </div>
+                {% endif %}
+
+                <!-- Show Join Club button if user has less than 3 clubs -->
+                {% if total_clubs < 3 %}
+                    <div class="club-actions-section">
+                        <a href="{% url 'club:club_list' %}" class="btn btn-outline-primary btn-join-club">
+                            <i class="fas fa-plus me-1"></i> 
+                            Join Another Club
+                        </a>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        {% else %}
+            <!-- If user has no clubs -->
+            <div class="no-content-state">
+                <div class="no-content-illustration">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="empty-state-decoration">
+                        <div class="decoration-dot"></div>
+                        <div class="decoration-dot"></div>
+                        <div class="decoration-dot"></div>
+                    </div>
+                </div>
+                <div class="no-content-text">
+                    <h6 class="empty-title">No Clubs Yet</h6>
+                    <p class="empty-description">Join clubs to connect with like-minded people and explore your interests.</p>
+                </div>
+                <div class="no-content-action">
+                    <a href="{% url 'club:club_list' %}" class="btn btn-primary btn-explore-clubs">
+                        <i class="fas fa-search me-2"></i> 
+                        Explore Clubs
+                    </a>
                 </div>
             </div>
+        {% endif %}
+    </div>
+</div>
+
 
             <!-- Quick Actions -->
             <div class="card mb-4 animate-fade-in-up stagger-5">

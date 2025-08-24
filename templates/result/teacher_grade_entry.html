@@ -1,0 +1,51 @@
+{% extends 'teacher_base.html' %}
+{% block title %}{{ session.exam_type }} - {{ subject.name }}{% endblock %}
+{% block page_title %}{{ session.exam_type }} - {{ subject.name }} (Sem {{ semester.semester }}){% endblock %}
+{% block content %}
+<div class="card" style="border-radius:16px;border:1px solid var(--border-color);">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div>
+      <i class="fas fa-pen me-2"></i>Enter Marks
+      {% if session.locked %}<span class="badge bg-danger ms-2">Locked</span>{% endif %}
+    </div>
+    <div>
+      <span class="badge bg-secondary">Full Marks: {{ session.full_marks }}</span>
+      <a href="{% url 'lock_exam_session' session.id %}" class="btn btn-sm btn-outline-danger ms-2" {% if session.locked %}disabled{% endif %}>
+        <i class="fas fa-lock me-1"></i>Lock
+      </a>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <form method="post">
+      {% csrf_token %}
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Registration</th>
+              <th>Marks (out of {{ session.full_marks }})</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in students %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ m.student.get_full_name|default:m.student.username }}</td>
+              <td>{{ m.student.registration_number|default:'-' }}</td>
+              <td style="max-width:160px;">
+                <input type="number" name="mark_{% if m.student_id %}{{ m.student_id }}{% endif %}" value="{{ m.marks|default:'' }}" class="form-control" min="0" max="{{ session.full_marks }}" step="0.01" {% if session.locked %}readonly{% endif %}>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="p-3 text-end">
+        <button type="submit" class="btn btn-primary" {% if session.locked %}disabled{% endif %}><i class="fas fa-save me-1"></i>Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

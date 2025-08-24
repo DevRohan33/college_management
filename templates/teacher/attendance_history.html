@@ -1,0 +1,42 @@
+{% extends "teacher_base.html" %}
+{% block title %}Attendance History - Teacher{% endblock %}
+{% block page_title %}Attendance History{% endblock %}
+{% block content %}
+<div class="card" style="border-radius: 16px; border: 1px solid var(--border-color);">
+  <div class="card-header">
+    <i class="fas fa-history me-2"></i>Your Classes
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Semester</th>
+            <th>Sessions</th>
+            <th>Last Taken</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.subject.name }}</td>
+            <td>Semester {{ r.semester.semester }}</td>
+            <td>{{ r.count }}</td>
+            <td>{% if r.last_date %}{{ r.last_date }}{% else %}-{% endif %}</td>
+            <td>
+              <a class="btn btn-outline-primary btn-sm" href="{% url 'teacher_subject_attendance_history' r.subject.id r.semester.id %}">
+                View Sessions
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">No classes found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

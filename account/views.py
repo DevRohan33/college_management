@@ -11,8 +11,11 @@ from datetime import datetime
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from attendance.models import AttendanceEntry, Attendance
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db import models
+from club.models import Club
+from teacher.models import TeacherProfile
+from result.models import StudentSGPA
 
 # ------------------ VIEWS ------------------
 def index(request):
@@ -142,12 +145,29 @@ def teacher_dashboard(request):
         return redirect("index")
 
     teacher = request.user
+    # ensure teacher profile exists
+    profile, _ = TeacherProfile.objects.get_or_create(user=teacher)
 
     # Show subjects in teacher’s department & assigned semesters
     accessible_semesters = teacher.accessible_batches.all()
     subjects = Subject.objects.filter(
         department=teacher.department,
         semester__in=accessible_semesters
+    )
+
+    # Today's routines for the teacher
+    today_code = datetime.today().strftime("%a").lower()[:3]
+    todays_routines = ClassRoutine.objects.filter(
+        teacher=teacher,
+        day_of_week=today_code
+    ).select_related('subject', 'semester').order_by('start_time')
+
+    # Teacher subjects (via routine or M2M)
+    teacher_subjects = (
+        Subject.objects
+        .filter(Q(routines__teacher=teacher) | Q(teachers=teacher))
+        .distinct()
+        .order_by('name')
     )
 
     student_count = User.objects.filter(
@@ -163,7 +183,10 @@ def teacher_dashboard(request):
         "subjects": subjects,
         "total_classes": subjects.count(),
         "total_students": student_count,
-        "notices": notices
+        "notices": notices,
+        "todays_routines": todays_routines,
+        "teacher_subjects": teacher_subjects,
+        "profile": profile,
     }
     return render(request, "dashboards/teacher_dashboard.html", context)
 
@@ -195,6 +218,12 @@ def student_dashboard(request):
         semester=user.semester
     ).order_by("day_of_week", "start_time")
 
+    # Get user's active clubs
+    user_clubs = Club.objects.filter(
+        memberships__user=user,
+        memberships__status="active"
+    )
+
     # ttendance summary
     entries = AttendanceEntry.objects.filter(student=user)
     total_present = entries.filter(status__iexact="present").count()
@@ -205,6 +234,13 @@ def student_dashboard(request):
         "Mid-term exams start next Monday.",
         "Project submission deadline extended."
     ]
+
+    # Overall SGPA for hero card
+    sgpa_qs = StudentSGPA.objects.filter(student=user)
+    overall_sgpa = None
+    if sgpa_qs.exists():
+        vals = [float(x.sgpa) for x in sgpa_qs]
+        overall_sgpa = round(sum(vals)/len(vals), 2)
 
     subject_stats = (
         entries.values("attendance__subject__name")
@@ -236,6 +272,8 @@ def student_dashboard(request):
         "attendance_subject_stats": subject_stats,
         'notifications': notifications,
         'notices': notices,
+        'user_clubs': user_clubs,
+        'current_gpa': overall_sgpa,
     })
 
 # --- NEW, SEPARATE FUNCTION FOR THE RESULTS PAGE ---

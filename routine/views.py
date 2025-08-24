@@ -3,6 +3,9 @@ from .models import ClassRoutine
 from account.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from .form import RoutineForm 
+
+# Helpers for day codes used in ClassRoutine
+DAY_CODES = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] 
 # ----------------- Student Routine -----------------
 @login_required
 def student_routine_view(request):
@@ -89,14 +92,24 @@ def hod_routine_edit(request, pk):
 
     return render(request, "hod/hod_routine_edit.html", {"form": form, "routine": routine})
 
-# ----------------- Teacher Routine -----------------
+# ----------------- Teacher: My Classes -----------------
 @login_required
-def teacher_routine_view(request):
+def teacher_classes(request):
     if request.user.role != "teacher":
         return redirect("index")
 
-    routines = ClassRoutine.objects.filter(
-        teacher=request.user
-    ).order_by("day_of_week", "start_time")
+    routines = (
+        ClassRoutine.objects
+        .filter(teacher=request.user)
+        .select_related("subject", "semester")
+        .order_by("day_of_week", "start_time")
+    )
 
-    return render(request, "routine/teacher_routine.html", {"routines": routines})
+    # Compute today's day code (mon..sun)
+    import datetime
+    today_code = DAY_CODES[datetime.date.today().weekday()]
+
+    return render(request, "teacher/classes.html", {
+        "routines": routines,
+        "today_code": today_code,
+    })

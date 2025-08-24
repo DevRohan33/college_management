@@ -1,0 +1,70 @@
+{% extends "teacher_base.html" %}
+{% block title %}Attendance Detail{% endblock %}
+{% block page_title %}{{ attendance.subject.name }} - Semester {{ attendance.semester.semester }} ({{ attendance.date }}){% endblock %}
+{% block content %}
+<div class="mb-3">
+  <a class="btn btn-outline-secondary" href="{% url 'teacher_subject_attendance_history' attendance.subject.id attendance.semester.id %}"><i class="fas fa-arrow-left me-2"></i>Back to Sessions</a>
+  <a class="btn btn-success" href="{% url 'export_class_attendance' attendance.id %}"><i class="fas fa-download me-2"></i>Export this session</a>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <div class="card" style="border-radius: 16px; border: 1px solid var(--border-color);">
+      <div class="card-body text-center">
+        <div class="h5">Present</div>
+        <div class="display-6 text-success">{{ present }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card" style="border-radius: 16px; border: 1px solid var(--border-color);">
+      <div class="card-body text-center">
+        <div class="h5">Absent</div>
+        <div class="display-6 text-danger">{{ absent }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card" style="border-radius: 16px; border: 1px solid var(--border-color);">
+      <div class="card-body text-center">
+        <div class="h5">Total</div>
+        <div class="display-6">{{ present|add:absent }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="border-radius: 16px; border: 1px solid var(--border-color);">
+  <div class="card-header">
+    <i class="fas fa-users me-2"></i>Entries
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Student</th>
+            <th>Registration</th>
+            <th>Status</th>
+            <th>Marked At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in entries %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ e.student.get_full_name }}</td>
+            <td>{{ e.student.registration_number }}</td>
+            <td>{{ e.status|title }}</td>
+            <td>{{ e.marked_at }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">No entries found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

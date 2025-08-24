@@ -1,0 +1,51 @@
+{% extends "teacher_base.html" %}
+{% block title %}Export Attendance{% endblock %}
+{% block page_title %}Export Attendance{% endblock %}
+{% block content %}
+<div class="card" style="border-radius: 16px; border: 1px solid var(--border-color);">
+  <div class="card-header">
+    <i class="fas fa-filter me-2"></i>Filter
+  </div>
+  <div class="card-body">
+    <form method="get">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label">Period</label>
+          <select class="form-select" name="period" id="period">
+            <option value="weekly" {% if period == 'weekly' %}selected{% endif %}>Weekly (last 7 days)</option>
+            <option value="monthly" {% if period == 'monthly' %}selected{% endif %}>Monthly (this month)</option>
+            <option value="custom" {% if period == 'custom' %}selected{% endif %}>Custom</option>
+          </select>
+        </div>
+        <div class="col-md-3 custom-range" {% if period != 'custom' %}style="display:none"{% endif %}>
+          <label class="form-label">Start</label>
+          <input type="date" class="form-control" name="start" value="{{ start|date:'Y-m-d' }}" />
+        </div>
+        <div class="col-md-3 custom-range" {% if period != 'custom' %}style="display:none"{% endif %}>
+          <label class="form-label">End</label>
+          <input type="date" class="form-control" name="end" value="{{ end|date:'Y-m-d' }}" />
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-primary w-100" type="submit"><i class="fas fa-eye me-2"></i>Preview</button>
+        </div>
+      </div>
+    </form>
+    <hr />
+    <div class="d-flex justify-content-between align-items-center">
+      <div>Sessions in range: <strong>{{ session_count }}</strong></div>
+      <div>
+        <a class="btn btn-success" href="?period={{ period }}{% if start %}&start={{ start|date:'Y-m-d' }}{% endif %}{% if end %}&end={{ end|date:'Y-m-d' }}{% endif %}&download=1">
+          <i class="fas fa-download me-2"></i>Download Excel
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('period').addEventListener('change', function() {
+    document.querySelectorAll('.custom-range').forEach(el => {
+      el.style.display = this.value === 'custom' ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}
