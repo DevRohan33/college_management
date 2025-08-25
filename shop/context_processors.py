@@ -15,5 +15,5 @@ def shop_counts(request):
     return {
         'cart_count': cart_count,
         'seller_pending_count': seller_pending_count,
-        'shop_total_count': total_count,  # ✅ Combined count
+        'shop_total_count': total_count,
     }

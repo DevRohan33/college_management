@@ -3,428 +3,222 @@
 
 {% block title %}Notices & Events{% endblock %}
 
-{% block extra_css %}
-<style>
-    .notices-container {
-        background: linear-gradient(135deg, #ffffffff 0%, #f6f6f6ff 100%);
-        min-height: calc(100vh - 100px);
-        padding: 30px 0;
-    }
-
-    .notices-header {
-        text-align: center;
-        margin-bottom: 40px;
-        color: black;
-        animation: fadeInDown 0.6s ease-out;
-    }
-
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .notices-header h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .notices-header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-        font-weight: 300;
-    }
-
-    .notices-grid {
-        display: grid;
-        gap: 25px;
-        animation: fadeInUp 0.8s ease-out;
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .notice-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 20px;
-    }
-
-    .notice-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.3s ease;
-    }
-
-    .notice-card:hover::before {
-        transform: scaleX(1);
-    }
-
-    .notice-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-    }
-
-    .notice-priority {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .priority-urgent {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: white;
-        animation: pulse 2s infinite;
-    }
-
-    .priority-important {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: white;
-    }
-
-    .priority-normal {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
-    }
-
-    .notice-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 15px;
-        margin-right: 100px;
-        line-height: 1.3;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .notice-icon {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        flex-shrink: 0;
-        margin-top: 2px;
-    }
-
-    .notice-description {
-        color: #64748b;
-        font-size: 1rem;
-        line-height: 1.6;
-        margin-bottom: 20px;
-        text-align: justify;
-    }
-
-    .notice-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 20px;
-        border-top: 1px solid #e2e8f0;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .notice-author {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.9rem;
-        color: #6b7280;
-    }
-
-    .author-avatar {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 0.8rem;
-    }
-
-    .notice-date {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.9rem;
-        color: #6b7280;
-        font-weight: 500;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 80px 20px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        animation: fadeInUp 0.8s ease-out;
-    }
-
-    .empty-icon {
-        font-size: 4rem;
-        color: #cbd5e1;
-        margin-bottom: 20px;
-        animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
-
-    .empty-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #64748b;
-        margin-bottom: 10px;
-    }
-
-    .empty-text {
-        color: #94a3b8;
-        font-size: 1rem;
-    }
-
-    .audience-tags {
-        margin: 15px 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .audience-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-        color: #4338ca;
-        border-radius: 15px;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-
-    .search-filter {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .search-input {
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 12px 45px 12px 20px;
-        font-size: 1rem;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.8);
-        transition: all 0.3s ease;
-    }
-
-    .search-input:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        outline: none;
-    }
-
-    .search-icon {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6b7280;
-        font-size: 1.1rem;
-    }
-
-    @media (max-width: 768px) {
-        .notices-header h1 {
-            font-size: 2.2rem;
-        }
-        
-        .notice-card {
-            padding: 20px;
-        }
-        
-        .notice-title {
-            font-size: 1.3rem;
-            margin-right: 0;
-            margin-bottom: 10px;
-        }
-        
-        .notice-priority {
-            position: static;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        
-        .notice-meta {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div>
-    <div class="container">
-        <!-- Header Section -->
-        <div class="notices-header">
-            <h1><i class="fas fa-bullhorn"></i> Notices & Events</h1>
-            <p>Stay updated with the latest announcements and important information</p>
-        </div>
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">📢 Notices & Events</h2>
+    </div>
 
-        <!-- Search/Filter Section -->
-        <div class="search-filter">
+    <!-- Search/Filter Section -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
             <div class="position-relative">
-                <input type="text" class="search-input" placeholder="Search notices..." id="noticeSearch">
-                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="form-control" placeholder="🔍 Search notices..." id="noticeSearch">
             </div>
-        </div>
-
-        <!-- Notices Grid -->
-        <div class="notices-grid">
-            {% for notice in notices %}
-            <div class="notice-card" data-title="{{ notice.title|lower }}" data-description="{{ notice.description|lower }}">
-                <!-- Priority Badge -->
-                {% if notice.priority %}
-                <div class="notice-priority priority-{{ notice.priority|default:'normal' }}">
-                    {% if notice.priority == 'urgent' %}
-                        <i class="fas fa-exclamation-triangle"></i> {{ notice.priority|title }}
-                    {% elif notice.priority == 'important' %}
-                        <i class="fas fa-star"></i> {{ notice.priority|title }}
-                    {% else %}
-                        <i class="fas fa-info-circle"></i> {{ notice.priority|title }}
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                <!-- Notice Content -->
-                <div class="notice-title">
-                    <div class="notice-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <span>{{ notice.title }}</span>
-                </div>
-
-                <!-- Audience Tags -->
-                {% if notice.audience %}
-                <div class="audience-tags">
-                    {% for audience in notice.audience %}
-                    <span class="audience-tag">
-                        {% if audience == 'students' %}
-                            <i class="fas fa-user-graduate"></i> Students
-                        {% elif audience == 'teachers' %}
-                            <i class="fas fa-chalkboard-teacher"></i> Teachers
-                        {% else %}
-                            <i class="fas fa-users"></i> {{ audience|title }}
-                        {% endif %}
-                    </span>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <div class="notice-description">
-                    {{ notice.description }}
-                </div>
-
-                <!-- Notice Meta Information -->
-                <div class="notice-meta">
-                    <div class="notice-author">
-                        <div class="author-avatar">
-                            {{ notice.created_by.first_name.0|default:notice.created_by.username.0|upper }}{{ notice.created_by.last_name.0|upper|default:'' }}
-                        </div>
-                        <div>
-                            <div style="font-weight: 600; color: #374151;">
-                                {{ notice.created_by.first_name|default:notice.created_by.username }} {{ notice.created_by.last_name|default:'' }}
-                            </div>
-                            <div style="font-size: 0.8rem;">
-                                {% if notice.created_by.groups.all.0.name == 'Teachers' %}
-                                    <i class="fas fa-chalkboard-teacher"></i> Teacher
-                                {% else %}
-                                    <i class="fas fa-user"></i> Admin
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="notice-date">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <div style="font-weight: 600;">{{ notice.created_at|timesince }} ago</div>
-                            <div style="font-size: 0.8rem; color: #9ca3af;">
-                                {{ notice.created_at|date:"M d, Y" }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <!-- Empty State -->
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-inbox"></i>
-                </div>
-                <div class="empty-title">No notices yet</div>
-                <div class="empty-text">Check back later for important announcements and updates</div>
-            </div>
-            {% endfor %}
         </div>
     </div>
+
+    <!-- Notices Grid -->
+    {% if notices %}
+    <div class="row">
+        {% for notice in notices %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 h-100 notice-card" 
+                 data-title="{{ notice.title|lower }}" 
+                 data-description="{{ notice.description|lower }}"
+                 style="cursor: pointer; transition: transform 0.2s;">
+                
+                <!-- Priority Badge -->
+                {% if notice.priority %}
+                <div class="card-header border-0 pb-2">
+                    <span class="badge priority-{{ notice.priority|default:'normal' }}">
+                        {% if notice.priority == 'urgent' %}
+                            🚨 {{ notice.priority|title }}
+                        {% elif notice.priority == 'important' %}
+                            ⭐ {{ notice.priority|title }}
+                        {% else %}
+                            ℹ️ {{ notice.priority|title }}
+                        {% endif %}
+                    </span>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <!-- Notice Title -->
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-bell text-primary me-2"></i>{{ notice.title }}
+                    </h5>
+
+                    <!-- Audience Tags -->
+                    {% if notice.audience %}
+                    <div class="mb-3">
+                        {% for audience in notice.audience %}
+                        <span class="badge bg-light text-dark me-1">
+                            {% if audience == 'students' %}
+                                👨‍🎓 Students
+                            {% elif audience == 'teachers' %}
+                                👩‍🏫 Teachers
+                            {% else %}
+                                👥 {{ audience|title }}
+                            {% endif %}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Notice Description -->
+                    <p class="card-text text-muted">{{ notice.description|truncatechars:120 }}</p>
+                    
+                    <!-- Author Info -->
+                    <p class="mb-1">
+                        <strong>By:</strong> {{ notice.created_by.first_name|default:notice.created_by.username }} {{ notice.created_by.last_name|default:'' }}
+                        {% if notice.created_by.groups.all.0.name == 'Teachers' %}
+                            <span class="badge bg-secondary ms-1">Teacher</span>
+                        {% else %}
+                            <span class="badge bg-info ms-1">Admin</span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <!-- Notice Footer -->
+                <div class="card-footer text-muted small border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>📅 {{ notice.created_at|date:"M d, Y" }}</span>
+                        <span>🕐 {{ notice.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+        <h4>No notices available yet</h4>
+        <p class="mb-0">Check back later for important announcements and updates ✅</p>
+    </div>
+    {% endif %}
+
+    <!-- No Results State (Hidden by default) -->
+    <div class="alert alert-warning text-center py-5" id="noResultsState" style="display: none;">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h4>No notices found</h4>
+        <p class="mb-0">Try searching with different keywords 🔍</p>
+    </div>
 </div>
+
+<style>
+/* Notice Card Hover Effect */
+.notice-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* Priority Badges */
+.priority-urgent {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    color: white !important;
+    animation: pulse 2s infinite;
+}
+
+.priority-important {
+    background: linear-gradient(135deg, #fd7e14, #e66100) !important;
+    color: white !important;
+}
+
+.priority-normal {
+    background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+    color: white !important;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+/* Search Input Styling */
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Card Styling */
+.card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.card-header {
+    background: transparent;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .notice-card:hover {
+        transform: none; /* Disable hover effects on mobile */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+    }
+    
+    .card-footer {
+        font-size: 0.8rem;
+    }
+    
+    .card-footer .d-flex {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+@media (max-width: 576px) {
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .card-text {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animation for filtered results */
+.notice-card.show {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -433,9 +227,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Search functionality
     const searchInput = document.getElementById('noticeSearch');
     const noticeCards = document.querySelectorAll('.notice-card');
+    const noResultsState = document.getElementById('noResultsState');
     
     searchInput.addEventListener('input', function() {
         const searchTerm = this.value.toLowerCase().trim();
+        let visibleCount = 0;
         
         noticeCards.forEach(card => {
             const title = card.dataset.title || '';
@@ -443,50 +239,35 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (title.includes(searchTerm) || description.includes(searchTerm)) {
                 card.style.display = 'block';
-                card.style.animation = 'fadeInUp 0.5s ease-out';
+                card.classList.add('show');
+                visibleCount++;
             } else {
                 card.style.display = 'none';
+                card.classList.remove('show');
             }
         });
         
-        // Show/hide empty state based on visible cards
-        const visibleCards = Array.from(noticeCards).filter(card => 
-            card.style.display !== 'none' && !card.classList.contains('empty-state')
-        );
-        
-        const emptyState = document.querySelector('.empty-state');
-        if (emptyState) {
-            emptyState.style.display = visibleCards.length === 0 && searchTerm !== '' ? 'block' : 'none';
+        // Show/hide no results state
+        if (searchTerm !== '' && visibleCount === 0) {
+            noResultsState.style.display = 'block';
+        } else {
+            noResultsState.style.display = 'none';
         }
     });
     
-    // Add stagger animation to notice cards
-    noticeCards.forEach((card, index) => {
-        if (!card.classList.contains('empty-state')) {
-            card.style.animationDelay = `${index * 0.1}s`;
-        }
-    });
-    
-    // Add scroll reveal effect
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-    
+    // Add click handlers for notice cards (if you want to add detailed view later)
     noticeCards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(card);
+        card.addEventListener('click', function() {
+            // You can add functionality to show full notice details in a modal
+            // For now, just a placeholder
+            console.log('Notice clicked:', this.dataset.title);
+        });
+    });
+    
+    // Add entrance animation delay
+    noticeCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('show');
     });
 });
 </script>

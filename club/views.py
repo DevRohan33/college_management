@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.db.models import Q, Count
 from django.core.paginator import Paginator
-from .models import Club, ClubMember,  ClubActivity, ClubEvent
+from .models import Club, ClubMember,  ClubActivity, ClubEvent , EventRSVP , ActivityLike, ActivityComment
 from django.utils.text import slugify
 from django import forms
 import json
@@ -16,6 +16,8 @@ from django.core.cache import cache
 from django.utils.timezone import now
 from django.conf import settings
 from .firebase_config import db
+from account.models import User
+from django.views.decorators.http import require_POST
 
 # ------------------ FORMS ------------------
 class ClubForm(forms.ModelForm):
@@ -59,7 +61,7 @@ def club_list(request):
     query = request.GET.get("q", "")
     clubs = (
         Club.objects.annotate(member_count=Count('memberships'))
-        .select_related('owner')
+        .select_related('created_by')
         .prefetch_related('memberships')
         .order_by('-created_at')
     )
@@ -214,6 +216,27 @@ def firebase_config(request, unique_id):
     }
     return JsonResponse(config)
 
+
+@login_required
+def club_chat(request, unique_id):
+    """Render the chat page for a specific club"""
+    club = get_object_or_404(Club, unique_id=unique_id)
+
+    # Ensure user is an active member
+    membership = ClubMember.objects.filter(
+        club=club, user=request.user, status="active"
+    ).first()
+    if not membership:
+        messages.error(request, "🚫 You must be a member to access the chat.")
+        return redirect("club:club_detail", unique_id=unique_id)
+
+    return render(request, "club/chat.html", {
+        "club": club,
+        "membership": membership,
+        "firebase_chat_enabled": True,
+    })
+
+# -------------------- Club Chat ------------------
 @login_required
 @require_http_methods(["POST"])
 def send_message(request, unique_id):
@@ -228,13 +251,14 @@ def send_message(request, unique_id):
 
     media_url = None
     if media_file:
-        # save file to Django media folder (or cloud)
         from django.core.files.storage import default_storage
         path = default_storage.save(f"chat_media/{media_file.name}", media_file)
         media_url = default_storage.url(path)
 
+    sender_name = request.user.first_name or request.user.username
+
     message_data = {
-        "sender": request.user.username,
+        "sender": sender_name,
         "message": message_text if message_text else (media_file.name if media_file else ""),
         "media_url": media_url,
         "created_at": timezone.now().isoformat()
@@ -263,8 +287,10 @@ def send_poll(request, unique_id):
     if not question or len(options) < 2:
         return JsonResponse({"error": "Poll must have at least 2 options"}, status=400)
 
+    sender_name = request.user.first_name or request.user.username
+
     poll_data = {
-        "sender": request.user.username,
+        "sender": sender_name,
         "type": "poll",
         "question": question,
         "options": {i: {"text": opt, "votes": {}} for i, opt in enumerate(options)},
@@ -291,8 +317,10 @@ def vote_poll(request, unique_id):
     message_id = data.get("message_id")
     option_index = str(data.get("option_index"))
 
+    sender_name = request.user.first_name or request.user.username
+
     ref = db.reference(f"clubs/{unique_id}/messages/{message_id}/options/{option_index}/votes")
-    ref.update({request.user.username: True})  # mark user voted
+    ref.update({sender_name: True})  # mark user voted
 
     return JsonResponse({"success": True})
 
@@ -311,18 +339,20 @@ def toggle_reaction(request, unique_id):
     message_id = data.get("message_id")
     emoji = data.get("emoji")
 
+    sender_name = request.user.first_name or request.user.username
+
     ref = db.reference(f"clubs/{unique_id}/messages/{message_id}/reactions/{emoji}")
     reactions = ref.get() or {}
 
-    if request.user.username in reactions:
-        # remove reaction
-        del reactions[request.user.username]
+    if sender_name in reactions:
+        del reactions[sender_name]
     else:
-        # add reaction
-        reactions[request.user.username] = True
+        reactions[sender_name] = True
 
     ref.set(reactions)
     return JsonResponse({"success": True, "emoji": emoji, "count": len(reactions)})
+
+
 @login_required
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -336,8 +366,10 @@ def typing_status(request, unique_id):
     data = json.loads(request.body)
     is_typing = data.get("is_typing", False)
 
+    sender_name = request.user.first_name or request.user.username
+
     from .firebase_config import db
-    ref = db.reference(f"clubs/{unique_id}/typing/{request.user.username}")
+    ref = db.reference(f"clubs/{unique_id}/typing/{sender_name}")
     if is_typing:
         ref.set({"typing": True, "timestamp": timezone.now().isoformat()})
     else:
@@ -364,7 +396,7 @@ def online_members(request, unique_id):
 
     return JsonResponse({"count": len(members_data), "members": members_data})
 
-#-------------------- Club Activities & Events ------------------
+#-------------------- Club Activities ------------------
 
 @login_required
 def club_activities(request, unique_id):
@@ -400,39 +432,246 @@ def club_activities(request, unique_id):
     })
 
 @login_required
+def like_activity(request, activity_id):
+    activity = get_object_or_404(ClubActivity, id=activity_id)
+
+    like, created = ActivityLike.objects.get_or_create(user=request.user, activity=activity)
+
+    if not created:
+        # already liked → unlike
+        like.delete()
+        messages.info(request, "👍 Like removed")
+    else:
+        messages.success(request, "❤️ You liked this activity")
+
+    return redirect("club:club_activities", unique_id=activity.club.unique_id)
+
+@login_required
+def comment_activity(request, activity_id):
+    activity = get_object_or_404(ClubActivity, id=activity_id)
+
+    if request.method == "POST":
+        comment_text = request.POST.get("comment", "").strip()
+        if comment_text.strip():
+            ActivityComment.objects.create(
+                user=request.user,
+                activity=activity,
+                content=comment_text
+            )
+            messages.success(request, "💬 Comment added")
+
+    return redirect("club:club_activities", unique_id=activity.club.unique_id)
+
+@login_required
+def delete_activity(request, activity_id):
+    activity = get_object_or_404(ClubActivity, id=activity_id)
+
+    membership = ClubMember.objects.filter(club=activity.club, user=request.user, status="active").first()
+    if not membership or membership.role not in ["owner", "admin", "moderator"]:
+        messages.error(request, "🚫 You don’t have permission to delete this activity.")
+        return redirect("club:club_activities", unique_id=activity.club.unique_id)
+
+    activity.delete()
+    messages.success(request, "🗑️ Activity deleted")
+    return redirect("club:club_activities", unique_id=activity.club.unique_id)
+
+#-------------------- Club Events ------------------
+@login_required
+@require_POST
+def rsvp_event(request, club_unique_id, event_id):
+    """Handle RSVP responses for events"""
+    try:
+        club = get_object_or_404(Club, unique_id=club_unique_id)
+        event = get_object_or_404(ClubEvent, id=event_id, club=club)
+        
+        # Check if user is a member of the club
+        if not ClubMember.objects.filter(club=club, user=request.user).exists():
+            return JsonResponse({'success': False, 'error': 'You must be a club member to RSVP'})
+        
+        data = json.loads(request.body)
+        response = data.get('response')
+        
+        if response not in ['yes', 'maybe', 'no']:
+            return JsonResponse({'success': False, 'error': 'Invalid RSVP response'})
+        
+        # Update or create RSVP
+        rsvp, created = EventRSVP.objects.update_or_create(
+            user=request.user,
+            event=event,
+            defaults={'response': response}
+        )
+        
+        # Get updated counts
+        counts = {
+            'yes': EventRSVP.objects.filter(event=event, response='yes').count(),
+            'maybe': EventRSVP.objects.filter(event=event, response='maybe').count(),
+            'no': EventRSVP.objects.filter(event=event, response='no').count(),
+        }
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'RSVP updated to {response}',
+            'counts': counts,
+            'user_response': response
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required
+@require_POST
+def edit_event(request, club_unique_id, event_id):
+    """Edit an existing event"""
+    try:
+        club = get_object_or_404(Club, unique_id=club_unique_id)
+        event = get_object_or_404(ClubEvent, id=event_id, club=club)
+
+        # Check membership
+        membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
+        if not (membership and membership.role in ["owner", "admin"] and event.created_by == request.user):
+            return JsonResponse({'success': False, 'error': 'Permission denied'})
+
+        data = json.loads(request.body)
+
+        if 'title' in data and data['title'].strip():
+            event.title = data['title'].strip()
+
+        if 'description' in data:
+            event.description = data['description']
+
+        if 'event_date' in data:
+            from datetime import datetime
+            try:
+                event_date = datetime.fromisoformat(data['event_date'].replace('Z', '+00:00'))
+                if event_date > timezone.now():
+                    event.event_date = event_date
+                else:
+                    return JsonResponse({'success': False, 'error': 'Event date must be in the future'})
+            except ValueError:
+                return JsonResponse({'success': False, 'error': 'Invalid date format'})
+
+        event.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Event updated successfully',
+            'event': {
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'event_date': event.event_date.isoformat(),
+            }
+        })
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required
+@require_POST
+def delete_event(request, club_unique_id, event_id):
+    """Delete an event"""
+    try:
+        club = get_object_or_404(Club, unique_id=club_unique_id)
+        event = get_object_or_404(ClubEvent, id=event_id, club=club)
+
+        membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
+        if not (membership and membership.role in ["owner", "admin"] and event.created_by == request.user):
+            return JsonResponse({'success': False, 'error': 'Permission denied'})
+
+        event_title = event.title
+        event.delete()
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Event \"{event_title}\" deleted successfully'
+        })
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required
+def get_event_rsvps(request, club_unique_id, event_id):
+    """Get RSVP counts and user's response for an event"""
+    try:
+        club = get_object_or_404(Club, unique_id=club_unique_id)
+        event = get_object_or_404(ClubEvent, id=event_id, club=club)
+        
+        counts = {
+            'yes': EventRSVP.objects.filter(event=event, response='yes').count(),
+            'maybe': EventRSVP.objects.filter(event=event, response='maybe').count(),
+            'no': EventRSVP.objects.filter(event=event, response='no').count(),
+        }
+        
+        user_rsvp = None
+        if request.user.is_authenticated:
+            try:
+                rsvp = EventRSVP.objects.get(event=event, user=request.user)
+                user_rsvp = rsvp.response
+            except EventRSVP.DoesNotExist:
+                pass
+        
+        return JsonResponse({
+            'success': True,
+            'counts': counts,
+            'user_response': user_rsvp
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+# Update your existing club_events view to include RSVP data
+@login_required
 def club_events(request, unique_id):
-    """Club events page"""
     club = get_object_or_404(Club, unique_id=unique_id)
-    
+
+    # Check membership
     membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
     if not membership:
-        messages.error(request, "🚫 You must be a member to view events.")
-        return redirect("club:club_detail", unique_id=unique_id)
+        messages.error(request, "You must be a club member to view events.")
+        return redirect('club:club_detail', unique_id=unique_id)
 
-    upcoming_events = ClubEvent.objects.filter(club=club, event_date__gte=timezone.now()).order_by('event_date')
-    past_events = ClubEvent.objects.filter(club=club, event_date__lt=timezone.now()).order_by('-event_date')[:10]
-    
-    event_form = EventForm()
-    is_admin = membership.role in ["owner", "admin", "moderator"]
+    is_admin = membership.role in ["owner", "admin"]
 
-    if request.method == 'POST' and is_admin:
-        event_form = EventForm(request.POST)
-        if event_form.is_valid():
-            event = event_form.save(commit=False)
+    now = timezone.now()
+    upcoming_events = ClubEvent.objects.filter(club=club, event_date__gt=now).order_by('event_date')
+    past_events = ClubEvent.objects.filter(club=club, event_date__lte=now).order_by('-event_date')[:5]
+
+    for event in upcoming_events:
+        event.rsvp_counts = {
+            'yes': EventRSVP.objects.filter(event=event, response='yes').count(),
+            'maybe': EventRSVP.objects.filter(event=event, response='maybe').count(),
+            'no': EventRSVP.objects.filter(event=event, response='no').count(),
+        }
+        try:
+            user_rsvp = EventRSVP.objects.get(event=event, user=request.user)
+            event.user_rsvp = user_rsvp.response
+        except EventRSVP.DoesNotExist:
+            event.user_rsvp = None
+
+    form = None
+    if is_admin and request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
             event.club = club
             event.created_by = request.user
             event.save()
-            messages.success(request, "📅 Event created!")
-            return redirect("club:club_events", unique_id=unique_id)
+            messages.success(request, 'Event created successfully!')
+            return redirect('club:club_events', unique_id=unique_id)
+    elif is_admin:
+        form = EventForm()
 
-    return render(request, "club/events.html", {
-        "club": club,
-        "upcoming_events": upcoming_events,
-        "past_events": past_events,
-        "form": event_form,
-        "is_admin": is_admin,
-        "membership": membership
-    })
+    context = {
+        'club': club,
+        'upcoming_events': upcoming_events,
+        'past_events': past_events,
+        'is_admin': is_admin,
+        'form': form,
+        'current_user': request.user,
+    }
+
+    return render(request, 'club/events.html', context)
+
 
 @login_required
 def approve_request(request, unique_id, member_id):

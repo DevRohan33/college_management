@@ -59,10 +59,12 @@ class ClubMember(models.Model):
     def __str__(self):
         return f"{self.user.username} in {self.club.name} ({self.role})"
 
+
+#------------------club activities & events models------------------
 class ClubActivity(models.Model):
     """Activity feed for posts/announcements"""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="activities")
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="activities")
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -71,6 +73,38 @@ class ClubActivity(models.Model):
 
     def __str__(self):
         return f"Activity in {self.club.name} by {self.created_by.username}"
+
+    @property
+    def like_count(self):
+        return self.likes.count()
+
+    @property
+    def comment_count(self):
+        return self.comments.count()
+
+
+class ActivityLike(models.Model):
+    """Likes on an activity"""
+    activity = models.ForeignKey(ClubActivity, on_delete=models.CASCADE, related_name="likes")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="activity_likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("activity", "user")  # a user can like only once
+
+    def __str__(self):
+        return f"{self.user.username} liked {self.activity.id}"
+
+
+class ActivityComment(models.Model):
+    """Comments on an activity"""
+    activity = models.ForeignKey(ClubActivity, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="activity_comments")
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on activity {self.activity.id}"
 
 class ClubEvent(models.Model):
     """Events inside a club"""
@@ -87,7 +121,27 @@ class ClubEvent(models.Model):
     def __str__(self):
         return f"{self.title} ({self.club.name})"
 
+class EventRSVP(models.Model):
+    RSVP_CHOICES = [
+        ('yes', 'Going'),
+        ('maybe', 'Maybe'),
+        ('no', "Can't Go"),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rsvps")
+    event = models.ForeignKey(ClubEvent, on_delete=models.CASCADE, related_name="rsvps")
+    response = models.CharField(max_length=10, choices=RSVP_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'event'], name="unique_user_event_rsvp")
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.event.title} ({self.response})"
+    
 #------------------club chat models------------------
 
 

@@ -1,5 +1,29 @@
 {% extends 'club_base.html' %}
+{% load static %}
 {% block title %}{{ club.name }} Events - ClubHub{% endblock %}
+
+{% block extra_css %}
+<style>
+.event-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--bs-primary);
+}
+.event-card:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.rsvp-button.active {
+    font-weight: bold;
+    position: relative;
+}
+.rsvp-button.active::after {
+    content: ' ✓';
+}
+.countdown-timer {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -43,15 +67,24 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="{{ form.title.id_for_label }}" class="form-label">Event Title *</label>
                                     {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="text-danger small">{{ form.title.errors.0 }}</div>
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="{{ form.event_date.id_for_label }}" class="form-label">Event Date & Time *</label>
                                     {{ form.event_date }}
+                                    {% if form.event_date.errors %}
+                                        <div class="text-danger small">{{ form.event_date.errors.0 }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="{{ form.description.id_for_label }}" class="form-label">Event Description</label>
                                 {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                                {% endif %}
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
@@ -81,20 +114,25 @@
                     </div>
                     <div class="card-body">
                         {% for event in upcoming_events %}
-                        <div class="event-card border rounded p-4 mb-4 {% if not forloop.last %}border-bottom{% endif %}">
+                        <div class="event-card border rounded p-4 mb-4" data-event-id="{{ event.id }}">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div class="flex-grow-1">
                                     <div class="d-flex align-items-center mb-2">
-                                        <h5 class="mb-0 me-3">{{ event.title }}</h5>
+                                        <h5 class="mb-0 me-3 event-title">{{ event.title }}</h5>
                                         <span class="badge bg-success">Upcoming</span>
+                                        {% if event.user_rsvp %}
+                                            <span class="badge bg-info ms-2">
+                                                {% if event.user_rsvp == 'yes' %}Going{% elif event.user_rsvp == 'maybe' %}Maybe{% else %}Can't Go{% endif %}
+                                            </span>
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="text-muted mb-2">
                                         <i class="fas fa-calendar me-2"></i>
-                                        {{ event.event_date|date:"l, F d, Y" }}
+                                        <span class="event-date">{{ event.event_date|date:"l, F d, Y" }}</span>
                                         <span class="mx-2">•</span>
                                         <i class="fas fa-clock me-2"></i>
-                                        {{ event.event_date|date:"g:i A" }}
+                                        <span class="event-time">{{ event.event_date|date:"g:i A" }}</span>
                                     </div>
                                     
                                     <div class="text-muted mb-3">
@@ -106,18 +144,22 @@
                                     </div>
                                     
                                     {% if event.description %}
-                                    <p class="text-muted mb-3">{{ event.description|linebreaks }}</p>
+                                    <p class="text-muted mb-3 event-description">{{ event.description|linebreaks }}</p>
                                     {% endif %}
                                     
                                     <!-- Event Countdown -->
                                     <div class="alert alert-info mb-3">
                                         <i class="fas fa-hourglass-half me-2"></i>
                                         <strong>Starts in:</strong> 
-                                        <span id="countdown-{{ event.id }}">{{ event.event_date|timeuntil }}</span>
+                                        <span class="countdown-timer" 
+                                              data-event-date="{{ event.event_date|date:'c' }}"
+                                              id="countdown-{{ event.id }}">
+                                            {{ event.event_date|timeuntil }}
+                                        </span>
                                     </div>
                                 </div>
                                 
-                                {% if is_admin and event.created_by == user %}
+                                {% if is_admin and event.created_by == current_user %}
                                 <div class="dropdown">
                                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle" 
                                             type="button" 
@@ -137,14 +179,17 @@
                             </div>
                             
                             <!-- Event Actions -->
-                            <div class="d-flex gap-2 flex-wrap">
-                                <button class="btn btn-primary btn-sm" onclick="rsvpEvent({{ event.id }}, 'yes')">
+                            <div class="d-flex gap-2 flex-wrap mb-3">
+                                <button class="btn btn-primary btn-sm rsvp-button {% if event.user_rsvp == 'yes' %}active{% endif %}" 
+                                        data-response="yes" onclick="rsvpEvent({{ event.id }}, 'yes', this)">
                                     <i class="fas fa-check me-1"></i>I'm Going
                                 </button>
-                                <button class="btn btn-outline-secondary btn-sm" onclick="rsvpEvent({{ event.id }}, 'maybe')">
+                                <button class="btn btn-outline-secondary btn-sm rsvp-button {% if event.user_rsvp == 'maybe' %}active{% endif %}" 
+                                        data-response="maybe" onclick="rsvpEvent({{ event.id }}, 'maybe', this)">
                                     <i class="fas fa-question me-1"></i>Maybe
                                 </button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="rsvpEvent({{ event.id }}, 'no')">
+                                <button class="btn btn-outline-danger btn-sm rsvp-button {% if event.user_rsvp == 'no' %}active{% endif %}" 
+                                        data-response="no" onclick="rsvpEvent({{ event.id }}, 'no', this)">
                                     <i class="fas fa-times me-1"></i>Can't Go
                                 </button>
                                 <button class="btn btn-outline-info btn-sm" onclick="shareEvent({{ event.id }})">
@@ -153,12 +198,12 @@
                             </div>
                             
                             <!-- RSVP Summary -->
-                            <div class="mt-3 p-3 bg-light rounded">
+                            <div class="mt-3 p-3 bg-light rounded" id="rsvp-summary-{{ event.id }}">
                                 <small class="text-muted">
                                     <i class="fas fa-users me-2"></i>
-                                    <span class="text-success">0 Going</span> • 
-                                    <span class="text-warning">0 Maybe</span> • 
-                                    <span class="text-danger">0 Can't Go</span>
+                                    <span class="text-success rsvp-count-yes">{{ event.rsvp_counts.yes }} Going</span> • 
+                                    <span class="text-warning rsvp-count-maybe">{{ event.rsvp_counts.maybe }} Maybe</span> • 
+                                    <span class="text-danger rsvp-count-no">{{ event.rsvp_counts.no }} Can't Go</span>
                                 </small>
                             </div>
                         </div>
@@ -274,12 +319,51 @@
     </div>
 </div>
 
+<!-- Edit Event Modal -->
+<div class="modal fade" id="editEventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>Edit Event
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editEventForm">
+                    <div class="mb-3">
+                        <label for="editEventTitle" class="form-label">Event Title *</label>
+                        <input type="text" class="form-control" id="editEventTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEventDate" class="form-label">Event Date & Time *</label>
+                        <input type="datetime-local" class="form-control" id="editEventDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEventDescription" class="form-label">Event Description</label>
+                        <textarea class="form-control" id="editEventDescription" rows="4"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEventChanges()">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% block extra_js %}
 <script>
+let currentEditEventId = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Update countdowns every minute
+    updateCountdowns();
     setInterval(updateCountdowns, 60000);
-    
+
     // Set minimum date for event creation to today
     const eventDateInput = document.querySelector('#id_event_date');
     if (eventDateInput) {
@@ -287,70 +371,170 @@ document.addEventListener('DOMContentLoaded', function() {
         const minDate = now.toISOString().slice(0, 16);
         eventDateInput.min = minDate;
     }
+
+    // Set minimum date for edit modal
+    const editEventDate = document.querySelector('#editEventDate');
+    if (editEventDate) {
+        const now = new Date();
+        const minDate = now.toISOString().slice(0, 16);
+        editEventDate.min = minDate;
+    }
 });
 
 function updateCountdowns() {
-    // Update countdown timers for events
-    const countdownElements = document.querySelectorAll('[id^="countdown-"]');
+    const countdownElements = document.querySelectorAll('.countdown-timer');
     countdownElements.forEach(element => {
-        // This would calculate and update the countdown
-        // Implementation depends on your specific needs
+        const eventDate = new Date(element.dataset.eventDate);
+        const now = new Date();
+        const timeDiff = eventDate.getTime() - now.getTime();
+
+        if (timeDiff > 0) {
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            let countdownText = '';
+            if (days > 0) {
+                countdownText = `${days} day${days !== 1 ? 's' : ''}, ${hours} hr, ${minutes} min`;
+            } else if (hours > 0) {
+                countdownText = `${hours} hr, ${minutes} min`;
+            } else if (minutes > 0) {
+                countdownText = `${minutes} min, ${seconds} sec`;
+            } else {
+                countdownText = `${seconds} sec`;
+            }
+
+            element.textContent = countdownText;
+        } else {
+            element.textContent = "Event Started";
+            element.classList.add("text-danger");
+        }
     });
 }
 
-// RSVP to event
-function rsvpEvent(eventId, response) {
-    // This would make an AJAX request to update RSVP status
-    alert(`RSVP feature coming soon! You selected: ${response}`);
+// ✅ RSVP to event
+function rsvpEvent(eventId, response, btn) {
+    fetch("{% url 'club:rsvp_event' club.unique_id 0 %}".replace("0", eventId), {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ response })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Update button states
+            btn.closest(".event-card").querySelectorAll(".rsvp-button").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // Update counts
+            const summary = document.getElementById(`rsvp-summary-${eventId}`);
+            summary.querySelector(".rsvp-count-yes").textContent = `${data.counts.yes} Going`;
+            summary.querySelector(".rsvp-count-maybe").textContent = `${data.counts.maybe} Maybe`;
+            summary.querySelector(".rsvp-count-no").textContent = `${data.counts.no} Can't Go`;
+        } else {
+            alert(data.error || "Failed to RSVP");
+        }
+    });
 }
 
-// Share event
-function shareEvent(eventId) {
-    const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
-    const shareText = `Check out this event from {{ club.name }}!`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'Club Event - {{ club.name }}',
-            text: shareText,
-            url: clubUrl
-        });
-    } else {
-        navigator.clipboard.writeText(clubUrl).then(() => {
-            alert('Event link copied to clipboard!');
-        });
-    }
-}
-
-// Edit event
+// ✅ Edit event
 function editEvent(eventId) {
-    alert('Edit event feature coming soon!');
+    currentEditEventId = eventId;
+
+    const card = document.querySelector(`.event-card[data-event-id="${eventId}"]`);
+    document.getElementById("editEventTitle").value = card.querySelector(".event-title").textContent.trim();
+    document.getElementById("editEventDate").value = new Date(card.querySelector(".countdown-timer").dataset.eventDate)
+        .toISOString().slice(0,16);
+    document.getElementById("editEventDescription").value = card.querySelector(".event-description")?.textContent.trim() || "";
+
+    new bootstrap.Modal(document.getElementById("editEventModal")).show();
 }
 
-// Delete event
+function saveEventChanges() {
+    const title = document.getElementById("editEventTitle").value;
+    const event_date = document.getElementById("editEventDate").value;
+    const description = document.getElementById("editEventDescription").value;
+
+    fetch("{% url 'club:edit_event' club.unique_id 0 %}".replace("0", currentEditEventId), {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ title, event_date, description })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // reload page to reflect changes
+        } else {
+            alert(data.error || "Failed to update event");
+        }
+    });
+}
+
+// ✅ Delete event
 function deleteEvent(eventId) {
-    if (confirm('Are you sure you want to delete this event?')) {
-        alert('Delete event feature coming soon!');
-    }
+    if (!confirm("Are you sure you want to delete this event?")) return;
+
+    fetch("{% url 'club:delete_event' club.unique_id 0 %}".replace("0", eventId), {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || "Failed to delete event");
+        }
+    });
 }
 
-// Share club
-function shareClub() {
-    const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
-    const shareText = `Check out this club: {{ club.name }} ({{ club.unique_id }})`;
-    
+// ✅ Share event
+function shareEvent(eventId) {
+    const eventCard = document.querySelector(`.event-card[data-event-id="${eventId}"]`);
+    const title = eventCard.querySelector(".event-title").textContent;
+    const clubUrl = window.location.href + `#event-${eventId}`;
+    const shareText = `Check out this event from {{ club.name }}: ${title}`;
+
     if (navigator.share) {
         navigator.share({
-            title: '{{ club.name }} - ClubHub',
+            title: `Club Event - {{ club.name }}`,
             text: shareText,
             url: clubUrl
         });
     } else {
         navigator.clipboard.writeText(clubUrl).then(() => {
-            alert('Club link copied to clipboard!');
+            alert("Event link copied to clipboard!");
+        });
+    }
+}
+
+// ✅ Share club
+function shareClub() {
+    const clubUrl = window.location.origin + "{% url 'club:club_detail' club.unique_id %}";
+    const shareText = `Check out this club: {{ club.name }} ({{ club.unique_id }})`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: "{{ club.name }} - ClubHub",
+            text: shareText,
+            url: clubUrl
+        });
+    } else {
+        navigator.clipboard.writeText(clubUrl).then(() => {
+            alert("Club link copied to clipboard!");
         });
     }
 }
 </script>
+
 {% endblock %}
 {% endblock %}

@@ -24,7 +24,6 @@ SECRET_KEY = 'django-insecure-!u(vw$oo!ux0*o8^d8vz&s4k@xb!riw#%bkb29rzmj2xhmg-z%
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,7 +44,6 @@ INSTALLED_APPS = [
     'hod',
     'portal_admin',
     'assignment',
-    "channels",
     'club',
     'widget_tweaks',
     'teacher',
@@ -56,15 +54,11 @@ AUTH_USER_MODEL = 'account.User'
 
 ASGI_APPLICATION = "college_portal.asgi.application"
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            # Use REDIS_URL if set (e.g., redis://:password@hostname:6379/0); fallback to local
-            "hosts": [os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")],
-        },
-    },
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#     },
+# }
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -84,8 +78,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'college_portal.urls'
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://college-management-d16p.onrender.com',
-    'http://127.0.0.1:8000'
+    'https://college-management-d16p.onrender.com'
 ]
 ALLOWED_HOSTS = ['*']
 
@@ -166,8 +159,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'parveagr@gmail.com'
-EMAIL_HOST_PASSWORD = 'qisqhcvdaxftqndq'
+EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
 # settings.py
 FIREBASE_CONFIG = {

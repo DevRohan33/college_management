@@ -9,9 +9,22 @@
     <div class="row">
         {% for assignment in assignments %}
         <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm border-0 h-100 assignment-card" 
+            <div class="card shadow-sm border-0 h-100 assignment-card 
+                        {% if assignment.submission %}submitted-assignment{% endif %}
+                        {% if assignment.submit_last_date < now and not assignment.submission %}overdue-assignment{% endif %}"
+                 {% if not assignment.submission %}
                  onclick="window.location.href='{% url 'submit_assignment' assignment.id %}'"
-                 style="cursor: pointer; transition: transform 0.2s;">
+                 style="cursor: pointer; transition: transform 0.2s;"
+                 {% else %}
+                 style="cursor: not-allowed; opacity: 0.8; transition: transform 0.2s;"
+                 {% endif %}>
+                
+                <!-- Submitted Overlay -->
+                {% if assignment.submission %}
+                <div class="submitted-overlay">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                {% endif %}
                 
                 <div class="card-body">
                     <h5 class="card-title">{{ assignment.title }}</h5>
@@ -29,6 +42,11 @@
                     <div class="mt-2">
                         {% if assignment.submission %}
                             <span class="badge bg-success">✅ Submitted</span>
+                            {% if assignment.submission.submitted_at %}
+                            <div class="mt-1 small text-muted">
+                                Submitted: {{ assignment.submission.submitted_at|date:"M d, Y H:i" }}
+                            </div>
+                            {% endif %}
                         {% else %}
                             {% if assignment.submit_last_date < now %}
                                 <span class="badge bg-danger">❌ Overdue</span>
@@ -36,7 +54,6 @@
                                 <span class="badge bg-primary">⏳ Pending</span>
                             {% endif %}
                         {% endif %}
-                                            
                     </div>
                 </div>
                 
@@ -53,9 +70,183 @@
 </div>
 
 <style>
+/* Default assignment card hover */
 .assignment-card:hover {
     transform: scale(1.03);
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
+
+/* Submitted assignment styles */
+.submitted-assignment {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #28a745 !important;
+    position: relative;
+}
+
+.submitted-assignment:hover {
+    transform: none !important;
+    box-shadow: 0 2px 10px rgba(40, 167, 69, 0.2) !important;
+}
+
+.submitted-assignment .card-title {
+    color: #495057;
+}
+
+/* Submitted overlay icon */
+.submitted-overlay {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #28a745;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Overdue assignment styles */
+.overdue-assignment {
+    border: 2px solid #dc3545 !important;
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+}
+
+.overdue-assignment:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.2);
+}
+
+/* Pending assignment styles */
+.assignment-card:not(.submitted-assignment):not(.overdue-assignment) {
+    border: 2px solid #007bff !important;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+}
+
+.assignment-card:not(.submitted-assignment):not(.overdue-assignment):hover {
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .assignment-card:hover {
+        transform: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .submitted-assignment:hover {
+        transform: none !important;
+        box-shadow: 0 2px 10px rgba(40, 167, 69, 0.2) !important;
+    }
+    
+    .overdue-assignment:hover {
+        transform: none;
+        box-shadow: 0 2px 10px rgba(220, 53, 69, 0.2);
+    }
+    
+    .submitted-overlay {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+        top: 10px;
+        right: 10px;
+    }
+}
+
+/* Tooltip for submitted assignments */
+.submitted-assignment::after {
+    content: "Assignment already submitted - Cannot be reopened";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 1000;
+    margin-bottom: 5px;
+}
+
+.submitted-assignment::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+
+.submitted-assignment:hover::after,
+.submitted-assignment:hover::before {
+    opacity: 1;
+}
+
+/* Animation for status badges */
+.badge {
+    transition: all 0.3s ease;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+}
+
+.bg-danger {
+    background: linear-gradient(135deg, #dc3545, #e74c3c) !important;
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click prevention for submitted assignments
+    const submittedCards = document.querySelectorAll('.submitted-assignment');
+    
+    submittedCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Optional: Show a toast or alert
+            // You can uncomment this if you want to show a message
+            /*
+            const toast = document.createElement('div');
+            toast.className = 'alert alert-info position-fixed';
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            toast.innerHTML = '<i class="fas fa-info-circle me-2"></i>This assignment has already been submitted and cannot be reopened.';
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+            */
+        });
+    });
+    
+    // Add visual feedback on hover for non-clickable cards
+    submittedCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'none';
+        });
+    });
+});
+</script>
 {% endblock %}

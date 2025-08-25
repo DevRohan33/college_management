@@ -9,9 +9,6 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
-  <!-- Emoji Picker -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.css" />
-  
   <style>
     :root {
       --brand-gradient: linear-gradient(45deg, #6366f1, #8b5cf6);
@@ -58,11 +55,28 @@
       padding: 20px;
       margin-bottom: 20px;
       border: 1px solid #e2e8f0;
+      scroll-behavior: smooth;
+    }
+
+    .chat-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .chat-container::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    .chat-container::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
     }
     
     .chat-message {
       margin-bottom: 20px;
       animation: slideInUp 0.3s ease;
+      position: relative;
     }
     
     .chat-message.own {
@@ -76,12 +90,12 @@
       border-radius: 20px;
       position: relative;
       word-wrap: break-word;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     
     .message-bubble.other {
       background: white;
       color: #374151;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       border-bottom-left-radius: 5px;
     }
     
@@ -96,6 +110,19 @@
       opacity: 0.7;
       margin-bottom: 5px;
     }
+
+    .member-avatar {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+    }
     
     .chat-input-container {
       background: white;
@@ -103,6 +130,37 @@
       padding: 15px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       border: 1px solid #e2e8f0;
+      position: relative;
+    }
+
+    .input-group {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .input-group .form-control {
+      border: none;
+      box-shadow: none;
+      padding: 12px 16px;
+      background: #f8f9fa;
+    }
+
+    .input-group .form-control:focus {
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .input-group .btn {
+      border: none;
+      background: #f8f9fa;
+      color: #6c757d;
+      transition: all 0.2s;
+    }
+
+    .input-group .btn:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateY(-1px);
     }
     
     @keyframes slideInUp {
@@ -146,99 +204,103 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-    }
-
-    /* Buttons */
-    .btn {
-      border-radius: 0.75rem;
-    }
-    .btn-lg {
-      padding: 0.75rem 1.5rem;
-    }
-
-    /* Emoji Button */
-    .emoji-btn {
-      background: transparent;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .emoji-btn:hover {
-      transform: scale(1.2);
-    }
 
     /* Poll Styling */
     .poll-container {
-      background: white;
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 12px;
       padding: 15px;
-      margin-bottom: 15px;
+      margin: 10px 0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 1px solid #e9ecef;
     }
+
+    .poll-question {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #2d3748;
+      font-size: 1rem;
+    }
+
     .poll-option {
-      padding: 8px 12px;
+      padding: 12px 16px;
       margin: 8px 0;
       border-radius: 8px;
       background: #f8f9fa;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-    .poll-option:hover {
-      background: #e9ecef;
-    }
-    .poll-progress {
-      height: 8px;
-      border-radius: 4px;
-      background: #e9ecef;
+      transition: all 0.2s;
+      border: 1px solid #e9ecef;
+      position: relative;
       overflow: hidden;
     }
-    .poll-progress-bar {
-      height: 100%;
+
+    .poll-option:hover {
+      background: #e9ecef;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .poll-option.voted {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: var(--primary-color);
+    }
+
+    .poll-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
       background: var(--primary-color);
-      border-radius: 4px;
+      border-radius: 0 0 8px 8px;
+      transition: width 0.3s ease;
     }
 
-    /* Emoji Picker */
-    .emoji-picker-container {
-      position: absolute;
-      bottom: 70px;
-      right: 20px;
-      z-index: 1000;
-      display: none;
+    .poll-stats {
+      font-size: 0.8rem;
+      color: #6c757d;
+      margin-top: 10px;
+      text-align: center;
     }
 
-    /* Message Actions */
-    .message-actions {
-      position: absolute;
-      right: 10px;
-      top: -20px;
-      background: white;
+    /* Reactions */
+    .message-reactions {
+      margin-top: 8px;
+    }
+
+    .reaction-btn {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #e9ecef;
       border-radius: 20px;
-      padding: 5px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      display: none;
+      padding: 4px 8px;
+      margin: 2px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .chat-message:hover .message-actions {
-      display: block;
+
+    .reaction-btn:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .reaction-btn.active {
+      background: var(--primary-color);
+      color: white;
     }
 
     /* Typing Indicator */
     .typing-indicator {
       background-color: #E6E7ED;
-      will-change: transform;
       width: auto;
-      border-radius: 50px;
+      border-radius: 20px;
       padding: 10px 15px;
-      display: table;
-      margin: 0 auto;
-      position: relative;
-      animation: 2s bulge infinite ease-out;
       display: none;
+      margin: 10px 0;
+      position: relative;
+      animation: slideInUp 0.3s ease;
     }
+
     .typing-indicator span {
       height: 8px;
       width: 8px;
@@ -249,25 +311,98 @@
       border-radius: 50%;
       opacity: 0.4;
     }
-    .typing-indicator span:nth-of-type(1) {
-      animation: 1s blink infinite 0.3333s;
-    }
-    .typing-indicator span:nth-of-type(2) {
-      animation: 1s blink infinite 0.6666s;
-    }
-    .typing-indicator span:nth-of-type(3) {
-      animation: 1s blink infinite 0.9999s;
-    }
+
+    .typing-indicator span:nth-of-type(1) { animation: 1s blink infinite 0.3333s; }
+    .typing-indicator span:nth-of-type(2) { animation: 1s blink infinite 0.6666s; }
+    .typing-indicator span:nth-of-type(3) { animation: 1s blink infinite 0.9999s; }
 
     @keyframes blink {
-      50% {
-        opacity: 1;
-      }
+      50% { opacity: 1; }
     }
-    @keyframes bulge {
-      50% {
-        transform: scale(1.05);
-      }
+
+    /* Media Messages */
+    .media-message {
+      max-width: 300px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .media-message img, .media-message video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Empty Chat State */
+    .empty-chat {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #6c757d;
+    }
+
+    .empty-chat i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Quick Emoji Panel */
+    .quick-emoji-panel {
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border-radius: 25px;
+      padding: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 1000;
+    }
+
+    .quick-emoji {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .quick-emoji:hover {
+      transform: scale(1.2);
+      background: #f8f9fa;
+    }
+
+    /* File Upload Preview */
+    .file-preview {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .file-preview img {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 8px;
+    }
+
+    /* Character counter */
+    .char-counter {
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    .char-counter.warning {
+      color: var(--warning-color);
+    }
+
+    .char-counter.danger {
+      color: var(--danger-color);
     }
 
     /* Responsive adjustments */
@@ -278,10 +413,17 @@
       .message-bubble {
         max-width: 85%;
       }
+      .chat-header h4 {
+        font-size: 1.1rem;
+      }
+      .chat-header .btn {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+      }
     }
   </style>
-
 </head>
+
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light">
@@ -297,31 +439,28 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}" href="{% url 'student_dashboard' %}">
+            <a class="nav-link" href="{% url 'student_dashboard' %}">
               <i class="fas fa-home me-1"></i>Home
             </a>
           </li>
-
           <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'club_list' %}active{% endif %}" href="{% url 'club:club_list' %}">
+            <a class="nav-link" href="{% url 'club:club_list' %}">
               <i class="fas fa-users me-1"></i>All Clubs
             </a>
           </li>
         </ul>
 
-        <!-- Right menu -->
         <ul class="navbar-nav">
           {% if user.is_authenticated %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                <div class="member-avatar me-2">
                   {% if user.student_profile.profile_image %}
                     <img src="{{ user.student_profile.profile_image.url }}" 
                          alt="{{ user.get_full_name|default:user.username }}" 
-                         class="rounded-circle" 
-                         style="width: 30px; height: 30px; object-fit: cover;">
+                         style="width: 30px; height: 30px; object-fit: cover; border-radius: 50%;">
                   {% else %}
-                    <i class="fas fa-user"></i>
+                    {{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
                   {% endif %}
                 </div>
                 {{ user.username }}
@@ -352,8 +491,8 @@
         <!-- Chat Header -->
         <div class="card mb-4">
           <div class="chat-header">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+              <div class="mb-2 mb-md-0">
                 <h4 class="mb-1">
                   <i class="fas fa-comments me-2"></i>{{ club.name }} Chat
                 </h4>
@@ -363,9 +502,9 @@
                   <span id="online-count" class="badge bg-light text-dark ms-2">0 online</span>
                 </p>
               </div>
-              <div class="d-flex gap-2">
+              <div class="d-flex flex-wrap gap-2">
                 <a href="{% url 'club:club_detail' club.unique_id %}" class="btn btn-light btn-sm">
-                  <i class="fas fa-arrow-left me-1"></i>Back to Club
+                  <i class="fas fa-arrow-left me-1"></i>Back
                 </a>
                 <a href="{% url 'club:club_activities' club.unique_id %}" class="btn btn-light btn-sm">
                   <i class="fas fa-bullhorn me-1"></i>Activities
@@ -382,101 +521,39 @@
         <div class="card">
           <div class="card-body p-0">
             <div id="chat-messages" class="chat-container">
+              <!-- Empty state -->
+              <div id="empty-chat" class="empty-chat">
+                <i class="fas fa-comments"></i>
+                <h5>No messages yet</h5>
+                <p>Be the first to start the conversation! 🎉</p>
+              </div>
+              
               <!-- Typing Indicator -->
               <div id="typing-indicator" class="typing-indicator">
                 <span></span>
                 <span></span>
                 <span></span>
+                <span id="typing-text" style="margin-left: 10px; font-size: 0.8rem;">Someone is typing...</span>
               </div>
-              
-              {% for message in messages %}
-              <div class="chat-message {% if message.sender == user %}own{% endif %}" data-message-id="{{ message.id }}">
-                {% if message.sender != user %}
-                  <div class="message-info">
-                    <div class="member-avatar d-inline-block me-2" style="width: 30px; height: 30px;">
-                      {% if message.sender.student_profile.profile_image %}
-                        <img src="{{ message.sender.student_profile.profile_image.url }}" 
-                             alt="{{ message.sender.get_full_name|default:message.sender.username }}" 
-                             class="rounded-circle" 
-                             style="width: 100%; height: 100%; object-fit: cover;">
-                      {% else %}
-                        <div class="bg-secondary text-white d-flex justify-content-center align-items-center rounded-circle"
-                             style="width: 30px; height: 30px; font-size: 12px;">
-                          {{ message.sender.first_name|slice:":1"|upper }}{{ message.sender.last_name|slice:":1"|upper }}
-                        </div>
-                      {% endif %}
-                    </div>
-                    <strong>{{ message.sender.username }}</strong>
-                    <span class="text-muted ms-1">{{ message.created_at|date:"H:i" }}</span>
-                  </div>
-                {% else %}
-                  <div class="message-info">
-                    <span class="text-muted">{{ message.created_at|date:"H:i" }}</span>
-                    <strong class="ms-1">You</strong>
-                  </div>
-                {% endif %}
-                
-                <div class="message-bubble {% if message.sender == user %}own{% else %}other{% endif %}">
-                  {% if message.is_poll %}
-                  <div class="poll-container" data-message-id="{{ message.id }}">
-                    <h6>{{ message.message|cut:"POLL: " }}</h6>
-                    {% for option in message.poll_options.all %}
-                      <div class="poll-option" data-option-id="{{ option.id }}">
-                        <div class="d-flex justify-content-between">
-                          <span>{{ option.option_text }}</span>
-                          <span class="badge bg-light text-dark">{{ option.votes }} votes</span>
-                        </div>
-                        <div class="poll-progress mt-1">
-                          <div class="poll-progress-bar" style="width: 
-                            {% if message.total_votes %}{{ option.votes|floatformat:0|divisibleby:message.total_votes }}%{% else %}0%{% endif %}">
-                          </div>
-                        </div>
-                      </div>
-                    {% endfor %}
-                    <small class="text-muted">Total votes: {{ message.poll_options.count }}</small>
-                  </div>
-                {% else %}
-                  {{ message.message }}
-                {% endif %}
-                
-                </div>
-                
-                <!-- Message Actions -->
-                <div class="message-actions">
-                  <button class="btn btn-sm btn-light react-btn" data-message-id="{{ message.id }}">
-                    <i class="far fa-smile"></i>
-                  </button>
-                  <button class="btn btn-sm btn-light reply-btn" data-message-id="{{ message.id }}">
-                    <i class="fas fa-reply"></i>
-                  </button>
-                </div>
-              </div>
-              {% empty %}
-              <div class="text-center py-5">
-                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No messages yet</h5>
-                <p class="text-muted">Be the first to start the conversation! 🎉</p>
-              </div>
-              {% endfor %}
             </div>
 
-            <!-- Reactions -->
-            <div class="reactions mt-1" id="reactions-{{ message.id }}">
-              {% for reaction in message.reactions.all %}
-                <button class="btn btn-light btn-sm reaction-btn" 
-                        data-message-id="{{ message.id }}" 
-                        data-emoji="{{ reaction.emoji }}">
-                  {{ reaction.emoji }} <span class="badge bg-secondary">{{ reaction.count }}</span>
+            <!-- File Preview -->
+            <div id="file-preview" class="file-preview">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold">File to upload:</span>
+                <button type="button" class="btn btn-sm btn-outline-danger" id="remove-file">
+                  <i class="fas fa-times"></i>
                 </button>
-              {% endfor %}
+              </div>
+              <div id="preview-content"></div>
             </div>
 
             <!-- Chat Input -->
-            <div class="chat-input-container position-relative">
-              <form id="chat-form" method="post">
+            <div class="chat-input-container">
+              <form id="chat-form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="input-group">
-                  <button type="button" class="btn btn-light emoji-btn" id="emoji-button">
+                  <button type="button" class="btn" id="emoji-button" title="Add emoji">
                     <i class="far fa-smile"></i>
                   </button>
                   <input 
@@ -487,30 +564,34 @@
                     autocomplete="off"
                     maxlength="500"
                   >
-                  <button type="button" class="btn btn-light" id="attach-button">
+                  <input type="file" id="file-input" accept="image/*,video/*" style="display: none;">
+                  <button type="button" class="btn" id="attach-button" title="Attach file">
                     <i class="fas fa-paperclip"></i>
                   </button>
-                  <button type="button" class="btn btn-light" id="poll-button" data-bs-toggle="modal" data-bs-target="#pollModal">
+                  <button type="button" class="btn" id="poll-button" data-bs-toggle="modal" data-bs-target="#pollModal" title="Create poll">
                     <i class="fas fa-chart-pie"></i>
                   </button>
-                  <button type="submit" class="btn btn-primary">
+                  <button type="submit" class="btn btn-primary" id="send-button">
                     <i class="fas fa-paper-plane"></i>
                   </button>
                 </div>
                 <div class="d-flex justify-content-between mt-2">
                   <small class="text-muted">
                     <i class="fas fa-info-circle me-1"></i>
-                    Press Enter to send • Max 500 characters
+                    Press Enter to send
                   </small>
-                  <small class="text-muted">
-                    <span id="char-count">0</span>/500
-                  </small>
+                  <small class="char-counter" id="char-count">0/500</small>
                 </div>
               </form>
               
-              <!-- Emoji Picker -->
-              <div class="emoji-picker-container">
-                <emoji-picker id="emoji-picker"></emoji-picker>
+              <!-- Quick Emoji Panel -->
+              <div class="quick-emoji-panel" id="quick-emoji-panel">
+                <button class="quick-emoji" data-emoji="👍">👍</button>
+                <button class="quick-emoji" data-emoji="❤️">❤️</button>
+                <button class="quick-emoji" data-emoji="😂">😂</button>
+                <button class="quick-emoji" data-emoji="😮">😮</button>
+                <button class="quick-emoji" data-emoji="😢">😢</button>
+                <button class="quick-emoji" data-emoji="🎉">🎉</button>
               </div>
             </div>
           </div>
@@ -549,41 +630,46 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="pollModalLabel">Create Poll</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="pollModalLabel">
+            <i class="fas fa-chart-pie me-2"></i>Create Poll
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <form id="poll-form">
             <div class="mb-3">
               <label for="poll-question" class="form-label">Poll Question</label>
-              <input type="text" class="form-control" id="poll-question" placeholder="Ask a question...">
+              <input type="text" class="form-control" id="poll-question" placeholder="What would you like to ask?" maxlength="200">
             </div>
             <div id="poll-options">
               <div class="mb-2 option-row">
                 <div class="input-group">
-                  <input type="text" class="form-control" name="poll-option" placeholder="Option 1">
-                  <button type="button" class="btn btn-danger remove-option" disabled>
+                  <input type="text" class="form-control poll-option-input" placeholder="Option 1" maxlength="100">
+                  <button type="button" class="btn btn-outline-danger remove-option" disabled>
                     <i class="fas fa-times"></i>
                   </button>
                 </div>
               </div>
               <div class="mb-2 option-row">
                 <div class="input-group">
-                  <input type="text" class="form-control" name="poll-option" placeholder="Option 2">
-                  <button type="button" class="btn btn-danger remove-option">
+                  <input type="text" class="form-control poll-option-input" placeholder="Option 2" maxlength="100">
+                  <button type="button" class="btn btn-outline-danger remove-option">
                     <i class="fas fa-times"></i>
                   </button>
                 </div>
               </div>
             </div>
-            <button type="button" id="add-option" class="btn btn-sm btn-secondary mt-2">
+            <button type="button" id="add-option" class="btn btn-sm btn-outline-secondary">
               <i class="fas fa-plus me-1"></i>Add Option
             </button>
+            <small class="text-muted d-block mt-2">Maximum 6 options</small>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="create-poll">Create Poll</button>
+          <button type="button" class="btn btn-primary" id="create-poll">
+            <i class="fas fa-plus me-1"></i>Create Poll
+          </button>
         </div>
       </div>
     </div>
@@ -594,33 +680,37 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="membersModalLabel">Club Members</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="membersModalLabel">
+            <i class="fas fa-users me-2"></i>Club Members
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <div class="row" id="members-list">
-            <!-- Members will be loaded here via JavaScript -->
+            <div class="col-12 text-center py-3">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2">Loading members...</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap scripts -->
+  <!-- Bootstrap Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-  <!-- Emoji Picker -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.min.js"></script>
 
   <script type="module">
     import { 
       initializeApp 
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { 
-      getDatabase, ref, push, set, onChildAdded, onValue, update, serverTimestamp 
+      getDatabase, ref, push, set, onChildAdded, onValue, update, serverTimestamp, onDisconnect, remove
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-    import { onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-    // ---- Firebase Config ----
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAPSGaOD3ttojdb7lQXXEAaETn4r7okWTw",
       authDomain: "ece-club.firebaseapp.com",
@@ -631,217 +721,601 @@
       appId: "1:757755687448:web:ecd6891df339e445ec496d",
       measurementId: "G-DBZVLNLJW8"
     };
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ---- DOM Elements ----
+    // DOM Elements
     const chatForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message-input');
     const chatMessages = document.getElementById('chat-messages');
     const charCount = document.getElementById('char-count');
     const typingIndicator = document.getElementById('typing-indicator');
     const emojiButton = document.getElementById('emoji-button');
-    const emojiPicker = document.getElementById('emoji-picker');
-    const emojiPickerContainer = document.querySelector('.emoji-picker-container');
+    const quickEmojiPanel = document.getElementById('quick-emoji-panel');
+    const attachButton = document.getElementById('attach-button');
+    const fileInput = document.getElementById('file-input');
+    const filePreview = document.getElementById('file-preview');
+    const previewContent = document.getElementById('preview-content');
+    const removeFileButton = document.getElementById('remove-file');
+    const emptyChat = document.getElementById('empty-chat');
 
+    // Constants
     const CLUB_ID = "{{ club.unique_id }}";
     const USERNAME = "{{ user.username }}";
     const USER_ID = "{{ user.id }}";
+    const DISPLAY_NAME = "{{ user.first_name|default:user.username }}";
 
-    // ---- Emoji Picker ----
-    emojiButton.addEventListener('click', () => {
-      emojiPickerContainer.style.display = 
-        emojiPickerContainer.style.display === 'block' ? 'none' : 'block';
-    });
+    let selectedFile = null;
+    let typingTimeout = null;
 
-    emojiPicker.addEventListener('emoji-click', event => {
-      messageInput.value += event.detail.unicode;
-      messageInput.focus();
-      emojiPickerContainer.style.display = 'none';
-    });
-
-    document.addEventListener('click', function(event) {
-      if (!emojiButton.contains(event.target) && !emojiPickerContainer.contains(event.target)) {
-        emojiPickerContainer.style.display = 'none';
-      }
-    });
-
-    // ---- Firebase Chat ----
+    // Firebase References
     const chatRef = ref(db, `clubs/${CLUB_ID}/chats`);
     const typingRef = ref(db, `clubs/${CLUB_ID}/typing/${USER_ID}`);
     const onlineRef = ref(db, `clubs/${CLUB_ID}/online/${USER_ID}`);
 
-    // Add message to chat UI
-    function addMessageToChat(message, username, timestamp, isOwn = false) {
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeChat();
+      setupEventListeners();
+      updateOnlinePresence();
+    });
+
+    function initializeChat() {
+      // Listen for new messages
+      onChildAdded(chatRef, (snapshot) => {
+        const data = snapshot.val();
+        const messageId = snapshot.key;
+        addMessageToChat(data, messageId);
+      });
+
+      // Listen for typing indicators
+      onValue(ref(db, `clubs/${CLUB_ID}/typing`), (snapshot) => {
+        const typingUsers = snapshot.val() || {};
+        updateTypingIndicator(typingUsers);
+      });
+
+      // Listen for online users
+      onValue(ref(db, `clubs/${CLUB_ID}/online`), (snapshot) => {
+        const onlineUsers = snapshot.val() || {};
+        updateOnlineCount(onlineUsers);
+      });
+    }
+
+    function setupEventListeners() {
+      // Chat form submission
+      chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        sendMessage();
+      });
+
+      // Character counter
+      messageInput.addEventListener('input', function() {
+        updateCharCount();
+        handleTyping();
+      });
+
+      // Emoji button
+      emojiButton.addEventListener('click', function() {
+        toggleQuickEmojiPanel();
+      });
+
+      // Quick emoji selection
+      document.querySelectorAll('.quick-emoji').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const emoji = this.dataset.emoji;
+          messageInput.value += emoji;
+          messageInput.focus();
+          quickEmojiPanel.style.display = 'none';
+        });
+      });
+
+      // File attachment
+      attachButton.addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          selectedFile = file;
+          showFilePreview(file);
+        }
+      });
+
+      removeFileButton.addEventListener('click', function() {
+        selectedFile = null;
+        fileInput.value = '';
+        filePreview.style.display = 'none';
+      });
+
+      // Poll modal handlers
+      setupPollModal();
+
+      // Close emoji panel when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!emojiButton.contains(e.target) && !quickEmojiPanel.contains(e.target)) {
+          quickEmojiPanel.style.display = 'none';
+        }
+      });
+
+      // Enter key to send message
+      messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+    }
+
+    function updateCharCount() {
+      const count = messageInput.value.length;
+      charCount.textContent = `${count}/500`;
+      
+      if (count > 400) {
+        charCount.className = 'char-counter danger';
+      } else if (count > 300) {
+        charCount.className = 'char-counter warning';
+      } else {
+        charCount.className = 'char-counter';
+      }
+    }
+
+    function handleTyping() {
+      // Clear previous timeout
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+
+      // Set user as typing
+      set(typingRef, {
+        username: DISPLAY_NAME,
+        typing: true,
+        timestamp: Date.now()
+      });
+
+      // Stop typing after 2 seconds of inactivity
+      typingTimeout = setTimeout(() => {
+        remove(typingRef);
+      }, 2000);
+    }
+
+    function toggleQuickEmojiPanel() {
+      const isVisible = quickEmojiPanel.style.display === 'block';
+      quickEmojiPanel.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function showFilePreview(file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        let previewHTML = '';
+        
+        if (file.type.startsWith('image/')) {
+          previewHTML = `<img src="${e.target.result}" alt="Preview" class="img-fluid">`;
+        } else if (file.type.startsWith('video/')) {
+          previewHTML = `<video controls class="img-fluid"><source src="${e.target.result}" type="${file.type}"></video>`;
+        } else {
+          previewHTML = `<div class="text-center p-3"><i class="fas fa-file fa-2x mb-2"></i><br>${file.name}</div>`;
+        }
+        
+        previewContent.innerHTML = previewHTML;
+        filePreview.style.display = 'block';
+      };
+      
+      reader.readAsDataURL(file);
+    }
+
+    async function sendMessage() {
+      const message = messageInput.value.trim();
+      
+      if (!message && !selectedFile) return;
+
+      let messageData = {
+        user: DISPLAY_NAME,
+        userId: USER_ID,
+        timestamp: serverTimestamp(),
+        type: 'text'
+      };
+
+      if (selectedFile) {
+        // In a real app, you'd upload the file to Firebase Storage first
+        // For now, we'll just indicate it's a media message
+        messageData.message = message || `Shared ${selectedFile.type.startsWith('image/') ? 'an image' : 'a file'}`;
+        messageData.type = selectedFile.type.startsWith('image/') ? 'image' : 'file';
+        messageData.fileName = selectedFile.name;
+        // messageData.fileUrl = 'path-to-uploaded-file'; // This would be the actual file URL
+      } else {
+        messageData.message = message;
+      }
+
+      // Send message to Firebase
+      try {
+        await push(chatRef, messageData);
+        
+        // Clear inputs
+        messageInput.value = '';
+        selectedFile = null;
+        fileInput.value = '';
+        filePreview.style.display = 'none';
+        updateCharCount();
+        
+        // Remove typing indicator
+        remove(typingRef);
+      } catch (error) {
+        console.error('Error sending message:', error);
+        alert('Failed to send message. Please try again.');
+      }
+    }
+
+    function addMessageToChat(data, messageId) {
+      // Hide empty chat state
+      emptyChat.style.display = 'none';
+
+      const isOwn = data.userId === USER_ID;
+      const time = data.timestamp ? new Date(data.timestamp).toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      }) : 'now';
+
       const messageDiv = document.createElement('div');
       messageDiv.className = `chat-message ${isOwn ? 'own' : ''}`;
+      messageDiv.dataset.messageId = messageId;
 
-      const time = data.timestamp ? 
-      new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 
-      "…";
+      let messageContent = '';
 
+      if (data.type === 'poll') {
+        messageContent = createPollHTML(data, messageId);
+      } else if (data.type === 'image') {
+        messageContent = `
+          <div class="media-message">
+            <img src="${data.fileUrl || '/static/images/placeholder.jpg'}" alt="${data.fileName}" class="img-fluid">
+            ${data.message ? `<p class="mt-2 mb-0">${escapeHtml(data.message)}</p>` : ''}
+          </div>
+        `;
+      } else {
+        messageContent = escapeHtml(data.message);
+      }
 
       messageDiv.innerHTML = `
-          ${!isOwn ? `
-              <div class="message-info">
-                  <div class="member-avatar d-inline-block me-2" 
-                      style="width: 25px; height: 25px; font-size: 11px;">
-                      ${username.charAt(0).toUpperCase()}
-                  </div>
-                  <strong>${username}</strong>
-                  <span class="text-muted ms-1">${time}</span>
-              </div>
-          ` : `
-              <div class="message-info">
-                  <span class="text-muted">${time}</span>
-                  <strong class="ms-1">You</strong>
-              </div>
-          `}
-          <div class="message-bubble ${isOwn ? 'own' : 'other'}">
-              ${message}
+        ${!isOwn ? `
+          <div class="message-info">
+            <div class="member-avatar me-2">
+              ${data.user.charAt(0).toUpperCase()}
+            </div>
+            <strong>${escapeHtml(data.user)}</strong>
+            <span class="text-muted ms-1">${time}</span>
           </div>
+        ` : `
+          <div class="message-info">
+            <span class="text-muted">${time}</span>
+            <strong class="ms-1">You</strong>
+          </div>
+        `}
+        <div class="message-bubble ${isOwn ? 'own' : 'other'}">
+          ${messageContent}
+        </div>
+        <div class="message-reactions" id="reactions-${messageId}"></div>
       `;
 
+      // Add click handler for reactions (only on other's messages)
+      if (!isOwn) {
+        const bubble = messageDiv.querySelector('.message-bubble');
+        bubble.addEventListener('dblclick', () => showReactionOptions(messageId));
+      }
+
       chatMessages.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    function createPollHTML(data, messageId) {
+      const options = data.options || [];
+      const totalVotes = options.reduce((sum, opt) => sum + (opt.votes || 0), 0);
+
+      let optionsHTML = '';
+      options.forEach((option, index) => {
+        const votes = option.votes || 0;
+        const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+        
+        optionsHTML += `
+          <div class="poll-option" data-option-index="${index}" onclick="voteInPoll('${messageId}', ${index})">
+            <div class="d-flex justify-content-between align-items-center">
+              <span>${escapeHtml(option.text)}</span>
+              <span class="badge bg-primary">${votes}</span>
+            </div>
+            <div class="poll-progress" style="width: ${percentage}%"></div>
+          </div>
+        `;
+      });
+
+      return `
+        <div class="poll-container">
+          <div class="poll-question">${escapeHtml(data.question)}</div>
+          ${optionsHTML}
+          <div class="poll-stats">Total votes: ${totalVotes}</div>
+        </div>
+      `;
+    }
+
+    function showReactionOptions(messageId) {
+      const emojis = ['👍', '❤️', '😂', '😮', '😢', '🎉'];
+      const emoji = emojis[Math.floor(Math.random() * emojis.length)]; // Random for demo
+      
+      // In a real app, you'd show a proper emoji picker
+      addReaction(messageId, emoji);
+    }
+
+    async function addReaction(messageId, emoji) {
+      try {
+        const reactionRef = ref(db, `clubs/${CLUB_ID}/reactions/${messageId}/${emoji}/${USER_ID}`);
+        await set(reactionRef, {
+          username: DISPLAY_NAME,
+          timestamp: serverTimestamp()
+        });
+      } catch (error) {
+        console.error('Error adding reaction:', error);
+      }
+    }
+
+    window.voteInPoll = async function(messageId, optionIndex) {
+      try {
+        const voteRef = ref(db, `clubs/${CLUB_ID}/polls/${messageId}/votes/${USER_ID}`);
+        await set(voteRef, {
+          option: optionIndex,
+          username: DISPLAY_NAME,
+          timestamp: serverTimestamp()
+        });
+        
+        // Update the poll display
+        updatePollResults(messageId);
+      } catch (error) {
+        console.error('Error voting in poll:', error);
+      }
+    };
+
+    function updatePollResults(messageId) {
+      // Listen for poll vote updates
+      onValue(ref(db, `clubs/${CLUB_ID}/polls/${messageId}/votes`), (snapshot) => {
+        const votes = snapshot.val() || {};
+        const pollElement = document.querySelector(`[data-message-id="${messageId}"] .poll-container`);
+        
+        if (pollElement) {
+          // Count votes for each option
+          const optionVotes = {};
+          Object.values(votes).forEach(vote => {
+            optionVotes[vote.option] = (optionVotes[vote.option] || 0) + 1;
+          });
+          
+          // Update the display
+          const options = pollElement.querySelectorAll('.poll-option');
+          const totalVotes = Object.values(optionVotes).reduce((sum, count) => sum + count, 0);
+          
+          options.forEach((option, index) => {
+            const voteCount = optionVotes[index] || 0;
+            const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+            
+            const badge = option.querySelector('.badge');
+            const progress = option.querySelector('.poll-progress');
+            
+            if (badge) badge.textContent = voteCount;
+            if (progress) progress.style.width = `${percentage}%`;
+            
+            // Mark if user voted for this option
+            const userVote = votes[USER_ID];
+            if (userVote && userVote.option === index) {
+              option.classList.add('voted');
+            }
+          });
+          
+          // Update total
+          const statsElement = pollElement.querySelector('.poll-stats');
+          if (statsElement) {
+            statsElement.textContent = `Total votes: ${totalVotes}`;
+          }
+        }
+      });
+    }
+
+    function setupPollModal() {
+      const addOptionBtn = document.getElementById('add-option');
+      const createPollBtn = document.getElementById('create-poll');
+      const pollForm = document.getElementById('poll-form');
+
+      addOptionBtn.addEventListener('click', function() {
+        const optionsContainer = document.getElementById('poll-options');
+        const currentOptions = optionsContainer.querySelectorAll('.option-row');
+        
+        if (currentOptions.length >= 6) {
+          alert('Maximum 6 options allowed');
+          return;
+        }
+
+        const optionRow = document.createElement('div');
+        optionRow.className = 'mb-2 option-row';
+        optionRow.innerHTML = `
+          <div class="input-group">
+            <input type="text" class="form-control poll-option-input" placeholder="Option ${currentOptions.length + 1}" maxlength="100">
+            <button type="button" class="btn btn-outline-danger remove-option">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        `;
+
+        optionsContainer.appendChild(optionRow);
+        
+        // Add remove handler
+        const removeBtn = optionRow.querySelector('.remove-option');
+        removeBtn.addEventListener('click', function() {
+          if (optionsContainer.querySelectorAll('.option-row').length > 2) {
+            optionRow.remove();
+            updateOptionPlaceholders();
+          }
+        });
+
+        updateOptionPlaceholders();
+      });
+
+      // Handle remove option buttons
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-option')) {
+          const optionRow = e.target.closest('.option-row');
+          const optionsContainer = document.getElementById('poll-options');
+          
+          if (optionsContainer.querySelectorAll('.option-row').length > 2) {
+            optionRow.remove();
+            updateOptionPlaceholders();
+          }
+        }
+      });
+
+      createPollBtn.addEventListener('click', async function() {
+        const question = document.getElementById('poll-question').value.trim();
+        const optionInputs = document.querySelectorAll('.poll-option-input');
+        
+        if (!question) {
+          alert('Please enter a poll question');
+          return;
+        }
+
+        const options = [];
+        optionInputs.forEach(input => {
+          const value = input.value.trim();
+          if (value) options.push({ text: value, votes: 0 });
+        });
+
+        if (options.length < 2) {
+          alert('Please enter at least 2 options');
+          return;
+        }
+
+        try {
+          const pollData = {
+            user: DISPLAY_NAME,
+            userId: USER_ID,
+            type: 'poll',
+            question: question,
+            options: options,
+            timestamp: serverTimestamp()
+          };
+
+          await push(chatRef, pollData);
+          
+          // Clear form
+          document.getElementById('poll-question').value = '';
+          optionInputs.forEach(input => input.value = '');
+          
+          // Close modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('pollModal'));
+          modal.hide();
+          
+        } catch (error) {
+          console.error('Error creating poll:', error);
+          alert('Failed to create poll. Please try again.');
+        }
+      });
+    }
+
+    function updateOptionPlaceholders() {
+      const optionInputs = document.querySelectorAll('.poll-option-input');
+      optionInputs.forEach((input, index) => {
+        input.placeholder = `Option ${index + 1}`;
+      });
+
+      // Update remove button states
+      const removeButtons = document.querySelectorAll('.remove-option');
+      removeButtons.forEach((btn, index) => {
+        btn.disabled = optionInputs.length <= 2;
+      });
+    }
+
+    function updateTypingIndicator(typingUsers) {
+      const currentlyTyping = Object.values(typingUsers).filter(user => 
+        user.typing && user.username !== DISPLAY_NAME && 
+        (Date.now() - user.timestamp < 5000) // 5 seconds timeout
+      );
+
+      if (currentlyTyping.length > 0) {
+        const names = currentlyTyping.map(user => user.username).slice(0, 3);
+        const text = names.length === 1 ? 
+          `${names[0]} is typing...` : 
+          `${names.join(', ')} are typing...`;
+        
+        document.getElementById('typing-text').textContent = text;
+        typingIndicator.style.display = 'block';
+      } else {
+        typingIndicator.style.display = 'none';
+      }
+    }
+
+    function updateOnlineCount(onlineUsers) {
+      const count = Object.values(onlineUsers).filter(status => status === true).length;
+      document.getElementById('online-count').textContent = `${count} online`;
+    }
+
+    function updateOnlinePresence() {
+      // Set user as online
+      set(onlineRef, true);
+      
+      // Set user as offline when they disconnect
+      onDisconnect(onlineRef).set(false);
+      
+      // Cleanup typing when disconnecting
+      onDisconnect(typingRef).remove();
+    }
+
+    function scrollToBottom() {
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Listen for new messages
-    onChildAdded(chatRef, (snapshot) => {
-      const data = snapshot.val();
-      addMessageToChat(data.message, data.user, data.timestamp, data.user === USERNAME);
-    });
-
-    // Send message
-    chatForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const message = messageInput.value.trim();
-      if (!message) return;
-    
-      const newMsgRef = push(chatRef);
-      set(newMsgRef, {
-        user: USERNAME,
-        message: message,
-        type: "text",
-        timestamp: serverTimestamp()
-      });
-    
-      messageInput.value = '';
-      charCount.textContent = '0';
-    });
-
-    // ---- Typing Indicator ----
-    messageInput.addEventListener('input', function() {
-      charCount.textContent = messageInput.value.length;
-      update(typingRef, { username: USERNAME, typing: true });
-      setTimeout(() => update(typingRef, { typing: false }), 2000);
-    });
-
-    onValue(ref(db, `clubs/${CLUB_ID}/typing`), (snapshot) => {
-      const typingUsers = snapshot.val() || {};
-      const someoneTyping = Object.values(typingUsers).some(u => u.typing && u.username !== USERNAME);
-      typingIndicator.style.display = someoneTyping ? "block" : "none";
-    });
-
-    // ---- Online Presence ----
-    set(onlineRef, true);
-    onDisconnect(onlineRef).set(false);
-
-    onValue(ref(db, `clubs/${CLUB_ID}/online`), (snapshot) => {
-      const onlineUsers = snapshot.val() || {};
-      const count = Object.values(onlineUsers).filter(v => v).length;
-      document.getElementById("online-count").innerText = `${count} online`;
-    });
-
-    // ---- Reactions ----
-    function reactMessage(messageId, emoji) {
-      const reactionRef = ref(db, `clubs/${CLUB_ID}/reactions/${messageId}/${emoji}/${USER_ID}`);
-      set(reactionRef, true);
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, function(m) { return map[m]; });
     }
 
-    document.addEventListener('click', (e) => {
-      const btn = e.target.closest('.react-btn');
-      if (!btn) return;
-      const msgId = btn.dataset.messageId;
-      const emoji = prompt("Enter emoji (👍 ❤️ 😂)");
-      if (emoji) reactMessage(msgId, emoji);
-    });
-
-    onValue(ref(db, `clubs/${CLUB_ID}/reactions`), (snapshot) => {
-      const reactions = snapshot.val() || {};
-      for (const [msgId, emojiMap] of Object.entries(reactions)) {
-        const reactionDiv = document.getElementById(`reactions-${msgId}`);
-        if (!reactionDiv) continue;
-        reactionDiv.innerHTML = "";
-        for (const [emoji, users] of Object.entries(emojiMap)) {
-          const count = Object.keys(users).length;
-          reactionDiv.innerHTML += `<button class="btn btn-light btn-sm">${emoji} <span class="badge bg-secondary">${count}</span></button>`;
-        }
-      }
-    });
-
-    // ---- Poll Voting ----
-    function votePoll(pollId, optionId) {
-      const optionRef = ref(db, `clubs/${CLUB_ID}/polls/${pollId}/options/${optionId}/votes/${USER_ID}`);
-      set(optionRef, true);
-    }
-    document.addEventListener('click', (e) => {
-      const opt = e.target.closest('.poll-option');
-      if (!opt) return;
-      const pollId = opt.closest('.poll-container').dataset.messageId;
-      const optionId = opt.dataset.optionId;
-      votePoll(pollId, optionId);
-    });
-
-    onValue(ref(db, `clubs/${CLUB_ID}/polls`), (snapshot) => {
-      const polls = snapshot.val() || {};
-      for (const [pollId, poll] of Object.entries(polls)) {
-        const pollDiv = document.querySelector(`.poll-container[data-message-id="${pollId}"]`);
-        if (!pollDiv) continue;
-        pollDiv.innerHTML = `<h6>${poll.question}</h6>`;
-        Object.entries(poll.options || {}).forEach(([optId, opt]) => {
-          const total = Object.values(poll.options).reduce((sum, o) => sum + Object.keys(o.votes || {}).length, 0);
-          const votes = Object.keys(opt.votes || {}).length;
-          const percentage = total ? Math.round((votes / total) * 100) : 0;
-          pollDiv.innerHTML += `
-            <div class="poll-option" data-option-id="${optId}">
-              <div class="d-flex justify-content-between">
-                <span>${opt.text}</span>
-                <span class="badge bg-light text-dark">${votes} votes</span>
-              </div>
-              <div class="poll-progress mt-1">
-                <div class="poll-progress-bar" style="width: ${percentage}%"></div>
-              </div>
-            </div>`;
-        });
-        pollDiv.innerHTML += `<small class="text-muted">Total votes: ${Object.values(poll.options || {}).reduce((sum, o) => sum + Object.keys(o.votes || {}).length, 0)}</small>`;
-      }
-    });
-
-
-    // ---- Share Club ----
+    // Share club function
     window.shareClub = function() {
       const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
       const shareText = `Check out this club: {{ club.name }} ({{ club.unique_id }})`;
 
       if (navigator.share) {
-          navigator.share({
-              title: '{{ club.name }} - ClubHub',
-              text: shareText,
-              url: clubUrl
-          });
+        navigator.share({
+          title: '{{ club.name }} - ClubHub',
+          text: shareText,
+          url: clubUrl
+        });
       } else {
-          navigator.clipboard.writeText(clubUrl).then(() => {
-              alert('Club link copied to clipboard!');
-          });
+        navigator.clipboard.writeText(clubUrl).then(() => {
+          alert('Club link copied to clipboard!');
+        });
       }
     };
-    </script>
 
+    // Load members for modal (placeholder)
+    document.getElementById('membersModal').addEventListener('show.bs.modal', function() {
+      // In a real app, you'd fetch this from your Django backend
+      const membersList = document.getElementById('members-list');
+      setTimeout(() => {
+        membersList.innerHTML = `
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <div class="member-avatar me-3">${DISPLAY_NAME.charAt(0)}</div>
+              <div>
+                <h6 class="mb-0">${DISPLAY_NAME}</h6>
+                <small class="text-muted">You</small>
+              </div>
+            </div>
+          </div>
+        `;
+      }, 1000);
+    });
 
-  {% block extra_js %}
-
-{% endblock %}
+  </script>
 
 </body>
 </html>

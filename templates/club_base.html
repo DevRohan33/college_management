@@ -227,20 +227,18 @@
         <!-- Right menu -->
         <ul class="navbar-nav">
           {% if user.is_authenticated %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                <div class="rounded-circle bg-gradient p-2 text-white me-2">
-                  {% if user.student_profile.profile_image %}
-                    <img src="{{ user.student_profile.profile_image.url }}" 
-                         alt="{{ user.get_full_name|default:user.username }}" 
-                         class="rounded-circle" 
-                         style="width: 30px; height: 30px; object-fit: cover;">
-                  {% else %}
-                    <i class="fas fa-user"></i>
-                  {% endif %}
-                </div>
-                {{ user.username }}
-              </a>
+            <li class="nav-item d-flex align-items-center">
+              <div class="rounded-circle bg-gradient p-2 text-white me-2">
+                {% if user.student_profile.profile_image %}
+                  <img src="{{ user.student_profile.profile_image.url }}" 
+                       alt="{{ user.get_full_name|default:user.username }}" 
+                       class="rounded-circle" 
+                       style="width: 30px; height: 30px; object-fit: cover;">
+                {% else %}
+                  <i class="fas fa-user"></i>
+                {% endif %}
+              </div>
+              <span class="nav-link mb-0">{{ user.get_full_name|default:user.username }}</span>
             </li>
           {% endif %}
         </ul>
