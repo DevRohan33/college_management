@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,7 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!u(vw$oo!ux0*o8^d8vz&s4k@xb!riw#%bkb29rzmj2xhmg-z%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -52,7 +55,7 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'account.User'
 
-ASGI_APPLICATION = "college_portal.asgi.application"
+ASGI_APPLICATION = "college_portal.asgi.application "
 
 # CHANNEL_LAYERS = {
 #     "default": {
@@ -73,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'college_portal.urls'
@@ -80,7 +84,8 @@ ROOT_URLCONF = 'college_portal.urls'
 CSRF_TRUSTED_ORIGINS = [
     'https://college-management-d16p.onrender.com'
 ]
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['college-management-d16p.onrender.com', 'localhost', '127.0.0.1']
+
 
 
 TEMPLATES = [
@@ -105,11 +110,9 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=f"sqlite:///{BASE_DIR}/db.sqlite3")
 }
+
 
 
 # Password validation
@@ -140,8 +143,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  # for development
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")   # for production (collectstatic)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # For collectstatic
+
+# WhiteNoise storage for compressed files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (user uploads like profile pics)
 MEDIA_URL = '/media/'
