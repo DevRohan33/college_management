@@ -59,6 +59,10 @@ ASGI_APPLICATION = "college_portal.asgi.application"
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            # Use REDIS_URL if set (e.g., redis://:password@hostname:6379/0); fallback to local
+            "hosts": [os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")],
+        },
     },
 }
 CACHES = {
@@ -81,10 +85,10 @@ ROOT_URLCONF = 'college_portal.urls'
 
 CSRF_TRUSTED_ORIGINS = [
     'https://college-management-d16p.onrender.com',
+    'http://127.0.0.1:8000'
 ]
-
-
 ALLOWED_HOSTS = ['*']
+
 
 TEMPLATES = [
     {
@@ -165,3 +169,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'parveagr@gmail.com'
 EMAIL_HOST_PASSWORD = 'qisqhcvdaxftqndq'
 
+# settings.py
+FIREBASE_CONFIG = {
+    "DATABASE_URL": "https://ece-club-default-rtdb.firebaseio.com/",
+    "SERVICE_ACCOUNT_KEY": os.path.join(BASE_DIR, "club", "serviceAccountKey.json")
+}

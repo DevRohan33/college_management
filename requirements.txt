@@ -1,0 +1,19 @@
+# Core framework
+Django==5.2.5
+
+# ASGI / WebSockets (Clubs chat)
+# channels>=4.0,<5.0
+# channels-redis>=4.1,<5.0
+# Recommended ASGI server for production
+# daphne>=4.1,<5.0
+# Redis client used by channels-redis
+# redis>=5.0.0
+
+# Images (ImageField uploads)
+Pillow>=10.0.0
+
+# Template utilities
+django-widget-tweaks>=1.5.0
+
+# Optional: enable if switching to Postgres
+# psycopg2-binary>=2.9

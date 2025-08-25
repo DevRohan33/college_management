@@ -280,6 +280,7 @@
       }
     }
   </style>
+
 </head>
 <body>
   <!-- Navbar -->
@@ -609,18 +610,45 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <!-- Emoji Picker -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.min.js"></script>
-  <script>
-document.addEventListener('DOMContentLoaded', function() {
+
+  <script type="module">
+    import { 
+      initializeApp 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { 
+      getDatabase, ref, push, set, onChildAdded, onValue, update, serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    import { onDisconnect } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    // ---- Firebase Config ----
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPSGaOD3ttojdb7lQXXEAaETn4r7okWTw",
+      authDomain: "ece-club.firebaseapp.com",
+      databaseURL: "https://ece-club-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "ece-club",
+      storageBucket: "ece-club.firebasestorage.app",
+      messagingSenderId: "757755687448",
+      appId: "1:757755687448:web:ecd6891df339e445ec496d",
+      measurementId: "G-DBZVLNLJW8"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // ---- DOM Elements ----
     const chatForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message-input');
     const chatMessages = document.getElementById('chat-messages');
     const charCount = document.getElementById('char-count');
-
-    // --- Emoji Picker ---
+    const typingIndicator = document.getElementById('typing-indicator');
     const emojiButton = document.getElementById('emoji-button');
     const emojiPicker = document.getElementById('emoji-picker');
     const emojiPickerContainer = document.querySelector('.emoji-picker-container');
 
+    const CLUB_ID = "{{ club.unique_id }}";
+    const USERNAME = "{{ user.username }}";
+    const USER_ID = "{{ user.id }}";
+
+    // ---- Emoji Picker ----
     emojiButton.addEventListener('click', () => {
       emojiPickerContainer.style.display = 
         emojiPickerContainer.style.display === 'block' ? 'none' : 'block';
@@ -633,195 +661,183 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.addEventListener('click', function(event) {
-        if (!emojiButton.contains(event.target) && !emojiPickerContainer.contains(event.target)) {
-            emojiPickerContainer.style.display = 'none';
-        }
+      if (!emojiButton.contains(event.target) && !emojiPickerContainer.contains(event.target)) {
+        emojiPickerContainer.style.display = 'none';
+      }
     });
 
-    // --- WebSocket Chat ---
-    const chatSocket = new WebSocket(
-        `ws://${window.location.host}/ws/club/{{ club.unique_id }}/`
-    );
-
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-
-        if (data.type === "chat_message") {
-            addMessageToChat(
-                data.message, 
-                data.user, 
-                new Date(), 
-                data.user === "{{ user.username }}"
-            );
-        } else if (data.type === "typing") {
-            showTyping(data.user);
-        } else if (data.type === "system") {
-            console.log("SYSTEM:", data.message);
-        }
-    };
-
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
-
-    // Typing indicator
-    function showTyping(username) {
-        const indicator = document.getElementById('typing-indicator');
-        if (!indicator) return;
-        indicator.style.display = "block";
-        setTimeout(() => {
-            indicator.style.display = "none";
-        }, 2000);
-    }
-
-    // Send message
-    chatForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const message = messageInput.value.trim();
-        if (!message) return;
-
-        chatSocket.send(JSON.stringify({
-            type: "chat_message",
-            message: message
-        }));
-
-        messageInput.value = '';
-        charCount.textContent = '0';
-    });
+    // ---- Firebase Chat ----
+    const chatRef = ref(db, `clubs/${CLUB_ID}/chats`);
+    const typingRef = ref(db, `clubs/${CLUB_ID}/typing/${USER_ID}`);
+    const onlineRef = ref(db, `clubs/${CLUB_ID}/online/${USER_ID}`);
 
     // Add message to chat UI
     function addMessageToChat(message, username, timestamp, isOwn = false) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${isOwn ? 'own' : ''}`;
-        
-        const time = timestamp instanceof Date ? 
-            timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 
-            timestamp;
-        
-        messageDiv.innerHTML = `
-            ${!isOwn ? `
-                <div class="message-info">
-                    <div class="member-avatar d-inline-block me-2" 
-                        style="width: 25px; height: 25px; font-size: 11px;">
-                        ${username.charAt(0).toUpperCase()}
-                    </div>
-                    <strong>${username}</strong>
-                    <span class="text-muted ms-1">${time}</span>
-                </div>
-            ` : `
-                <div class="message-info">
-                    <span class="text-muted">${time}</span>
-                    <strong class="ms-1">You</strong>
-                </div>
-            `}
-            <div class="message-bubble ${isOwn ? 'own' : 'other'}">
-                ${message}
-            </div>
-        `;
-        
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `chat-message ${isOwn ? 'own' : ''}`;
+
+      const time = data.timestamp ? 
+      new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 
+      "…";
+
+
+      messageDiv.innerHTML = `
+          ${!isOwn ? `
+              <div class="message-info">
+                  <div class="member-avatar d-inline-block me-2" 
+                      style="width: 25px; height: 25px; font-size: 11px;">
+                      ${username.charAt(0).toUpperCase()}
+                  </div>
+                  <strong>${username}</strong>
+                  <span class="text-muted ms-1">${time}</span>
+              </div>
+          ` : `
+              <div class="message-info">
+                  <span class="text-muted">${time}</span>
+                  <strong class="ms-1">You</strong>
+              </div>
+          `}
+          <div class="message-bubble ${isOwn ? 'own' : 'other'}">
+              ${message}
+          </div>
+      `;
+
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Update character count & send typing
+    // Listen for new messages
+    onChildAdded(chatRef, (snapshot) => {
+      const data = snapshot.val();
+      addMessageToChat(data.message, data.user, data.timestamp, data.user === USERNAME);
+    });
+
+    // Send message
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      if (!message) return;
+    
+      const newMsgRef = push(chatRef);
+      set(newMsgRef, {
+        user: USERNAME,
+        message: message,
+        type: "text",
+        timestamp: serverTimestamp()
+      });
+    
+      messageInput.value = '';
+      charCount.textContent = '0';
+    });
+
+    // ---- Typing Indicator ----
     messageInput.addEventListener('input', function() {
-        charCount.textContent = messageInput.value.length;
-        chatSocket.send(JSON.stringify({ type: "typing" }));
+      charCount.textContent = messageInput.value.length;
+      update(typingRef, { username: USERNAME, typing: true });
+      setTimeout(() => update(typingRef, { typing: false }), 2000);
     });
 
-    // --- Reactions ---
-    document.addEventListener('click', function(e) {
-      if (e.target.closest('.react-btn')) {
-        const msgId = e.target.closest('.react-btn').dataset.messageId;
-        const emoji = prompt("Enter emoji (e.g. 👍 ❤️ 😂)");  // temporary
-        if (!emoji) return;
-
-        fetch(`/clubs/{{ club.unique_id }}/chat/react/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-          },
-          body: JSON.stringify({ message_id: msgId, emoji: emoji })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            const reactionDiv = document.getElementById(`reactions-${msgId}`);
-            if (reactionDiv) {
-              reactionDiv.innerHTML = "";
-              data.reactions.forEach(r => {
-                reactionDiv.innerHTML += `
-                  <button class="btn btn-light btn-sm reaction-btn" 
-                    data-message-id="${msgId}" data-emoji="${r.emoji}">
-                    ${r.emoji} <span class="badge bg-secondary">${r.count}</span>
-                  </button>`;
-              });
-            }
-          }
-        });
-      }
+    onValue(ref(db, `clubs/${CLUB_ID}/typing`), (snapshot) => {
+      const typingUsers = snapshot.val() || {};
+      const someoneTyping = Object.values(typingUsers).some(u => u.typing && u.username !== USERNAME);
+      typingIndicator.style.display = someoneTyping ? "block" : "none";
     });
 
-    // --- Poll Voting ---
-    document.addEventListener('click', function(e) {
-      if (e.target.closest('.poll-option')) {
-        const optionDiv = e.target.closest('.poll-option');
-        const optionId = optionDiv.dataset.optionId;
-        const messageId = optionDiv.closest('.poll-container').dataset.messageId;
+    // ---- Online Presence ----
+    set(onlineRef, true);
+    onDisconnect(onlineRef).set(false);
 
-        fetch(`/clubs/{{ club.unique_id }}/chat/poll/vote/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-          },
-          body: JSON.stringify({ message_id: messageId, option_id: optionId })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            const pollContainer = optionDiv.closest('.poll-container');
-            pollContainer.innerHTML = `<h6>${data.poll_data.question}</h6>`;
-            data.poll_data.options.forEach(opt => {
-              pollContainer.innerHTML += `
-                <div class="poll-option" data-option-id="${opt.id}">
-                  <div class="d-flex justify-content-between">
-                    <span>${opt.text}</span>
-                    <span class="badge bg-light text-dark">${opt.votes} votes</span>
-                  </div>
-                  <div class="poll-progress mt-1">
-                    <div class="poll-progress-bar" style="width: ${opt.percentage}%"></div>
-                  </div>
-                </div>`;
-            });
-            pollContainer.innerHTML += `<small class="text-muted">Total votes: ${data.poll_data.total_votes}</small>`;
-          } else {
-            alert(data.error || "Vote failed");
-          }
-        });
-      }
+    onValue(ref(db, `clubs/${CLUB_ID}/online`), (snapshot) => {
+      const onlineUsers = snapshot.val() || {};
+      const count = Object.values(onlineUsers).filter(v => v).length;
+      document.getElementById("online-count").innerText = `${count} online`;
     });
 
-    // --- Share Club ---
-    window.shareClub = function() {
-        const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
-        const shareText = `Check out this club: {{ club.name }} ({{ club.unique_id }})`;
-        
-        if (navigator.share) {
-            navigator.share({
-                title: '{{ club.name }} - ClubHub',
-                text: shareText,
-                url: clubUrl
-            });
-        } else {
-            navigator.clipboard.writeText(clubUrl).then(() => {
-                alert('Club link copied to clipboard!');
-            });
+    // ---- Reactions ----
+    function reactMessage(messageId, emoji) {
+      const reactionRef = ref(db, `clubs/${CLUB_ID}/reactions/${messageId}/${emoji}/${USER_ID}`);
+      set(reactionRef, true);
+    }
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.react-btn');
+      if (!btn) return;
+      const msgId = btn.dataset.messageId;
+      const emoji = prompt("Enter emoji (👍 ❤️ 😂)");
+      if (emoji) reactMessage(msgId, emoji);
+    });
+
+    onValue(ref(db, `clubs/${CLUB_ID}/reactions`), (snapshot) => {
+      const reactions = snapshot.val() || {};
+      for (const [msgId, emojiMap] of Object.entries(reactions)) {
+        const reactionDiv = document.getElementById(`reactions-${msgId}`);
+        if (!reactionDiv) continue;
+        reactionDiv.innerHTML = "";
+        for (const [emoji, users] of Object.entries(emojiMap)) {
+          const count = Object.keys(users).length;
+          reactionDiv.innerHTML += `<button class="btn btn-light btn-sm">${emoji} <span class="badge bg-secondary">${count}</span></button>`;
         }
+      }
+    });
+
+    // ---- Poll Voting ----
+    function votePoll(pollId, optionId) {
+      const optionRef = ref(db, `clubs/${CLUB_ID}/polls/${pollId}/options/${optionId}/votes/${USER_ID}`);
+      set(optionRef, true);
+    }
+    document.addEventListener('click', (e) => {
+      const opt = e.target.closest('.poll-option');
+      if (!opt) return;
+      const pollId = opt.closest('.poll-container').dataset.messageId;
+      const optionId = opt.dataset.optionId;
+      votePoll(pollId, optionId);
+    });
+
+    onValue(ref(db, `clubs/${CLUB_ID}/polls`), (snapshot) => {
+      const polls = snapshot.val() || {};
+      for (const [pollId, poll] of Object.entries(polls)) {
+        const pollDiv = document.querySelector(`.poll-container[data-message-id="${pollId}"]`);
+        if (!pollDiv) continue;
+        pollDiv.innerHTML = `<h6>${poll.question}</h6>`;
+        Object.entries(poll.options || {}).forEach(([optId, opt]) => {
+          const total = Object.values(poll.options).reduce((sum, o) => sum + Object.keys(o.votes || {}).length, 0);
+          const votes = Object.keys(opt.votes || {}).length;
+          const percentage = total ? Math.round((votes / total) * 100) : 0;
+          pollDiv.innerHTML += `
+            <div class="poll-option" data-option-id="${optId}">
+              <div class="d-flex justify-content-between">
+                <span>${opt.text}</span>
+                <span class="badge bg-light text-dark">${votes} votes</span>
+              </div>
+              <div class="poll-progress mt-1">
+                <div class="poll-progress-bar" style="width: ${percentage}%"></div>
+              </div>
+            </div>`;
+        });
+        pollDiv.innerHTML += `<small class="text-muted">Total votes: ${Object.values(poll.options || {}).reduce((sum, o) => sum + Object.keys(o.votes || {}).length, 0)}</small>`;
+      }
+    });
+
+
+    // ---- Share Club ----
+    window.shareClub = function() {
+      const clubUrl = window.location.origin + '{% url "club:club_detail" club.unique_id %}';
+      const shareText = `Check out this club: {{ club.name }} ({{ club.unique_id }})`;
+
+      if (navigator.share) {
+          navigator.share({
+              title: '{{ club.name }} - ClubHub',
+              text: shareText,
+              url: clubUrl
+          });
+      } else {
+          navigator.clipboard.writeText(clubUrl).then(() => {
+              alert('Club link copied to clipboard!');
+          });
+      }
     };
-});
-</script>
+    </script>
+
 
   {% block extra_js %}
 
