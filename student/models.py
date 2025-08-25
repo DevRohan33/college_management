@@ -11,8 +11,7 @@ class Student(models.Model):
     )
     profile_image = models.ImageField(
         upload_to="student_profiles/",
-        blank=True,
-        null=True
+        default='student_profiles/default_image.jpg',
     )
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     session = models.CharField(max_length=20, blank=True, null=True)

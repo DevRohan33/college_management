@@ -1,0 +1,62 @@
+{% extends 'login-base.html' %}
+
+{% block title %}Login - Elite College of Engineering{% endblock %}
+
+{% block content %}
+<div class="form-header">
+    <h2 class="form-title">Welcome back</h2>
+    <p class="form-subtitle">Please enter your details to sign in</p>
+</div>
+
+<!-- Django Login Form -->
+<form id="loginForm" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    
+    {% if form.errors %}
+    <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i> Invalid username or password.
+    </div>
+    {% endif %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="{% if message.tags == 'error' %}error-message{% elif message.tags == 'success' %}success-message{% else %}info-message{% endif %}">
+                <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i> 
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="form-group">
+        <label for="username" class="form-label">User ID</label>
+        <div class="input-wrapper">
+            <input type="text" id="username" name="username" class="form-input" placeholder="Enter your user id" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-wrapper">
+            <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+        </div>
+    </div>
+
+    <div class="form-options">
+        <div class="remember-me">
+            <input type="checkbox" id="remember" name="remember">
+            <label for="remember">Remember for 30 days</label>
+        </div>
+        <a href="{% url 'request_password_reset' %}" class="forgot-password">Forgot password?</a>
+    </div>
+
+    <button type="submit" class="primary-btn">
+        <i class="fas fa-sign-in-alt"></i> Sign in
+    </button>
+</form>
+
+<div class="back-link">
+    <a href="/">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+</div>
+{% endblock %}

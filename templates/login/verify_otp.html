@@ -1,0 +1,114 @@
+{% extends 'login-base.html' %}
+
+{% block title %}Verify OTP - Elite College of Engineering{% endblock %}
+
+{% block content %}
+<div class="form-header">
+    <h2 class="form-title">Verify OTP</h2>
+    <p class="form-subtitle">Enter the OTP sent to your email and set your new password</p>
+</div>
+
+<!-- Django OTP Verification Form -->
+<form method="post">
+    {% csrf_token %}
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="{% if message.tags == 'error' %}error-message{% elif message.tags == 'success' %}success-message{% else %}info-message{% endif %}">
+                <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i> 
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if form.errors %}
+        {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+    <div class="form-group">
+        <label for="email" class="form-label">Email address</label>
+        <div class="input-wrapper">
+            <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="otp" class="form-label">OTP Code</label>
+        <div class="input-wrapper">
+            <input type="text" id="otp" name="otp" class="form-input" placeholder="Enter 6-digit OTP" maxlength="6" required>
+        </div>
+        <small style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem; display: block;">
+            Check your email for the verification code
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label for="password" class="form-label">New Password</label>
+        <div class="input-wrapper">
+            <input type="password" id="password" name="password" class="form-input" placeholder="Enter new password" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="confirm_password" class="form-label">Confirm New Password</label>
+        <div class="input-wrapper">
+            <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Confirm new password" required>
+        </div>
+    </div>
+
+    <button type="submit" class="primary-btn">
+        <i class="fas fa-key"></i> Reset Password
+    </button>
+</form>
+
+<div class="back-link">
+    <a href="{% url 'request_password_reset' %}">
+        <i class="fas fa-arrow-left"></i> Back to Reset Request
+    </a>
+</div>
+
+
+<div class="back-link" style="margin-top: 0.5rem;">
+    <a href="{% url 'login' %}">
+        <i class="fas fa-sign-in-alt"></i> Back to Sign In
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-format OTP input (optional enhancement)
+    document.getElementById('otp').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+        if (value.length > 6) {
+            value = value.slice(0, 6);
+        }
+        e.target.value = value;
+    });
+
+    // Password confirmation validation
+    document.getElementById('confirm_password').addEventListener('input', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = e.target.value;
+        
+        if (password !== confirmPassword) {
+            e.target.setCustomValidity('Passwords do not match');
+        } else {
+            e.target.setCustomValidity('');
+        }
+    });
+
+    document.getElementById('password').addEventListener('input', function(e) {
+        const confirmPassword = document.getElementById('confirm_password');
+        if (confirmPassword.value) {
+            confirmPassword.dispatchEvent(new Event('input'));
+        }
+    });
+</script>
+{% endblock %}

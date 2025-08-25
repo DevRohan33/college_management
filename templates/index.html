@@ -1,414 +1,934 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elitte College of Engineering - Excellence in Technical Education</title>
-    <meta name="description" content="Premier engineering college offering cutting-edge programs in AI, Computer Science, and Engineering. 95% placement rate, NAAC A+ accredited.">
+    <meta name="description" content="Premier engineering college offering cutting-edge programs with 95% placement rate, NAAC A+ accredited.">
+    <link rel="icon" type="image/x-icon" href="{% static 'index/favico.ico' %}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="Elitte College of Engineering - Excellence in Technical Education">
-    <meta property="og:description" content="Experience next-generation learning with cutting-edge technology and industry partnerships.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="/hero-image.jpg">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS will be in separate file -->
-    <link rel="stylesheet" href="index/style.css">
+    <!-- AOS Animation Library -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4B49AC;
+            --secondary-color: #7DA0FA;
+            --accent-color: #F3797E;
+            --white: #FFFFFF;
+            --light-gray: #F8F9FA;
+            --dark-gray: #6C757D;
+            --text-dark: #212529;
+            --text-light: #6C757D;
+            --shadow: 0 10px 30px rgba(75, 73, 172, 0.1);
+            --shadow-hover: 0 20px 40px rgba(75, 73, 172, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        .font-poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: var(--text-dark) !important;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-color) !important;
+            transform: translateY(-2px);
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            padding: 0 2rem;
+        }
+
+        /* Blurred background image */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("{% static 'index/hero.jpg' %}") center/cover no-repeat;
+            filter: blur(5px);
+            transform: scale(1.1);
+            z-index: -2;
+        }
+
+        /* Gradient overlay */
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(120, 84, 45, 0.56), rgba(231, 174, 95, 0.48));
+            z-index: -1;
+        }
+
+        /* Hero Content */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 650px;
+        }
+
+        /* Badge above title */
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Title Styling */
+        .hero-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            color: #fff;
+        }
+
+        /* Highlighted word */
+        .hero-title span {
+            color: #6bb4ff; /* Accent color for emphasis */
+        }
+
+        /* Subtitle */
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            line-height: 1.8;
+            color: #f1f1f1;
+        }
+
+        /* Buttons */
+        .btn-custom {
+            background: #6bb4ff;
+            color: #fff;
+            padding: 0.75rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            border: none;
+            margin-right: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: #fff;
+            color: #6bb4ff;
+            transform: translateY(-3px);
+        }
+
+        .btn-outline-custom {
+            border: 2px solid white;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-custom:hover {
+            background: white;
+            color: #2d3978;
+            transform: translateY(-3px);
+        }
+
+        /* Stats Card */
+        .stats-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .stats-label {
+            font-size: 1rem;
+            opacity: 0.95;
+            color: #eee;
+        }
+
+            /* Section Styling */
+            .section-padding {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Cards */
+        .custom-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: none;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .custom-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        /* Programs Section */
+        .program-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .program-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .program-features {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .program-features li {
+            padding: 0.25rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .program-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        /* Notice Board */
+        .notice-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .notice-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .notice-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notice-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: var(--light-gray);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            border: 4px solid var(--secondary-color);
+        }
+
+        /* Contact Form */
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(75, 73, 172, 0.25);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 0.75rem 3rem;
+            border-radius: 25px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--primary-color), var(--text-dark));
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: var(--secondary-color);
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            margin-top: 2rem;
+        }
+
+        .dev-credit {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .dev-credit a {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .stats-card {
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .section-padding {
+                padding: 3rem 0;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header" id="header">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <nav class="navbar">
-                <a href="#home" class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <span>Elitte College</span>
-                </a>
-                
-                <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#programs">Programs</a></li>
-                    <li><a href="#campus">Campus</a></li>
-                    <li><a href="#research">Research</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    
-                    <li><a href="{% url 'login' %}" class="btn btn-primary">Portal Login</a></li>
+            <a class="navbar-brand d-flex align-items-center" href="#home">
+                <img src="{% static 'index/logo.png' %}" alt="ECE Logo" height="40" class="me-2">
+                <i class="fas me-2"></i>Elitte College of Engineering
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#programs">Programs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#campus">Campus</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#research">Research</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'login' %}" class="btn btn-primary-custom ms-2" href="#admission">LOGIN</a>
+                        
+                    </li>
                 </ul>
-                
-                <button class="mobile-toggle" id="mobile-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </nav>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="floating-element">
-            <i class="fas fa-atom"></i>
-        </div>
-        <div class="floating-element">
-            <i class="fas fa-code"></i>
-        </div>
-        <div class="floating-element">
-            <i class="fas fa-rocket"></i>
-        </div>
-        
+    <section id="home" class="hero-section">
         <div class="container">
-          <div class="hero-content">
-            
-            <!-- Floating Badge -->
-            <div class="hero-badge">
-              <i class="fas fa-graduation-cap"></i> 95% Placement | NAAC A+ Accredited
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content" data-aos="fade-up">
+                        <div class="hero-badge">
+                            <i class="fas fa-award me-2"></i>95% Placement Rate • NAAC A+ Accredited
+                        </div>
+                        
+                        <h1 class="hero-title">
+                            Shape Your Future with 
+                            <span class="gradient-text">Excellence</span>
+                        </h1>
+                        
+                        <p class="hero-subtitle">
+                            Join India's premier engineering college offering cutting-edge programs, 
+                            world-class faculty, and exceptional career opportunities in technology and innovation.
+                        </p>
+                        
+                        <div class="d-flex flex-wrap gap-3 mb-4">
+                            <a href="#programs" class="btn btn-primary-custom">
+                                <i class="fas fa-rocket me-2"></i>Explore Programs
+                            </a>
+                            <a href="#contact" class="btn btn-outline-custom">
+                                <i class="fas fa-play me-2"></i>Apply Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="row" data-aos="fade-left" data-aos-delay="200">
+                        <div class="col-sm-6 mb-3">
+                            <div class="stats-card floating">
+                                <div class="stats-number">95%</div>
+                                <div class="stats-label">Placement Rate</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="stats-card floating" style="animation-delay: 2s;">
+                                <div class="stats-number">50+</div>
+                                <div class="stats-label">Industry Partners</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="stats-card floating" style="animation-delay: 4s;">
+                                <div class="stats-number">200+</div>
+                                <div class="stats-label">Expert Faculty</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <div class="stats-card floating" style="animation-delay: 6s;">
+                                <div class="stats-number">15+</div>
+                                <div class="stats-label">Years Legacy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        
-            <!-- Heading -->
-            <h1 class="gradient-title">
-              Shape Your Future <br>
-              with <span>Excellence</span>
-            </h1>
-        
-            <!-- Subheading -->
-            <p class="hero-subtext">
-              Join a premier institution offering cutting-edge engineering education with industry partnerships, 
-              advanced research facilities, and an outstanding 95% placement record. 
-              Experience the future of learning today.
-            </p>
-        
-            <!-- Buttons -->
-            <div class="hero-actions">
-              <a href="#contact" class="btn btn-primary">
-                <i class="fas fa-rocket"></i> Start Your Journey
-              </a>
-              <a href="#programs" class="btn btn-secondary">
-                <i class="fas fa-play"></i> Explore Programs
-              </a>
-            </div>
-        
-            <!-- Stats Row -->
-            <div class="hero-stats">
-              <div class="stat">
-                <h3>95%</h3>
-                <p>Placement Success</p>
-              </div>
-              <div class="stat">
-                <h3>50+</h3>
-                <p>Industry Partners</p>
-              </div>
-              <div class="stat">
-                <h3>20+</h3>
-                <p>Research Labs</p>
-              </div>
-            </div>
-        
-          </div>
         </div>
-        
     </section>
 
-    <!-- Notice Board Section -->
-    <section class="section">
+    <!-- Notice Board -->
+    <section class="section-padding bg-light">
         <div class="container">
-            <div class="section-header">
+            <div class="text-center mb-5" data-aos="fade-up">
                 <h2 class="section-title">Latest <span class="gradient-text">Announcements</span></h2>
                 <p class="section-subtitle">Stay updated with important notices and upcoming events</p>
             </div>
-
-            <div class="notice-board-new">
-                <!-- Notice Card -->
-                <div class="notice-card">
-                    <div class="notice-top">
-                        <span class="notice-badge urgent">Urgent</span>
-                        <span class="notice-date">June 18, 2024</span>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="notice-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="notice-date">
+                            <i class="fas fa-calendar-alt me-2"></i>August 20, 2024
+                        </div>
+                        <h5 class="notice-title">
+                            <i class="fas fa-exclamation-circle me-2 text-danger"></i>
+                            Admission Deadline Extended - Last Date: August 31, 2024
+                        </h5>
+                        <p class="mb-0">Due to overwhelming response, we've extended the admission deadline for all B.Tech programs. Don't miss this opportunity to secure your future!</p>
                     </div>
-                    <h4 class="notice-title">Admission Deadline Extended</h4>
-                    <p class="notice-text">Application deadline for Academic Year 2024-25 extended to June 30, 2024. Apply now to secure your seat!</p>
-                </div>
-
-                <div class="notice-card">
-                    <div class="notice-top">
-                        <span class="notice-badge event">Event</span>
-                        <span class="notice-date">June 15, 2024</span>
+                    
+                    <div class="notice-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="notice-date">
+                            <i class="fas fa-calendar-alt me-2"></i>August 15, 2024
+                        </div>
+                        <h5 class="notice-title">
+                            <i class="fas fa-trophy me-2 text-warning"></i>
+                            Annual Tech Fest "Innovate 2024" - September 5-7
+                        </h5>
+                        <p class="mb-0">Join us for three days of innovation, competitions, and networking with industry experts. Registration now open for all events!</p>
                     </div>
-                    <h4 class="notice-title">Annual Tech Fest "Innovate-2024"</h4>
-                    <p class="notice-text">Three days of technical competitions, workshops, and guest lectures from July 15-17. Register now!</p>
-                </div>
-
-                <div class="notice-card">
-                    <div class="notice-top">
-                        <span class="notice-badge academic">Academic</span>
-                        <span class="notice-date">June 12, 2024</span>
+                    
+                    <div class="notice-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="notice-date">
+                            <i class="fas fa-calendar-alt me-2"></i>August 10, 2024
+                        </div>
+                        <h5 class="notice-title">
+                            <i class="fas fa-graduation-cap me-2 text-success"></i>
+                            New AI & Data Science Lab Inaugurated
+                        </h5>
+                        <p class="mb-0">State-of-the-art AI lab with latest GPU clusters and cloud computing facilities now available for students and research.</p>
                     </div>
-                    <h4 class="notice-title">Semester Examination Schedule</h4>
-                    <p class="notice-text">Spring 2024 semester examinations commence from July 1st. Check student portal for detailed schedule.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Programs Section -->
-    <section id="programs" class="section programs">
+    <section id="programs" class="section-padding">
         <div class="container">
-            <div class="section-header">
+            <div class="text-center mb-5" data-aos="fade-up">
                 <h2 class="section-title">Academic <span class="gradient-text">Programs</span></h2>
-                <p class="section-subtitle">
-                    Discover our comprehensive range of engineering programs designed for the innovators of tomorrow
-                </p>
+                <p class="section-subtitle">Choose from our comprehensive range of engineering programs designed for future innovators</p>
             </div>
             
-            <div class="grid grid-3">
-                <div class="card program-card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <div class="program-meta">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="custom-card program-card">
                         <div class="program-badge">B.Tech</div>
-                        <div class="program-duration">4 Years</div>
-                    </div>
-                    <h3>Artificial Intelligence & Machine Learning</h3>
-                    <p>Master the fundamentals of AI, machine learning algorithms, neural networks, and deep learning with hands-on projects and industry collaborations.</p>
-                    <div class="program-features">
-                        <span class="feature-tag">98% Placement</span>
-                        <span class="feature-tag">Industry Projects</span>
-                        <span class="feature-tag">Research Opportunities</span>
-                    </div>
-                    <div class="mt-4">
-                        <a href="#" class="btn btn-outline">
-                            Learn More <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="card-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4 class="card-title">Artificial Intelligence & ML</h4>
+                        <p>Master AI algorithms, machine learning, deep learning, and neural networks with hands-on industry projects.</p>
+                        <ul class="program-features">
+                            <li>98% Placement Rate</li>
+                            <li>Industry Mentorship</li>
+                            <li>Research Opportunities</li>
+                            <li>AI Lab Access</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary rounded-pill">Learn More</a>
                     </div>
                 </div>
                 
-                <div class="card program-card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-code"></i>
-                    </div>
-                    <div class="program-meta">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="custom-card program-card">
                         <div class="program-badge">B.Tech</div>
-                        <div class="program-duration">4 Years</div>
-                    </div>
-                    <h3>Computer Science & Engineering</h3>
-                    <p>Comprehensive curriculum covering software development, algorithms, data structures, cybersecurity, and emerging technologies.</p>
-                    <div class="program-features">
-                        <span class="feature-tag">97% Placement</span>
-                        <span class="feature-tag">Coding Labs</span>
-                        <span class="feature-tag">Hackathons</span>
-                    </div>
-                    <div class="mt-4">
-                        <a href="#" class="btn btn-outline">
-                            Learn More <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="card-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h4 class="card-title">Computer Science & Engineering</h4>
+                        <p>Comprehensive curriculum covering software development, algorithms, cybersecurity, and emerging technologies.</p>
+                        <ul class="program-features">
+                            <li>97% Placement Rate</li>
+                            <li>Coding Bootcamps</li>
+                            <li>Tech Industry Connects</li>
+                            <li>Innovation Labs</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary rounded-pill">Learn More</a>
                     </div>
                 </div>
                 
-                <div class="card program-card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-cog"></i>
-                    </div>
-                    <div class="program-meta">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="custom-card program-card">
                         <div class="program-badge">B.Tech</div>
-                        <div class="program-duration">4 Years</div>
-                    </div>
-                    <h3>Mechanical Engineering</h3>
-                    <p>Study design, manufacturing, thermal systems, and robotics with access to state-of-the-art workshops and CAD/CAM laboratories.</p>
-                    <div class="program-features">
-                        <span class="feature-tag">94% Placement</span>
-                        <span class="feature-tag">CAD/CAM Labs</span>
-                        <span class="feature-tag">Industry Training</span>
-                    </div>
-                    <div class="mt-4">
-                        <a href="#" class="btn btn-outline">
-                            Learn More <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="card-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h4 class="card-title">Mechanical Engineering</h4>
+                        <p>Study design, manufacturing, robotics, and automation with state-of-the-art workshops and CAD facilities.</p>
+                        <ul class="program-features">
+                            <li>94% Placement Rate</li>
+                            <li>Modern Workshops</li>
+                            <li>CAD/CAM Training</li>
+                            <li>Industry Projects</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary rounded-pill">Learn More</a>
                     </div>
                 </div>
                 
-                <div class="card program-card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-microchip"></i>
-                    </div>
-                    <div class="program-meta">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="custom-card program-card">
                         <div class="program-badge">B.Tech</div>
-                        <div class="program-duration">4 Years</div>
-                    </div>
-                    <h3>Electronics & Communication</h3>
-                    <p>Explore VLSI design, embedded systems, signal processing, and telecommunications with modern laboratory facilities.</p>
-                    <div class="program-features">
-                        <span class="feature-tag">92% Placement</span>
-                        <span class="feature-tag">VLSI Labs</span>
-                        <span class="feature-tag">IoT Projects</span>
-                    </div>
-                    <div class="mt-4">
-                        <a href="#" class="btn btn-outline">
-                            Learn More <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="card-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h4 class="card-title">Electronics & Communication</h4>
+                        <p>Explore VLSI design, embedded systems, IoT, and telecommunications with cutting-edge lab facilities.</p>
+                        <ul class="program-features">
+                            <li>92% Placement Rate</li>
+                            <li>VLSI Design Lab</li>
+                            <li>IoT Projects</li>
+                            <li>Industry Internships</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary rounded-pill">Learn More</a>
                     </div>
                 </div>
                 
-                <div class="card program-card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-building"></i>
-                    </div>
-                    <div class="program-meta">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="custom-card program-card">
                         <div class="program-badge">B.Tech</div>
-                        <div class="program-duration">4 Years</div>
-                    </div>
-                    <h3>Civil Engineering</h3>
-                    <p>Master structural design, environmental engineering, and smart city technologies with real-world project experience.</p>
-                    <div class="program-features">
-                        <span class="feature-tag">91% Placement</span>
-                        <span class="feature-tag">Site Visits</span>
-                        <span class="feature-tag">Green Building</span>
-                    </div>
-                    <div class="mt-4">
-                        <a href="#" class="btn btn-outline">
-                            Learn More <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="card-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h4 class="card-title">Civil Engineering</h4>
+                        <p>Master structural design, environmental engineering, and sustainable construction technologies.</p>
+                        <ul class="program-features">
+                            <li>90% Placement Rate</li>
+                            <li>Site Visits</li>
+                            <li>Green Construction</li>
+                            <li>Smart City Projects</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary rounded-pill">Learn More</a>
                     </div>
                 </div>
                 
-                <div class="card program-card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-flask"></i>
-                    </div>
-                    <div class="program-meta">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="custom-card program-card">
                         <div class="program-badge">B.Tech</div>
-                        <div class="program-duration">4 Years</div>
-                    </div>
-                    <h3>Chemical Engineering</h3>
-                    <p>Study process design, sustainability, and green chemistry with advanced laboratory facilities and industry partnerships.</p>
-                    <div class="program-features">
-                        <span class="feature-tag">89% Placement</span>
-                        <span class="feature-tag">Process Labs</span>
-                        <span class="feature-tag">Sustainability Focus</span>
-                    </div>
-                    <div class="mt-4">
-                        <a href="#" class="btn btn-outline">
-                            Learn More <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="card-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h4 class="card-title">Chemical Engineering</h4>
+                        <p>Study process design, sustainability, and green chemistry with advanced laboratory infrastructure.</p>
+                        <ul class="program-features">
+                            <li>88% Placement Rate</li>
+                            <li>Process Simulation</li>
+                            <li>Green Chemistry</li>
+                            <li>Industry Partnerships</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary rounded-pill">Learn More</a>
                     </div>
                 </div>
-            </div>
-            
-            <div class="text-center mt-8">
-                <a href="#" class="btn btn-primary">
-                    View All Programs <i class="fas fa-arrow-right"></i>
-                </a>
             </div>
         </div>
     </section>
 
     <!-- Campus Facilities -->
-    <section id="campus" class="section">
+    <section id="campus" class="section-padding bg-light">
         <div class="container">
-            <div class="section-header">
+            <div class="text-center mb-5" data-aos="fade-up">
                 <h2 class="section-title">World-Class <span class="gradient-text">Campus</span></h2>
-                <p class="section-subtitle">
-                    Experience a campus designed for the future with cutting-edge facilities and technology integration
-                </p>
+                <p class="section-subtitle">Experience modern facilities designed to enhance your learning journey</p>
             </div>
             
-            <div class="grid grid-3">
-                <div class="card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-flask"></i>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="custom-card">
+                        <div class="card-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h4 class="card-title">Advanced Laboratories</h4>
+                        <p>State-of-the-art labs equipped with latest technology for hands-on learning and cutting-edge research across all engineering disciplines.</p>
                     </div>
-                    <h3>Advanced Laboratories</h3>
-                    <p>State-of-the-art labs equipped with the latest technology for hands-on learning and research across all engineering disciplines.</p>
                 </div>
                 
-                <div class="card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-wifi"></i>
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="custom-card">
+                        <div class="card-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h4 class="card-title">Smart Classrooms</h4>
+                        <p>Modern classrooms with interactive smart boards, high-speed internet, and audio-visual systems for enhanced learning experiences.</p>
                     </div>
-                    <h3>Smart Infrastructure</h3>
-                    <p>Modern classrooms with smart boards, high-speed internet, and advanced audio-visual systems for interactive learning experiences.</p>
                 </div>
                 
-                <div class="card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-book"></i>
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="custom-card">
+                        <div class="card-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h4 class="card-title">Digital Library</h4>
+                        <p>Extensive collection of books, journals, and online resources with 24/7 access and dedicated study spaces for students.</p>
                     </div>
-                    <h3>Digital Library</h3>
-                    <p>Extensive collection of books, journals, and online resources with 24/7 access and dedicated study spaces for students.</p>
                 </div>
                 
-                <div class="card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-dumbbell"></i>
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="custom-card">
+                        <div class="card-icon">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <h4 class="card-title">Sports Complex</h4>
+                        <p>Complete sports facilities including gymnasium, swimming pool, outdoor courts, and recreational areas for holistic development.</p>
                     </div>
-                    <h3>Sports Complex</h3>
-                    <p>Complete sports facilities including gymnasium, swimming pool, courts for various sports, and outdoor recreational areas.</p>
                 </div>
                 
-                <div class="card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-home"></i>
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="custom-card">
+                        <div class="card-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h4 class="card-title">Modern Hostels</h4>
+                        <p>Comfortable accommodation with Wi-Fi, mess facilities, common areas, and 24/7 security for a home-away-from-home experience.</p>
                     </div>
-                    <h3>Hostel Facilities</h3>
-                    <p>Modern hostels with comfortable accommodation, mess facilities, Wi-Fi connectivity, and 24/7 security for residential students.</p>
                 </div>
                 
-                <div class="card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-seedling"></i>
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="custom-card">
+                        <div class="card-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h4 class="card-title">Green Campus</h4>
+                        <p>Eco-friendly campus with solar power, rainwater harvesting, waste management systems, and lush green landscapes.</p>
                     </div>
-                    <h3>Green Campus</h3>
-                    <p>Eco-friendly campus with solar power, rainwater harvesting, waste management systems, and extensive green spaces.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Research & Innovation -->
-    <section id="research" class="section programs">
+    <!-- Research Section -->
+    <section id="research" class="section-padding">
         <div class="container">
-            <div class="section-header">
+            <div class="text-center mb-5" data-aos="fade-up">
                 <h2 class="section-title">Research & <span class="gradient-text">Innovation</span></h2>
-                <p class="section-subtitle">
-                    Pushing the boundaries of knowledge through cutting-edge research and innovation initiatives
-                </p>
+                <p class="section-subtitle">Driving tomorrow's breakthroughs through cutting-edge research and innovation</p>
             </div>
             
-            <div class="grid grid-2">
-                <div class="card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-microscope"></i>
+            <div class="row">
+                <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="custom-card">
+                        <div class="card-icon">
+                            <i class="fas fa-atom"></i>
+                        </div>
+                        <h4 class="card-title">Research Centers</h4>
+                        <p>Specialized research centers focusing on emerging technologies like AI, quantum computing, renewable energy, and biotechnology.</p>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-check-circle text-success me-2"></i>AI & Machine Learning Lab<br>
+                                <i class="fas fa-check-circle text-success me-2"></i>Quantum Computing Research<br>
+                                <i class="fas fa-check-circle text-success me-2"></i>Renewable Energy Center<br>
+                                <i class="fas fa-check-circle text-success me-2"></i>Biotechnology Research Lab
+                            </small>
+                        </div>
                     </div>
-                    <h3>Research Centers</h3>
-                    <p>Dedicated research centers for AI, robotics, renewable energy, and advanced materials with funding from DST, AICTE, and industry partners.</p>
-                    <ul class="mt-4 research-list">
-                        <li>Center for AI & Machine Learning</li>
-                        <li>Robotics & Automation Lab</li>
-                        <li>Renewable Energy Research Center</li>
-                        <li>Advanced Materials Lab</li>
-                    </ul>
                 </div>
                 
-                <div class="card scroll-reveal">
-                    <div class="card-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <h3>Innovation Hub</h3>
-                    <p>Incubation center supporting student startups and entrepreneurial ventures with mentorship, funding, and industry connections.</p>
-                    <div class="grid grid-2 mt-4 stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number">50+</div>
-                            <div class="stat-label">Startups Incubated</div>
+                <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="custom-card">
+                        <div class="card-icon">
+                            <i class="fas fa-rocket"></i>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number">₹2Cr+</div>
-                            <div class="stat-label">Funding Raised</div>
+                        <h4 class="card-title">Innovation Hub</h4>
+                        <p>Supporting student entrepreneurs with incubation facilities, mentorship programs, and funding opportunities for startup ventures.</p>
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <h5 class="text-primary mb-1">50+</h5>
+                                    <small class="text-muted">Startups Launched</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <h5 class="text-primary mb-1">₹5Cr+</h5>
+                                    <small class="text-muted">Funding Secured</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -417,58 +937,38 @@
     </section>
 
     <!-- Testimonials -->
-    <section class="section">
+    <section class="section-padding bg-light">
         <div class="container">
-            <div class="section-header">
+            <div class="text-center mb-5" data-aos="fade-up">
                 <h2 class="section-title">Student <span class="gradient-text">Success Stories</span></h2>
-                <p class="section-subtitle">
-                    Hear from our graduates who are making their mark in top companies and research institutions worldwide
-                </p>
+                <p class="section-subtitle">Hear from our graduates making their mark in leading companies worldwide</p>
             </div>
             
-            <div class="grid grid-3">
-                <div class="card testimonial-card scroll-reveal">
-                    <div class="testimonial-quote">
-                        "The faculty mentorship and industry exposure at Elitte College transformed my career. The practical approach to learning helped me secure my dream job at Microsoft."
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-image">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face" alt="Rahul Sharma">
-                        </div>
-                        <div class="author-info">
-                            <div class="author-name">Rahul Sharma</div>
-                            <div class="author-title">B.Tech CSE '22 • Software Engineer at Microsoft</div>
-                        </div>
+            <div class="row">
+                <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-card">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="Student" class="testimonial-avatar">
+                        <p class="fst-italic">"The hands-on approach and industry connections at Elitte College helped me land my dream job at Google. The faculty's guidance was exceptional!"</p>
+                        <h6 class="fw-bold">Arjun Sharma</h6>
+                        <small class="text-muted">B.Tech CSE '23 • Software Engineer at Google</small>
                     </div>
                 </div>
                 
-                <div class="card testimonial-card scroll-reveal">
-                    <div class="testimonial-quote">
-                        "The research opportunities here are exceptional. I published three papers during my studies and secured admission to MIT for my PhD."
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-image">
-                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=64&h=64&fit=crop&crop=face" alt="Priya Patel">
-                        </div>
-                        <div class="author-info">
-                            <div class="author-name">Priya Patel</div>
-                            <div class="author-title">B.Tech AI/ML '23 • PhD Student at MIT</div>
-                        </div>
+                <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-card">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" alt="Student" class="testimonial-avatar">
+                        <p class="fst-italic">"The research opportunities here are incredible. I published papers during my studies and got selected for PhD at MIT. Forever grateful!"</p>
+                        <h6 class="fw-bold">Priya Singh</h6>
+                        <small class="text-muted">B.Tech AI/ML '22 • PhD Student at MIT</small>
                     </div>
                 </div>
                 
-                <div class="card testimonial-card scroll-reveal">
-                    <div class="testimonial-quote">
-                        "The entrepreneurship support and incubation center helped me launch my startup. Today, we have 50+ employees and $2M in funding."
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-image">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face" alt="Amit Kumar">
-                        </div>
-                        <div class="author-info">
-                            <div class="author-name">Amit Kumar</div>
-                            <div class="author-title">B.Tech ME '21 • Founder & CEO, TechNova</div>
-                        </div>
+                <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="testimonial-card">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" alt="Student" class="testimonial-avatar">
+                        <p class="fst-italic">"The innovation hub supported my startup idea from conception to funding. Today, we're a team of 30+ engineers building the future!"</p>
+                        <h6 class="fw-bold">Vikram Patel</h6>
+                        <small class="text-muted">B.Tech ME '21 • Founder & CEO, TechStart</small>
                     </div>
                 </div>
             </div>
@@ -476,103 +976,109 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="section contact">
+    <section id="contact" class="section-padding">
         <div class="container">
-            <div class="section-header">
+            <div class="text-center mb-5" data-aos="fade-up">
                 <h2 class="section-title">Ready to <span class="gradient-text">Join Us?</span></h2>
-                <p class="section-subtitle">
-                    Take the first step towards an exceptional engineering education and a successful career
-                </p>
+                <p class="section-subtitle">Take the first step towards an exceptional engineering education</p>
             </div>
             
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <div class="contact-item scroll-reveal">
-                        <div class="contact-item-icon">
-                            <i class="fas fa-envelope"></i>
+            <div class="row">
+                <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="custom-card">
+                        <h4 class="card-title mb-4">Get in Touch</h4>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="card-icon me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Campus Address</h6>
+                                <p class="mb-0 text-muted">123 Innovation Drive, Tech City<br>Knowledge Park, India 110001</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4>Email Us</h4>
-                            <p>admissions@elitte.edu</p>
-                            <p>info@elitte.edu</p>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="card-icon me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Phone Numbers</h6>
+                                <p class="mb-0 text-muted">+91 9876543210<br>Toll Free: 1800-123-4567</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="contact-item scroll-reveal">
-                        <div class="contact-item-icon">
-                            <i class="fas fa-phone"></i>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="card-icon me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Email Address</h6>
+                                <p class="mb-0 text-muted">admissions@elitte.edu<br>info@elitte.edu</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4>Call Us</h4>
-                            <p>+91 (XXX) XXX-XXXX</p>
-                            <p>Toll Free: 1800-XXX-XXXX</p>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item scroll-reveal">
-                        <div class="contact-item-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div>
-                            <h4>Visit Us</h4>
-                            <p>123 Education Road<br>
-                            Knowledge City, KC 12345<br>
-                            India</p>
+                        
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Office Hours</h6>
+                                <p class="mb-0 text-muted">Mon - Fri: 9:00 AM - 6:00 PM<br>Sat: 9:00 AM - 2:00 PM</p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="card scroll-reveal">
-                    <div class="section-header text-left contact-form-header">
-                        <h3>Start Your Application</h3>
-                        <p>Fill out the form below and our admissions team will get back to you within 24 hours.</p>
+                <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="custom-card">
+                        <h4 class="card-title mb-4">Send us a Message</h4>
+                        
+                        <form id="contactForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="program" class="form-label">Program of Interest</label>
+                                <select class="form-select" id="program" required>
+                                    <option value="">Select a Program</option>
+                                    <option value="ai-ml">Artificial Intelligence & ML</option>
+                                    <option value="cse">Computer Science & Engineering</option>
+                                    <option value="me">Mechanical Engineering</option>
+                                    <option value="ece">Electronics & Communication</option>
+                                    <option value="ce">Civil Engineering</option>
+                                    <option value="che">Chemical Engineering</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" rows="4" placeholder="Tell us about your interests and goals..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-submit w-100">
+                                <i class="fas fa-paper-plane me-2"></i>Send Message
+                            </button>
+                        </form>
                     </div>
-                    
-                    <form class="contact-form" id="contact-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName">First Name</label>
-                                <input type="text" id="firstName" name="firstName" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="lastName">Last Name</label>
-                                <input type="text" id="lastName" name="lastName" required>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="program">Program of Interest</label>
-                            <select id="program" name="program" required>
-                                <option value="">Select a program</option>
-                                <option value="ai-ml">Artificial Intelligence & Machine Learning</option>
-                                <option value="cse">Computer Science & Engineering</option>
-                                <option value="me">Mechanical Engineering</option>
-                                <option value="ece">Electronics & Communication</option>
-                                <option value="ce">Civil Engineering</option>
-                                <option value="che">Chemical Engineering</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="4" placeholder="Tell us about your interests, goals, and any questions you have..."></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary submit-btn">
-                            <i class="fas fa-paper-plane"></i>
-                            Submit Application
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -581,15 +1087,14 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <div class="logo mb-4">
-                        <div class="logo-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <span>Elitte College of Engineering</span>
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="mb-3">
+                        <a href="#" class="text-white text-decoration-none">
+                            <h4><i class="fas fa-graduation-cap me-2"></i>Elitte College</h4>
+                        </a>
                     </div>
-                    <p>Shaping tomorrow's leaders through innovative education, cutting-edge research, and industry partnerships.</p>
+                    <p>Empowering the next generation of engineers and innovators through world-class education, cutting-edge research, and industry partnerships.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -599,56 +1104,152 @@
                     </div>
                 </div>
                 
-                <div class="footer-section">
-                    <h4>Programs</h4>
-                    <ul>
-                        <li><a href="#">Artificial Intelligence & ML</a></li>
-                        <li><a href="#">Computer Science & Engineering</a></li>
-                        <li><a href="#">Mechanical Engineering</a></li>
-                        <li><a href="#">Electronics & Communication</a></li>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Programs</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">AI & Machine Learning</a></li>
+                        <li><a href="#">Computer Science</a></li>
+                        <li><a href="#">Mechanical Engg.</a></li>
+                        <li><a href="#">Electronics & Comm.</a></li>
                         <li><a href="#">Civil Engineering</a></li>
-                        <li><a href="#">Chemical Engineering</a></li>
+                        <li><a href="#">Chemical Engg.</a></li>
                     </ul>
                 </div>
                 
-                <div class="footer-section">
-                    <h4>Campus Life</h4>
-                    <ul>
-                        <li><a href="#">Virtual Campus Tour</a></li>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Campus Life</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Virtual Tour</a></li>
                         <li><a href="#">Student Activities</a></li>
-                        <li><a href="#">Sports & Recreation</a></li>
+                        <li><a href="#">Sports Complex</a></li>
                         <li><a href="#">Hostel Facilities</a></li>
                         <li><a href="#">Cultural Events</a></li>
                         <li><a href="#">Student Clubs</a></li>
                     </ul>
                 </div>
                 
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
                         <li><a href="#">Admissions</a></li>
                         <li><a href="#">Placements</a></li>
-                        <li><a href="#">Research & Innovation</a></li>
+                        <li><a href="#">Research</a></li>
                         <li><a href="#">Faculty</a></li>
-                        <li><a href="#">Alumni Network</a></li>
+                        <li><a href="#">Alumni</a></li>
                         <li><a href="#">Career Services</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Resources</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Digital Library</a></li>
+                        <li><a href="#">Student Portal</a></li>
+                        <li><a href="#">Academic Calendar</a></li>
+                        <li><a href="#">Fee Structure</a></li>
+                        <li><a href="#">Scholarships</a></li>
+                        <li><a href="#">Downloads</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2024 Elitte College of Engineering. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Cookie Policy</a>
-                    <a href="#">Sitemap</a>
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="mb-2">&copy; 2024 Elitte College of Engineering. All rights reserved.</p>
+                        <small>
+                            <a href="#" class="me-3">Privacy Policy</a>
+                            <a href="#" class="me-3">Terms of Service</a>
+                            <a href="#">Cookie Policy</a>
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="dev-credit">
+                            <p class="mb-1"><i class="fas fa-code me-2"></i>Developed with Django, HTML & Bootstrap</p>
+                            <p class="mb-0">Made by <a href="https://www.linkedin.com/in/sk-rohan-parveag-999294212" target="_blank">Rohan</a></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript will be in separate file -->
-    <script src="index/script.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.15)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Show success message (you can integrate with actual form handling)
+            alert('Thank you for your message! We will get back to you soon.');
+            this.reset();
+        });
+
+        // Add loading animation for cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards for scroll animations
+        document.querySelectorAll('.custom-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
 </body>
 </html>

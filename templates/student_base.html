@@ -453,6 +453,12 @@
             opacity: 0.03;
             z-index: -1;
         }
+        .logo {
+            width: 40px;   /* adjust size */
+            height: auto;  /* keeps aspect ratio */
+            border-radius: 50%; /* optional: makes it round */
+        }
+
 
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
@@ -923,8 +929,9 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a class="navbar-brand" href="/">
-                <div class="brand-icon">
-                    <i class="fas fa-graduation-cap"></i>
+                <div>
+                    <!-- Replace icon with logo -->
+                    <img src="{% static 'index/logo.png' %}" alt="Logo" class="logo">
                 </div>
                 ECE
             </a>

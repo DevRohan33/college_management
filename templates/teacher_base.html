@@ -175,6 +175,12 @@
         gap: 12px;
         margin-bottom: 15px;
     }
+    .logo {
+        width: 40px;   /* adjust size */
+        height: auto;  /* keeps aspect ratio */
+        border-radius: 50%; /* optional: makes it round */
+    }
+    
     
     .social-link {
         width: 36px;
@@ -930,13 +936,12 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a class="navbar-brand" href="/">
-                <div class="brand-icon">
-                    <i class="fas fa-chalkboard-user"></i>
-                </div>
-                Teacher Portal
-            </a>
-        </div>
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="{% static 'index/logo.png' %}" alt="Logo" class="logo me-2">
+            <span class="brand-text">ECE</span>
+        </a>
+    </div>
+    
         <ul class="sidebar-menu">
             <li><a href="#dashboard" class="{% if request.resolver_match.url_name == 'teacher_dashboard' %}active{% endif %}">
                 <i class="fas fa-tachometer-alt icon"></i> Dashboard</a></li>
@@ -983,7 +988,7 @@
                     <div class="fw-bold">{{ user.first_name }} {{ user.last_name }}</div>
                     <small class="text-muted">Teacher ID: TCH-{{ user.id }}</small>
                 </div>
-                <img src="https://via.placeholder.com/50" class="rounded-circle" alt="User Avatar" width="50" height="50">
+                <img src="{{ profile.profile_image.url }}" class="rounded-circle" alt="User Avatar" width="50" height="50">
             </div>
         </div>
 

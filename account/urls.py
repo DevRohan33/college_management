@@ -1,10 +1,16 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('login/', views.custom_login, name='login'),
     path('logout/', views.custom_logout, name='logout'),
+    path("password_reset/", views.request_password_reset, name="request_password_reset"),
+    # Step 2: User enters OTP (sent via email)
+    path("password_reset/verify/", views.verify_otp, name="verify_otp"),
+
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
      path('management-dashboard/', views.management_dashboard, name='management_dashboard'),
     path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),

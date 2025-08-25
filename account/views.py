@@ -7,7 +7,6 @@ from .models import User,Department
 from routine.models import ClassRoutine
 from django.contrib import messages
 from events.models import Notice
-from datetime import datetime
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from attendance.models import AttendanceEntry, Attendance
@@ -16,6 +15,13 @@ from django.db import models
 from club.models import Club
 from teacher.models import TeacherProfile
 from result.models import StudentSGPA
+from .models import PasswordResetOTP
+from django.core.mail import EmailMultiAlternatives
+from django.utils import timezone
+from datetime import datetime, timedelta
+import random
+
+OTP_STORE = {}
 
 # ------------------ VIEWS ------------------
 def index(request):
@@ -55,7 +61,7 @@ def custom_login(request):
                 return redirect('hod_dashboard')
             else:
                 return redirect('student_dashboard')
-    return render(request, 'login.html')
+    return render(request, 'login/login.html')
 
 
 # ------------------ DASHBOARDS ------------------
@@ -191,7 +197,6 @@ def teacher_dashboard(request):
     return render(request, "dashboards/teacher_dashboard.html", context)
 
 
-
 @login_required
 def student_dashboard(request):
     user = request.user
@@ -276,6 +281,7 @@ def student_dashboard(request):
         'current_gpa': overall_sgpa,
     })
 
+
 # --- NEW, SEPARATE FUNCTION FOR THE RESULTS PAGE ---
 @login_required
 def student_results(request):
@@ -298,6 +304,8 @@ def event_list(request):
     notices = Notice.objects.all().order_by('-created_at')
     return render(request, 'event/notice_list.html', {'notices': notices})
 
+
+#------------password change -----------------
 @login_required
 def student_change_password(request):
     if request.method == "POST":
@@ -314,6 +322,77 @@ def student_change_password(request):
         form = PasswordChangeForm(user=request.user)
 
     return render(request, "student_profiles/password_change.html", {"form": form})
+
+
+#------------password reset via email with otp -----------------
+
+def send_otp_email(email, otp):
+    subject = "Profile Password Reset OTP - Elitte College of Engineering"
+    
+    html_content = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; background:#f9f9f9; padding:20px;">
+        <div style="max-width:600px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+            <h2 style="color:#2c3e50;text-align:center;">🔑 Password Reset Request</h2>
+            <p>Hello,</p>
+            <p>We received a request to reset your profile password for your 
+            <b>Elitte College of Engineering </b> account.</p>
+
+            <p style="font-size:16px;">Your One-Time Password (OTP) is:</p>
+            <h1 style="color:#e74c3c; text-align:center;">{otp}</h1>
+
+            <p>This OTP will expire in <b>10 minutes</b>. Please use it to set a new password.</p>
+
+            <hr style="margin:20px 0;">
+            <p style="font-size:14px;color:#555;">📍 Location: Sodpur, North 24 PGS</p>
+            <p style="font-size:14px;color:#555;">🙏 Thank you for being part of our family. We pray for your better future!</p>
+        </div>
+    </body>
+    </html>
+    """
+
+    msg = EmailMultiAlternatives(subject, f"Your OTP is {otp}. It expires in 10 minutes.", "parveagr@gmail.com", [email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+def request_password_reset(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        try:
+            user = User.objects.get(email=email)
+            otp = random.randint(100000, 999999)
+            OTP_STORE[email] = {"otp": otp, "expires": timezone.now() + timedelta(minutes=10)}
+
+            send_otp_email(email, otp)
+            messages.success(request, "OTP sent to your email. Please check inbox.")
+            return redirect("verify_otp")
+        except User.DoesNotExist:
+            messages.error(request, "No account found with this email.")
+    
+    return render(request, "login/request_password_reset.html")
+
+
+def verify_otp(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        otp_entered = request.POST.get("otp")
+        new_password = request.POST.get("password")
+
+        if email in OTP_STORE:
+            data = OTP_STORE[email]
+            if timezone.now() < data["expires"] and str(data["otp"]) == otp_entered:
+                user = User.objects.get(email=email)
+                user.set_password(new_password)
+                user.save()
+                del OTP_STORE[email]
+                messages.success(request, "Password reset successful! You can now log in.")
+                return redirect("login")
+            else:
+                messages.error(request, "Invalid or expired OTP.")
+        else:
+            messages.error(request, "No OTP request found for this email.")
+    
+    return render(request, "login/verify_otp.html")
 
 def custom_logout(request):
     logout(request)
