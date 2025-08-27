@@ -37,10 +37,7 @@
 
     <footer class="chat__footer">
       <div class="quick" id="ece-chat-quick">
-        <button class="chip">Course Details</button>
-        <button class="chip">Placement</button>
-        <button class="chip">Fees</button>
-        <button class="chip">Communication Systems</button>
+        
       </div>
       <div class="inputbar">
         <input id="ece-chat-input" type="text" placeholder="Ask about ECE topics, courses, or projects..." autocomplete="off" />
@@ -388,18 +385,7 @@
 <script>
   // ECE AI Assistant Chat Widget Script
   (() => {
-    // ECE-specific replies
-    const eceReplies = [
-      "Welcome to Elitte College of Engineering — Approved by AICTE and Affiliated to MAKAUT, West Bengal.",
-      "Elitte College of Engineering, established in 2015 by Pinnacle Educational Trust, is one of the best private B.Tech colleges in Kolkata.",
-      "Our college is accredited with 'B+' Grade by NAAC (effective from 31/10/2024).",
-      "Located at Karnamadhabpur, Sodepur, Kolkata - 700113, we provide a vibrant campus environment for learning and growth.",
-      "We offer AICTE-approved B.Tech programs across various engineering and management disciplines with a focus on hands-on learning and industry exposure.",
-      "Elitte College of Engineering ensures students are well-prepared for successful careers and top placements in leading companies.",
-      "Want to know more? Elitte is widely recognized as one of the best B.Tech colleges in Kolkata for quality education and opportunities."
-    ];
-
-
+    const chatbotAppUrl = '/chat-api/'; 
     const elements = {
       toggle: document.getElementById('ece-chat-toggle'),
       chat: document.getElementById('ece-chat-window'),
@@ -437,66 +423,33 @@
       }
     });
 
-    function sendMessage() {
+    async function sendMessage() {
       const text = elements.input.value.trim();
       if (!text) return;
       addMessage(text, 'user');
       elements.input.value = '';
       
-      // Show typing indicator
-      setTimeout(() => {
-        const reply = generateECEReply(text);
-        addMessage(reply, 'bot');
-      }, 800);
+      try {
+        const response = await fetch(chatbotAppUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify({ message: text })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        addMessage(data.reply, 'bot');   // ✅ fixed (was data.response)
+      } catch (error) {
+        console.error('Error:', error);
+        addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+      }
     }
-    
-    function generateECEReply(userText) {
-      const text = userText.toLowerCase();
-
-      // Course Details
-      if (text.includes("course") || text.includes("btech") || text.includes("program") || text.includes("department")) {
-        return "Elitte College of Engineering offers AICTE-approved B.Tech programs in multiple engineering disciplines such as Computer Science, Electronics, Electrical, Mechanical, and Civil Engineering. All programs are affiliated with MAKAUT, West Bengal.";
-      }
-
-      // Placement
-      if (text.includes("placement") || text.includes("job") || text.includes("career") || text.includes("company")) {
-        return "Our Training & Placement Cell actively collaborates with leading companies. Students receive training in soft skills, aptitude, and technical skills, ensuring excellent placement opportunities in IT, core engineering, and management sectors.";
-      }
-
-      // Fees
-      if (text.includes("fee") || text.includes("fees") || text.includes("admission") || text.includes("structure")) {
-        return "Elitte College of Engineering provides quality education at affordable fees, following MAKAUT and AICTE guidelines. For the latest fee structure and admission details, please visit the official college website or contact the admission cell.";
-      }
-
-      // Communication Systems (keep as a sample academic query)
-      if (text.includes("communication") || text.includes("wireless") || text.includes("network")) {
-        return "In our Electronics & Communication department, students learn topics like analog/digital communication, wireless systems, signal processing, and antenna design — preparing them for careers in telecom and networking industries.";
-      }
-
-      // Location / Address
-      if (text.includes("where") || text.includes("location") || text.includes("address") || text.includes("map")) {
-        return "Elitte College of Engineering is located at PO: Karnamadhabpur, PS: Ghola, Sodepur, Kolkata - 700113. The campus is easily accessible by road and public transport.";
-      }
-
-      // About College
-      if (text.includes("about") || text.includes("info") || text.includes("college") || text.includes("elitte")) {
-        return "Elitte College of Engineering (established in 2015 by Pinnacle Educational Trust) is a reputed private engineering college in Kolkata. Approved by AICTE and affiliated with MAKAUT, it is accredited with 'B+' Grade by NAAC (since 31/10/2024).";
-      }
-
-      // Greetings
-      if (text.includes("hello") || text.includes("hi") || text.includes("hey") || text.includes("good")) {
-        return "Hello! Welcome to Elitte College of Engineering — one of the best B.Tech colleges in Kolkata. How can I assist you today?";
-      }
-
-      // Thanks
-      if (text.includes("thank") || text.includes("thanks")) {
-        return "You're welcome! Feel free to ask about courses, admissions, placements, or any other details about Elitte College of Engineering.";
-      }
-
-      // Default
-      return eceReplies[Math.floor(Math.random() * eceReplies.length)];
-    }
-
 
     function addMessage(text, sender) {
       const messageWrapper = document.createElement('div');
@@ -514,16 +467,32 @@
     function scrollToBottom() {
       elements.messages.scrollTop = elements.messages.scrollHeight;
     }
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
     
     // Initial welcome message
     setTimeout(() => {
       addMessage(
-        "Welcome to Elitte College of Engineering AI Assistant! I can help you with information about our B.Tech courses, admissions, fees, placements, campus details, and more. What would you like to know?",
+        "Welcome to Elitte College of Engineering AI Assistant! How can I help you today?",
         'bot'
       );
     }, 1000);
 
   })();
 </script>
+
 
 <!-- END: ECE AI Assistant Chat Widget -->

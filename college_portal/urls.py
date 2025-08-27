@@ -20,6 +20,8 @@ urlpatterns = [
     path('clubs/', include("club.urls")),
     path('result', include('result.urls')),
     path('shop/', include('shop.urls')),
+    path("", include("chatbot.urls")),
+
 
 
 ]
