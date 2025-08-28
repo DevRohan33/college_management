@@ -1,0 +1,32 @@
+# Environment variables
+.env
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Django specific
+*.log
+*.sqlite3
+db.sqlite3
+
+# Node modules (if using frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
