@@ -4,14 +4,6 @@ services:
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn college_portal.wsgi:application --bind 0.0.0.0:$PORT"
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: college_portal.settings
-      - key: PYTHON_VERSION
-        value: 3.11
-
-databases:
-  - name: college-portal-db
-    databaseName: college_portal
-    user: college_portal_user
-    plan: free
+    postDeployCommand: |
+      python manage.py migrate
+      python manage.py collectstatic --noinput
