@@ -11,8 +11,6 @@ import mimetypes
 # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'college_portal.settings')
 # django.setup()
 
-
-
 # def test_without_acl():
 #     print("=== Testing Without ACL (Bucket Policy Only) ===")
     

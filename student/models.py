@@ -4,7 +4,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from college_portal.storage_backends import MediaStorage
 
-
 class Student(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

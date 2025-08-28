@@ -15,5 +15,5 @@ if hasattr(default_storage, 'bucket_name'):
     print(f"S3 Bucket: {default_storage.bucket_name}")
     print("✅ Using S3 storage")
 else:
-    print("❌ Still using local storage")
+    print("Still using local storage")
     print("Check settings loading order")
