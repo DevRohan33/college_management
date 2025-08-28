@@ -711,16 +711,8 @@
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAPSGaOD3ttojdb7lQXXEAaETn4r7okWTw",
-      authDomain: "ece-club.firebaseapp.com",
-      databaseURL: "https://ece-club-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "ece-club",
-      storageBucket: "ece-club.firebasestorage.app",
-      messagingSenderId: "757755687448",
-      appId: "1:757755687448:web:ecd6891df339e445ec496d",
-      measurementId: "G-DBZVLNLJW8"
-    };
+    {% comment %} const firebaseConfig = JSON.parse('{{ FIREBASE_FRONTEND|escapejs }}'); {% endcomment %}
+    const firebaseConfig = {{ FIREBASE_FRONTEND|safe }};
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);

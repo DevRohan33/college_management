@@ -21,10 +21,5 @@ urlpatterns = [
     path('result', include('result.urls')),
     path('shop/', include('shop.urls')),
     path("", include("chatbot.urls")),
-
-
-
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

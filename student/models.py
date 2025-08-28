@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from college_portal.storage_backends import MediaStorage
+
 
 class Student(models.Model):
     user = models.OneToOneField(
@@ -10,8 +12,10 @@ class Student(models.Model):
         related_name="student_profile"
     )
     profile_image = models.ImageField(
-        upload_to="student_profiles/",
-        default='student_profiles/default_image.jpg',
+        storage=MediaStorage(),
+        upload_to="student_profiles/", 
+        blank=True, 
+        null=True
     )
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     session = models.CharField(max_length=20, blank=True, null=True)
@@ -50,3 +54,4 @@ def create_student_profile(sender, instance, created, **kwargs):
 def save_student_profile(sender, instance, **kwargs):
     if getattr(instance, "role", None) == "student" and hasattr(instance, "student_profile"):
         instance.student_profile.save()
+

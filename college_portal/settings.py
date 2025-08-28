@@ -15,6 +15,7 @@ import os
 import dj_database_url
 from decouple import config
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,11 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!u(vw$oo!ux0*o8^d8vz&s4k@xb!riw#%bkb29rzmj2xhmg-z%'
+SECRET_KEY = config("SECRET_KEY", default="insecure-dev-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# DEBUG = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -53,17 +55,13 @@ INSTALLED_APPS = [
     'teacher',
     'shop',
     'chatbot',
+    "storages"
 ]
 
 AUTH_USER_MODEL = 'account.User'
 
-ASGI_APPLICATION = "college_portal.asgi.application "
+ASGI_APPLICATION = "college_portal.asgi.application"
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#     },
-# }
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -79,14 +77,20 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
 ]
 
 ROOT_URLCONF = 'college_portal.urls'
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://college-management-d16p.onrender.com'
-]
-ALLOWED_HOSTS = ['college-management-d16p.onrender.com', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
+    default="http://localhost,http://127.0.0.1"
+).split(",")
+
+
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(",")
+
 
 
 
@@ -107,24 +111,40 @@ TEMPLATES = [
     },
 ]
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+#sqlit3
 # DATABASES = {
 #     'default': dj_database_url.config(default=f"sqlite:///{BASE_DIR}/db.sqlite3")
 # }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'clg_portal',
-        'USER': 'rohan', 
-        'PASSWORD': 'Rohan@330',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
 
+
+# if running on Render (Render sets DATABASE_URL automatically)
+DATABASE_URL = config("DATABASE_URL", default="")
+
+if DATABASE_URL:
+    # Running on Render → SSL required
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    # Running locally → use Postgres without SSL
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "clg_portal",
+            "USER": "rohan",
+            "PASSWORD": "Rohan@330",
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
 
 
 
@@ -154,17 +174,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # For collectstatic
 
-# WhiteNoise storage for compressed files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Media files (user uploads like profile pics)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -182,8 +192,60 @@ EMAIL_HOST_USER = config("EMAIL_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# settings.py
 FIREBASE_CONFIG = {
     "DATABASE_URL": "https://ece-club-default-rtdb.firebaseio.com/",
     "SERVICE_ACCOUNT_KEY": os.path.join(BASE_DIR, "club", "serviceAccountKey.json")
 }
+
+FIREBASE_CONFIG = {
+    "type": config("FIREBASE_TYPE"),
+    "project_id": config("FIREBASE_PROJECT_ID"),
+    "private_key_id": config("FIREBASE_PRIVATE_KEY_ID"),
+    "private_key": config("FIREBASE_PRIVATE_KEY").replace("\\n", "\n"),
+    "client_email": config("FIREBASE_CLIENT_EMAIL"),
+    "client_id": config("FIREBASE_CLIENT_ID"),
+    "auth_uri": config("FIREBASE_AUTH_URI"),
+    "token_uri": config("FIREBASE_TOKEN_URI"),
+    "auth_provider_x509_cert_url": config("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
+    "client_x509_cert_url": config("FIREBASE_CLIENT_X509_CERT_URL"),
+    "universe_domain": config("FIREBASE_UNIVERSE_DOMAIN"),
+    "database_url": config("FIREBASE_DATABASE_URL"),
+}
+
+FIREBASE_FRONTEND = {
+    "apiKey": config("FIREBASE_API_KEY"),
+    "authDomain": config("FIREBASE_AUTH_DOMAIN"),
+    "databaseURL": config("FIREBASE_DATABASE_URL"),
+    "projectId": config("FIREBASE_PROJECT_ID"),
+    "storageBucket": config("FIREBASE_STORAGE_BUCKET"),
+    "messagingSenderId": config("FIREBASE_MESSAGING_SENDER_ID"),
+    "appId": config("FIREBASE_APP_ID"),
+    "measurementId": config("FIREBASE_MEASUREMENT_ID"),
+}
+
+
+
+# AWS S3 Configuration
+
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
+
+DEFAULT_FILE_STORAGE = "college_portal.storage_backends.MediaStorage"
+
+
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# WhiteNoise for static files only
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"

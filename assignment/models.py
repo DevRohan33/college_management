@@ -2,7 +2,9 @@ from django.db import models
 from django.conf import settings
 from subject.models import Subject
 from account.models import Department, Semester
-from student.models import Student  
+from student.models import Student
+from college_portal.storage_backends import MediaStorage  
+
 
 
 class Assignment(models.Model):
@@ -54,7 +56,10 @@ class AssignmentSubmission(models.Model):
         on_delete=models.CASCADE,
         related_name="submissions"
     )
-    file = models.FileField(upload_to="assignments/submissions/")
+    file = models.FileField(
+        upload_to="assignments/submissions/",
+        storage=MediaStorage(),    
+    )
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

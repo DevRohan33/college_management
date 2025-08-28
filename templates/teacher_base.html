@@ -988,7 +988,7 @@
                     <div class="fw-bold">{{ user.first_name }} {{ user.last_name }}</div>
                     <small class="text-muted">Teacher ID: TCH-{{ user.id }}</small>
                 </div>
-                <img src="{{ profile.profile_image.url }}" class="rounded-circle" alt="User Avatar" width="50" height="50">
+                {% comment %} <img src="{{ profile.profile_image.url }}" class="rounded-circle" alt="User Avatar" width="50" height="50"> {% endcomment %}
             </div>
         </div>
 
@@ -1008,7 +1008,7 @@
 
         <!-- Footer -->
         <!-- Enhanced Footer -->
-<footer class="enhanced-footer">
+{% comment %} <footer class="enhanced-footer">
     <div class="footer-content">
         <div class="container-fluid">
             <div class="row align-items-center">
@@ -1097,7 +1097,7 @@
         <div class="decoration-line"></div>
         <div class="decoration-dot"></div>
     </div>
-</footer>
+</footer> {% endcomment %}
     </main>
 
 </div>

@@ -1,0 +1,262 @@
+[
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "sknajmulislam",
+      "first_name": "SK",
+      "last_name": "NAJMUL ISLAM",
+      "email": "isknajmul7@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "ishabisal",
+      "first_name": "ISHA",
+      "last_name": "BISAL",
+      "email": "ishabisal@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "saikatdas",
+      "first_name": "SAIKAT",
+      "last_name": "DAS",
+      "email": "saikatdas40g@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "jagannathdas",
+      "first_name": "JAGANNATH",
+      "last_name": "DAS",
+      "email": "jdas07056@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "pritampanda",
+      "first_name": "PRITAM",
+      "last_name": "PANDA",
+      "email": "pritampanda825@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "saptakghosh",
+      "first_name": "SAPTAK",
+      "last_name": "GHOSH",
+      "email": "ghpapu422@gmail.com",
+      "role": "student",
+      "department": 2,
+      "semester": 2,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "anubhabdas",
+      "first_name": "ANUBHAB",
+      "last_name": "DAS",
+      "email": "anubhabd45@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "niranjankumarsingh",
+      "first_name": "NIRANJAN",
+      "last_name": "KUMAR SINGH",
+      "email": "niranjansingh1419@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "sumansahoo",
+      "first_name": "SUMAN",
+      "last_name": "SAHOO",
+      "email": "sahoosuman96@gmail.com",
+      "role": "student",
+      "department": 2,
+      "semester": 2,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "milankamilya",
+      "first_name": "MILAN",
+      "last_name": "KAMILYA",
+      "email": "itsmilanofficial@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "papiakhatun",
+      "first_name": "PAPIA",
+      "last_name": "KHATUN",
+      "email": "khatunpapia032@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "puspendumondal",
+      "first_name": "PUSPENDU",
+      "last_name": "MONDAL",
+      "email": "puspendum456@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "sumitbhunia",
+      "first_name": "SUMIT",
+      "last_name": "BHUNIA",
+      "email": "sumitbhunia2003@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "abdulhadi",
+      "first_name": "ABDUL",
+      "last_name": "HADI",
+      "email": "abdulhadi272003@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "subhasishdas",
+      "first_name": "SUBHASISH",
+      "last_name": "DAS",
+      "email": "daspiku2004@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "mdmuddassirakhtar",
+      "first_name": "MD",
+      "last_name": "MUDDASSIR AKHTAR",
+      "email": "mdmuddassirakhtar@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "irfanhassan",
+      "first_name": "IRFAN",
+      "last_name": "HASSAN",
+      "email": "irfanhassan8777@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "irfanhabib",
+      "first_name": "IRFAN",
+      "last_name": "HABIB",
+      "email": "irfanhabib478@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "rinachowdhury",
+      "first_name": "RINA",
+      "last_name": "CHOWDHURY",
+      "email": "rinachowdhury33808@gmail.com",
+      "role": "student",
+      "department": 2,
+      "semester": 2,
+      "password": "default1234"
+    }
+  },
+  {
+    "model": "account.user",
+    "fields": {
+      "username": "jyotirmoyhazra",
+      "first_name": "JYOTIRMOY",
+      "last_name": "HAZRA",
+      "email": "Jyotirmoyhazra2001@gmail.com",
+      "role": "student",
+      "department": 1,
+      "semester": 1,
+      "password": "default1234"
+    }
+  }
+]

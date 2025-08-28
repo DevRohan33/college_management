@@ -196,25 +196,37 @@ def manage_members(request, unique_id):
 
 
 #-------------------- Club Chat ------------------
+# @login_required
+# def firebase_config(request, unique_id):
+#     """Return Firebase config for frontend"""
+#     club = get_object_or_404(Club, unique_id=unique_id)
+#     membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
+#     if not membership:
+#         return JsonResponse({"error": "Not authorized"}, status=403)
+
+#     # Normally load from settings.py
+#     config = {
+#         "apiKey": settings.FIREBASE_API_KEY,
+#         "authDomain": settings.FIREBASE_AUTH_DOMAIN,
+#         "databaseURL": settings.FIREBASE_DB_URL,
+#         "projectId": settings.FIREBASE_PROJECT_ID,
+#         "storageBucket": settings.FIREBASE_STORAGE_BUCKET,
+#         "messagingSenderId": settings.FIREBASE_MSG_SENDER_ID,
+#         "appId": settings.FIREBASE_APP_ID,
+#     }
+#     return JsonResponse(config)
+
 @login_required
 def firebase_config(request, unique_id):
     """Return Firebase config for frontend"""
     club = get_object_or_404(Club, unique_id=unique_id)
-    membership = ClubMember.objects.filter(club=club, user=request.user, status="active").first()
+    membership = ClubMember.objects.filter(
+        club=club, user=request.user, status="active"
+    ).first()
     if not membership:
         return JsonResponse({"error": "Not authorized"}, status=403)
 
-    # Normally load from settings.py
-    config = {
-        "apiKey": settings.FIREBASE_API_KEY,
-        "authDomain": settings.FIREBASE_AUTH_DOMAIN,
-        "databaseURL": settings.FIREBASE_DB_URL,
-        "projectId": settings.FIREBASE_PROJECT_ID,
-        "storageBucket": settings.FIREBASE_STORAGE_BUCKET,
-        "messagingSenderId": settings.FIREBASE_MSG_SENDER_ID,
-        "appId": settings.FIREBASE_APP_ID,
-    }
-    return JsonResponse(config)
+    return JsonResponse(settings.FIREBASE_FRONTEND)
 
 
 @login_required
@@ -234,6 +246,7 @@ def club_chat(request, unique_id):
         "club": club,
         "membership": membership,
         "firebase_chat_enabled": True,
+        "FIREBASE_FRONTEND": json.dumps(settings.FIREBASE_FRONTEND),
     })
 
 # -------------------- Club Chat ------------------

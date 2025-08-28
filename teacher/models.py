@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from college_portal.storage_backends import MediaStorage
+
 
 
 class TeacherProfile(models.Model):
@@ -11,7 +13,12 @@ class TeacherProfile(models.Model):
         related_name="teacher_profile",
         limit_choices_to={'role': 'teacher'}
     )
-    profile_image = models.ImageField(upload_to="teacher_profiles/", blank=True, null=True)
+    profile_image = models.ImageField(
+        storage=MediaStorage(),
+        upload_to="teacher_profiles/", 
+        blank=True, 
+        null=True
+    )
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
 
