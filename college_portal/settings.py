@@ -209,7 +209,7 @@ FIREBASE_CONFIG = {
     "auth_provider_x509_cert_url": config("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
     "client_x509_cert_url": config("FIREBASE_CLIENT_X509_CERT_URL"),
     "universe_domain": config("FIREBASE_UNIVERSE_DOMAIN"),
-    "database_url": config("FIREBASE_DATABASE_URL"),
+    "database_url": config("FIREBASE_DATABASE_URL_NEW"),
 }
 
 FIREBASE_FRONTEND = {
