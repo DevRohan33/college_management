@@ -27,8 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="insecure-dev-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-# DEBUG = True
+# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True
 
 # Application definition
 
@@ -100,6 +100,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://college-management-d1jh.onrender.com",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "https://*.render.com",
 ]
 
 TEMPLATES = [
