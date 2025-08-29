@@ -6,212 +6,2136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOD Dashboard</title>
-    <!-- Bootstrap CSS -->
+
+    <!-- Bootstrap & FontAwesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            background-color: #f8f9fa;
+        /* --- Start of styles from student_base.html --- */
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --accent-color: #06b6d4;
+            --background-color: #f8fafc;
+            --background-dark: #0f172a;
+            --card-bg: #ffffff;
+            --card-bg-dark: #1e293b;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
         }
 
-        .sidebar {
-            height: 100vh;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+       /* Dark mode styles */
+        /* Dark mode styles */
+        [data-theme="dark"] {
+            --background-color: var(--background-dark);
+            --card-bg: var(--card-bg-dark);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border-color: #334155;
+            --text-muted: #64748b; /* Add this line to define dark mode muted text color */
+
+            /* Add this rule to make the sidebar header dark in dark mode */
+            .sidebar-header {
+                background-color: var(--card-bg) !important; /* Use card-bg-dark for the header */
+            }
+             /* Also ensure the after pseudo-element gradient adapts for dark mode if needed, though usually the gradient looks fine */
+            .sidebar-header::after {
+                 background: var(--primary-gradient); /* Keep the primary gradient for the accent line */
+            }
+
+
+
+/* --- Table Dark Mode Fixes --- */
+        /* Ensure table body background adapts */
+        .table tbody {
+            background-color: var(--card-bg); /* Set default background for table body in dark mode */
+            color: var(--text-primary); /* Ensure text color for table body is primary text color */
+        }
+      
+        .table td, .table th {
+            background-color: var(--card-bg) !important;
+            color: var(--text-primary) !important;
+        }
+        .table td::after {
+            background: var(--primary-gradient);
+            
+        }
+
+
+
+
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
-            width: 250px;
-            background-color: #343a40;
-            padding-top: 20px;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #6366f1, #8b5cf6, #06b6d4, #10b981);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            opacity: 0.03;
+            z-index: -1;
+        }
+        .logo {
+            width: 40px;   /* adjust size */
+            height: auto;  /* keeps aspect ratio */
+            border-radius: 50%; /* optional: makes it round */
         }
 
-        .sidebar a {
-            padding: 15px 20px;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: var(--shadow-md);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: #fff; /* You can make this transparent if needed */
+        }
+
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: var(--primary-gradient);
+            border-radius: 1px;
+        }
+
+        .navbar-brand {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-decoration: none;
-            font-size: 18px;
-            color: #adb5bd;
-            display: block;
-            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .sidebar a:hover,
-        .sidebar a.active {
-            color: #ffffff;
-            background-color: #495057;
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
         }
 
+        .sidebar-menu {
+            list-style: none;
+            padding: 24px 16px;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-menu li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-menu li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .sidebar-menu li a:hover::before {
+            left: 100%;
+        }
+
+        .sidebar-menu li a .icon {
+            width: 20px;
+            margin-right: 14px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu li a:hover {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            transform: translateX(4px);
+        }
+
+        .sidebar-menu li a.active {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+            position: relative;
+        }
+
+        .sidebar-menu li a.active::after {
+            content: '';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.5; transform: translateY(-50%) scale(1.2); }
+        }
+
+        .menu-divider {
+            margin: 20px 16px;
+            border: none;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Main content */
         .main-content {
-            margin-left: 260px;
-            padding: 20px;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        .header-title {
+            font-weight: 700;
+            font-size: 2.25rem;
+            margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        /* Enhanced cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.02));
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 24px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            position: relative;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .card-header::before {
+            transform: scaleX(1);
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Alert enhancements */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .alert-success::before { background: var(--success-color); }
+        .alert-warning::before { background: var(--warning-color); }
+        .alert-danger::before { background: var(--danger-color); }
+        .alert-info::before { background: var(--accent-color); }
+
+        /* Loading animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 80px 20px 32px;
+            }
+
+            .header-title {
+                font-size: 1.75rem;
+            }
+
+            .theme-toggle {
+                top: 20px;
+                right: 80px;
+                padding: 8px 12px;
+            }
+
+            .card {
+                margin-bottom: 20px;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+
+            .brand-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 80px 16px 24px;
+            }
+
+            .header-title {
+                font-size: 1.5rem;
+            }
+
+            .sidebar-header {
+                padding: 20px;
+            }
+
+            .sidebar-menu {
+                padding: 20px 12px;
+            }
+
+            .card-header, .card-body {
+                padding: 16px;
+            }
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        /* Enhanced animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .animate-slide-in-left {
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        /* Stagger animation delays */
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        /* --- End of styles from student_base.html --- */
+
+        /* --- Dashboard specific styles from student_dashboard.html --- */
+        .welcome-card {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .welcome-card .card-body {
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.attendance { background: linear-gradient(135deg, #10b981, #059669); }
+        .stat-icon.courses { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .stat-icon.assignments { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .stat-icon.gpa { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 4px solid white;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .details-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .details-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .details-item:last-child {
+            border-bottom: none;
+        }
+
+        .details-item:hover {
+            background: rgba(99, 102, 241, 0.02);
+            margin: 0 -24px;
+            padding: 12px 24px;
+        }
+
+        .details-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .details-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Enhanced routine styles */
+        .routine-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .routine-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .routine-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .routine-card:hover {
+            background: rgba(99, 102, 241, 0.02);
+            border-color: rgba(99, 102, 241, 0.2);
+            transform: translateX(8px);
+        }
+
+        .routine-time {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .routine-subject {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 4px 0;
+        }
+
+        .routine-type {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .subject-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .subject-item:last-child {
+            border-bottom: none;
+        }
+
+        .subject-item:hover {
+            background: rgba(99, 102, 241, 0.02);
+            margin: 0 -24px;
+            padding: 12px 24px;
+            border-radius: 8px;
+        }
+
+        .subject-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 16px;
+            font-size: 1.1rem;
+        }
+
+        .subject-info {
+            flex: 1;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .subject-code {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Enhanced attendance chart */
+        .attendance-overview {
+            position: relative;
+            text-align: center;
+        }
+
+        .attendance-chart-container {
+            position: relative;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .attendance-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .attendance-stat {
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .attendance-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .attendance-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .attendance-stat.present .attendance-stat-value { color: var(--success-color); }
+        .attendance-stat.absent .attendance-stat-value { color: var(--danger-color); }
+        .attendance-stat.total .attendance-stat-value { color: var(--primary-color); }
+
+        /* Enhanced notice styles */
+        .latest-notice {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .latest-notice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-color);
+        }
+
+        .notice-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .notice-time {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .no-content-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-content-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Club card styles */
+        .club-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .club-item:last-child {
+            border-bottom: none;
+        }
+
+        .club-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--secondary-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 12px;
+            font-size: 0.9rem;
+        }
+
+        /* Enhanced buttons */
+        .btn-enhanced {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-enhanced:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
+        .btn-outline-enhanced {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-enhanced:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Progress bars */
+        .progress-enhanced {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--border-color);
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-bar-enhanced {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-enhanced::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Responsive design enhancements */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .stat-card {
+                padding: 10px 14px;
+            }
+
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .profile-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .attendance-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .routine-card {
+                margin-bottom: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .details-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .attendance-chart-container {
+                height: 150px;
+            }
+        }
+
+        /* Tab enhancements */
+        .nav-tabs {
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 8px 8px 0 0;
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 12px 20px;
+            margin-right: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background: transparent;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .nav-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+        }
+
+        /* Animation delays for stagger effect */
+        .stagger-animation .card:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-animation .card:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-animation .card:nth-child(3) { animation-delay: 0.3s; }
+        .stagger-animation .card:nth-child(4) { animation-delay: 0.4s; }
+        .stagger-animation .card:nth-child(5) { animation-delay: 0.5s; }
+        .stagger-animation .card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Enhanced Clubs Section Styles */
+        .clubs-card {
+            border: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .clubs-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .clubs-card .card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.25rem;
+        }
+
+        .clubs-card .header-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        .club-count-badge {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Clubs List Styles */
+        .clubs-list {
+            margin: 0.5rem 0;
+        }
+
+        .club-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .club-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.05), rgba(0, 123, 255, 0.02));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .club-item:hover::before {
+            opacity: 1;
+        }
+
+        .club-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 15px rgba(0, 123, 255, 0.15);
+        }
+
+        .club-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .club-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .club-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .club-details {
+            flex: 1;
+        }
+
+        .club-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .club-status {
+            color: #28a745;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .club-actions .club-menu-btn {
+            border: none;
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .club-actions .club-menu-btn:hover {
+            background: rgba(108, 117, 125, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* More clubs indicator */
+        .more-clubs-indicator {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 123, 255, 0.05);
+            border-radius: 8px;
+            margin-top: 1rem;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .view-all-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .view-all-link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Club actions section */
+        .club-actions-section {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-join-club {
+            border-radius: 8px;
+            padding: 0.6rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-join-club:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+        }
+
+        /* Enhanced Empty State */
+        .no-content-state {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .no-content-illustration {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e9ecef, #f8f9fa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .empty-state-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 123, 255, 0.1), transparent);
+            transform: rotate(-45deg);
+            animation: shimmer 2s infinite;
+        }
+
+        .empty-state-icon i {
+            font-size: 2rem;
+            color: #6c757d;
+            z-index: 1;
+        }
+
+        .empty-state-decoration {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .decoration-dot {
+            width: 6px;
+            height: 6px;
+            background: #dee2e6;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        .decoration-dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .decoration-dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .empty-title {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-description {
+            color: #6c757d;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        .no-content-action {
+            margin-top: 1.5rem;
+        }
+
+        .btn-explore-clubs {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-explore-clubs::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-explore-clubs:hover::before {
+            left: 100%;
+        }
+
+        .btn-explore-clubs:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Animations */
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(-45deg);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(-45deg);
+            }
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .clubs-card .card-header {
+                padding: 0.75rem 1rem;
+            }
+            
+            .club-item {
+                padding: 0.75rem;
+            }
+            
+            .club-icon {
+                width: 35px;
+                height: 35px;
+                margin-right: 0.75rem;
+            }
+            
+            .club-name {
+                font-size: 0.95rem;
+            }
+            
+            .empty-state-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .empty-state-icon i {
+                font-size: 1.5rem;
+            }
+        }
+        /* --- End of Dashboard specific styles --- */
+
+        /* --- HOD Dashboard specific Overrides/Additions --- */
+        /* Adjust sidebar width if necessary, but student_base.html sets it to --sidebar-width */
+        /* Styles for the HOD specific sections */
+        .hod-section {
+            margin-bottom: 32px;
+        }
+
+        .hod-section-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hod-section-header i {
+            margin-right: 10px;
+        }
+
+        /* Styles for the overview cards in HOD dashboard */
+        .hod-stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            height: 100%; /* Ensure cards in a row have the same height */
+        }
+
+        .hod-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .hod-stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.4rem;
+            color: white;
+        }
+
+        .hod-stat-icon.teachers { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .hod-stat-icon.students { background: linear-gradient(135deg, #10b981, #059669); }
+        .hod-stat-icon.subjects { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .hod-stat-icon.classes { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+
+        .hod-stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .hod-stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Table styles */
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: rgba(99, 102, 241, 0.03);
+        }
+        .table thead th {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .table td, .table th {
+            padding: 12px 16px;
+        }
+
+        /* Adjusting the HOD dashboard's default sidebar styling */
+        .sidebar.text-white {
+            background-color: var(--card-bg); /* Match student base */
+            color: var(--text-secondary); /* Match student base */
+        }
+        .sidebar a {
+            color: var(--text-secondary); /* Match student base */
+        }
+        .sidebar a:hover, .sidebar a.active {
+            color: var(--primary-color); /* Match student base */
+            background-color: rgba(99, 102, 241, 0.1); /* Match student base */
+        }
         .navbar-brand-custom {
-            color: #ffffff;
+            color: var(--text-primary); /* Match student base */
             font-weight: bold;
             padding: 0 20px;
             font-size: 1.5rem;
         }
+        .sidebar a {
+             padding: 14px 16px; /* Match student base sidebar link padding */
+        }
+        .sidebar-header {
+             display: flex; /* Match student base */
+             align-items: center; /* Match student base */
+             padding: 1rem; /* Match student base */
+             background-color: #fff; /* Match student base */
+             position: relative;
+             width: 100%;
+        }
+        .sidebar-header::after { /* Match student base */
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+            border-radius: 1px;
+        }
+        .navbar-brand { /* Match student base */
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-icon { /* Match student base */
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        .sidebar-menu { /* Match student base */
+            list-style: none;
+            padding: 24px 16px;
+            margin: 0;
+        }
+        .sidebar-menu li { /* Match student base */
+            margin-bottom: 8px;
+        }
+        .sidebar-menu li a { /* Match student base */
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+         .sidebar-menu li a::before { /* Match student base */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+         .sidebar-menu li a:hover::before { /* Match student base */
+            left: 100%;
+        }
+        .sidebar-menu li a .icon { /* Match student base */
+            width: 20px;
+            margin-right: 14px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .sidebar-menu li a:hover { /* Match student base */
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            transform: translateX(4px);
+        }
+        .sidebar-menu li a.active { /* Match student base */
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+            position: relative;
+        }
+         .sidebar-menu li a.active::after { /* Match student base */
+            content: '';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .menu-divider { /* Match student base */
+            margin: 20px 16px;
+            border: none;
+            height: 1px;
+            background: var(--border-color);
+        }
+        .main-content { /* Match student base */
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .header-title { /* Match student base */
+            font-weight: 700;
+            font-size: 2.25rem;
+            margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-subtitle { /* Match student base */
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
 
-        .card-icon {
-            font-size: 3rem;
-            opacity: 0.3;
+        /* --- HOD Dashboard specific Overrides/Additions --- */
+        /* ... (existing HOD specific styles) ... */
+
+        /* Fix: Override header-title and header-subtitle styles specifically for the welcome card */
+        .welcome-card .header-title {
+            background: none; /* Remove the gradient background for the text */
+            -webkit-background-clip: unset; /* Remove text clipping */
+            -webkit-text-fill-color: unset; /* Revert text fill color to default (which will be white from .welcome-card) */
+            color: white; /* Ensure text is explicitly white for contrast */
+        }
+        .welcome-card .header-subtitle {
+            color: white !important; /* Ensure subtitle is white for contrast, !important to override var(--text-secondary) */
+        }
+
+       .fa-sun {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
         }
     </style>
+
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
-    <!-- Sidebar Navigation -->
-    <div class="sidebar text-white">
-        <h3 class="navbar-brand-custom mb-4">My College</h3>
-        <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-        <a href="#department"><i class="fas fa-building me-2"></i>Department</a>
-        <a href="{% url 'teacher_list' %}"><i class="fas fa-chalkboard-teacher me-2"></i>Teachers</a>
-        <a href="{% url 'classes_routine' %}"><i class="fas fa-user-graduate me-2"></i>Classes</a>
-        <a href="#subjects"><i class="fas fa-book me-2"></i>Subjects</a>
-        <a href="#notices"><i class="fas fa-bullhorn me-2"></i>Notices</a>
-        <hr class="bg-secondary">
-        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
-    </div>
+    <!-- Mobile menu toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container-fluid">
+    <!-- Theme toggle -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon" ></i>
+    </button>
 
-            <!-- Welcome Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h2">HOD Dashboard</h1>
-                <div class="d-flex align-items-center">
-                    <span class="me-3 fs-5">Welcome, <strong>{{ user.first_name|default:user.username }}</strong></span>
-                    <img src="https://via.placeholder.com/40" class="rounded-circle" alt="User Avatar">
+    <!-- Sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a class="navbar-brand" href="/">
+                    <div>
+                        <!-- Replace icon with logo -->
+                        <img src="{% static 'index/logo.png' %}" alt="Logo" class="logo">
+                    </div>
+                    ECE
+                </a>
+            </div>
+            <ul class="sidebar-menu">
+                <!-- Placeholder for HOD specific links, will be populated below -->
+                 <li>
+                    <a href="#dashboard" class="{% if request.resolver_match.url_name == 'hod_dashboard' %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt icon"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#department" class="{% if request.resolver_match.url_name == 'hod_department_detail' %}active{% endif %}">
+                        <i class="fas fa-building icon"></i> Department
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'teacher_list' %}" class="{% if request.resolver_match.url_name == 'teacher_list' %}active{% endif %}">
+                        <i class="fas fa-chalkboard-teacher icon"></i> Teachers
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'classes_routine' %}" class="{% if request.resolver_match.url_name == 'classes_routine' %}active{% endif %}">
+                        <i class="fas fa-user-graduate icon"></i> Classes Routine
+                    </a>
+                </li>
+                <li>
+                    <a href="#subjects" class="{% if request.resolver_match.url_name == 'hod_subjects' %}active{% endif %}">
+                        <i class="fas fa-book icon"></i> Subjects
+                    </a>
+                </li>
+                <li>
+                    <a href="#notices" class="{% if request.resolver_match.url_name == 'notice_list' %}active{% endif %}">
+                        <i class="fas fa-bullhorn icon"></i> Notices
+                    </a>
+                </li>
+                 <li>
+                    <a href="{% url 'notice_create' %}" class="{% if request.resolver_match.url_name == 'notice_create' %}active{% endif %}">
+                        <i class="fas fa-plus-circle icon"></i> Post Notice
+                    </a>
+                </li>
+
+                <hr class="menu-divider">
+
+                <li><a href="#">
+                    <i class="fas fa-cog icon"></i> Settings</a></li>
+                <li><a href="#">
+                    <i class="fas fa-question-circle icon"></i> Help & Support</a></li>
+                <li><a href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt icon"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Page Content -->
+        <main class="main-content">
+
+            <!-- Django messages -->
+            {% if messages %}
+              <div class="container-fluid mb-4">
+                {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }} alert-dismissible fade show animate-fade-in-up" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <!-- Main Dashboard Content -->
+            <div class="animate-fade-in-up">
+                <!-- Quick Overview Section -->
+                <div class="hod-section">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card welcome-card">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h1 class="header-title text-white mb-2">Welcome Back, {{ user.first_name|default:user.username }} </h1>
+                                            <p class="header-subtitle text-white mb-0">Department Name Goes here</p>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <div class="d-none d-md-block">
+                                                <i class="fas fa-school" style="font-size: 4rem; opacity: 0.3;"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid stagger-animation animate-fade-in-up">
+                        <div class="stat-card animate-fade-in-up stagger-1 hod-stat-card">
+                            <div class="stat-icon teachers">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div class="stat-value">{{ total_teachers }}</div>
+                            <div class="stat-label">Total Teachers</div>
+                        </div>
+                        
+                        <div class="stat-card animate-fade-in-up stagger-2 hod-stat-card">
+                            <div class="stat-icon students">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-value">{{ total_students }}</div>
+                            <div class="stat-label">Total Students</div>
+                        </div>
+                        
+                        <div class="stat-card animate-fade-in-up stagger-3 hod-stat-card">
+                            <div class="stat-icon subjects">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-value">{{ subjects.count }}</div>
+                            <div class="stat-label">Total Subjects</div>
+                        </div>
+                        
+                        <div class="stat-card animate-fade-in-up stagger-4 hod-stat-card">
+                            <div class="stat-icon classes">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="stat-value"> classes_count </div>
+                            <div class="stat-label">Total Classes</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Department Details Section -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Teachers List -->
+                        <div class="card mb-4 hod-section animate-fade-in-up stagger-1">
+                            <div class="card-header">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>Teachers in DepartmentName
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Semesters</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for teacher in teachers %}
+                                            <tr>
+                                                <td>{{ teacher.get_full_name }}</td>
+                                                <td>{{ teacher.email }}</td>
+                                                <td>
+                                                    {% for sem in teacher.semesters.all %}
+                                                        Semester {{ sem.semester }}{% if not forloop.last %}, {% endif %}
+                                                    {% empty %}
+                                                        -
+                                                    {% endfor %}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="3" class="text-center py-4 text-muted">No teachers found in this department.</td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="{% url 'teacher_list' %}" class="btn btn-outline-primary btn-sm">View All Teachers</a>
+                            </div>
+                        </div>
+
+                        <!-- Subjects Offered -->
+                        <div class="card mb-4 hod-section animate-fade-in-up stagger-2">
+                            <div class="card-header">
+                                <i class="fas fa-book me-2"></i>Subjects Offered
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Code</th>
+                                                <th>Name</th>
+                                                <th>Semester</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for subject in subjects %}
+                                            <tr>
+                                                <td>{{ subject.code }}</td>
+                                                <td>{{ subject.name }}</td>
+                                                <td>Semester {{ subject.semester.semester }}</td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="3" class="text-center py-4 text-muted">No subjects found for this department.</td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Department Details -->
+                        <div class="card profile-card mb-4 hod-section animate-fade-in-up stagger-1">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <div class="stat-icon courses" style="width: 80px; height: 80px; font-size: 2rem;">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <h5 class="mb-1 mt-2">{{ department.name }}</h5>
+                                    <p class="text-muted small mb-2">Department head name (HOD)</p>
+                                </div>
+                                <ul class="details-list">
+                                    <li class="details-item">
+                                        <span class="details-label">Code</span>
+                                        <span class="details-value">{{ department.code }}</span>
+                                    </li>
+                                    <li class="details-item">
+                                        <span class="details-label">Established</span>
+                                        <span class="details-value">{{ department.establishment_date|date:"Y" }}</span>
+                                    </li>
+                                    <li class="details-item">
+                                        <span class="details-label">Email</span>
+                                        <span class="details-value">{{ department.email }}</span>
+                                    </li>
+                                    <li class="details-item">
+                                        <span class="details-label">Phone</span>
+                                        <span class="details-value">{{ department.phone_number|default:"N/A" }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Latest Notices -->
+                        <div class="card mb-4 hod-section animate-fade-in-up stagger-2">
+                            <div class="card-header">
+                                <i class="fas fa-bullhorn me-2"></i>Latest Notices
+                            </div>
+                            <div class="card-body">
+                                {% if notices %}
+                                    <div class="latest-notice">
+                                        <div class="notice-title">{{ notices.0.title }}</div>
+                                        <div class="notice-time">
+                                            <i class="fas fa-clock"></i>
+                                            {{ notices.0.created_at|timesince }} ago
+                                        </div>
+                                        <div class="mt-2">
+                                            <p class="btn-outline-enhanced btn-sm"> Placeholder Read More </p>
+                                            <!-- <a href="{% url 'notice_detail' notices.0.id %}" class="btn-outline-enhanced btn-sm">Read More</a> -->
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="no-content-state">
+                                        <div class="no-content-icon">
+                                            <i class="fas fa-bullhorn"></i>
+                                        </div>
+                                        <p>No recent notices. Stay tuned for updates!</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="{% url 'notice_list' %}" class="btn btn-outline-primary btn-sm">View All Notices</a>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card animate-fade-in-up stagger-3">
+                            <div class="card-header">
+                                <i class="fas fa-bolt me-2"></i>Quick Actions
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-3">
+                                    <a href="{% url 'teacher_list' %}" class="btn-enhanced">
+                                        <i class="fas fa-users"></i>
+                                        Manage Teachers
+                                    </a>
+                                    <a href="{% url 'classes_routine' %}" class="btn-outline-enhanced">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        Manage Classes
+                                    </a>
+                                    <a href="{% url 'notice_create' %}" class="btn-outline-enhanced">
+                                        <i class="fas fa-plus-circle"></i>
+                                        Post Notice
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </main>
+    </div>
 
-            <!-- Quick Department Overview -->
-            <section id="dashboard" class="mb-5">
-                <h3 class="border-bottom pb-2 mb-3">Department Overview ({{ department.name }})</h3>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card text-white bg-primary shadow">
-                            <div class="card-body text-center">
-                                <h4>{{ total_teachers }}</h4>
-                                <p>Teachers</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-success shadow">
-                            <div class="card-body text-center">
-                                <h4>{{ total_students }}</h4>
-                                <p>Students</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card text-white bg-info shadow">
-                            <div class="card-body text-center">
-                                <h4>{{ subjects.count }}</h4>
-                                <p>Subjects</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Teachers Section -->
-            <section id="teachers" class="card shadow-sm p-4 mb-5">
-                <h2 class="border-bottom pb-2 mb-3">Teachers in Department</h2>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for teacher in teachers %}
-                            <tr>
-                                <td>{{ teacher.get_full_name }}</td>
-                                <td>{{ teacher.email }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="2" class="text-center">No teachers found</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Students Section -->
-            <section id="students" class="card shadow-sm p-4 mb-5">
-                <h2 class="border-bottom pb-2 mb-3">Students in Department</h2>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for student in students %}
-                            <tr>
-                                <td>{{ student.get_full_name }}</td>
-                                <td>{{ student.email }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="2" class="text-center">No students found</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Subjects Section -->
-            <section id="subjects" class="card shadow-sm p-4 mb-5">
-                <h2 class="border-bottom pb-2 mb-3">Subjects Offered</h2>
-                <ul class="list-group">
-                    {% for subject in subjects %}
-                    <li class="list-group-item">{{ subject.code }} - {{ subject.name }} (Sem {{ subject.semester.semester }})</li>
-                    {% empty %}
-                    <li class="list-group-item text-muted">No subjects found</li>
-                    {% endfor %}
-                </ul>
-            </section>
-
-            <!-- Notices Section -->
-            <section id="notices" class="card shadow-sm p-4 mb-5">
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                    <h2>Department Notices</h2>
-                    
-                    <form method="post" action="{% url 'notice_create' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Post New Notice</button>
-                    </form>
-
-
-                </div>
-                <div class="list-group">
-                    {% for notice in notices %}
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ notice.title }}</h5>
-                            <small>{{ notice.age }}</small>
-                        </div>
-                        <p class="mb-1">{{ notice.content }}</p>
-                    </a>
-                    {% empty %}
-                    <div class="list-group-item text-muted">No notices available</div>
-                    {% endfor %}
-                </div>
-            </section>
-
-        </div>
-    </main>
-
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Mobile menu toggle
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking overlay
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const icon = themeToggle.querySelector('i');
+            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        const themeIcon = themeToggle.querySelector('i');
+        themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+
+        // Close mobile menu when resizing to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+
+        // Add loading states for links
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    const icon = this.querySelector('i');
+                    const originalClass = icon.className;
+                    icon.className = 'fas fa-spinner fa-spin icon';
+                    
+                    setTimeout(() => {
+                        icon.className = originalClass;
+                    }, 1000);
+                }
+            });
+        });
+
+        // Animate cards on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.classList.add('animate-fade-in-up');
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
-
-
 </html>
