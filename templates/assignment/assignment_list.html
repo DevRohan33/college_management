@@ -78,21 +78,23 @@
                                 <i class="fas fa-clock me-1"></i>Created At
                                 <i class="fas fa-sort ms-1 text-muted"></i>
                             </th>
-                            <th width="100"><i class="fas fa-cog me-1"></i>Actions</th>
+                            <th width="50"><i class="fas fa-cog me-1"></i>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for assignment in assignments %}
-                        <tr class="assignment-row {% if assignment.is_past_due %}overdue-row{% else %}active-row{% endif %}" 
+                        <tr class="assignment-row clickable-row {% if assignment.is_past_due %}overdue-row{% else %}active-row{% endif %}" 
                             data-title="{{ assignment.title|lower }}" 
                             data-author="{{ assignment.created_by|lower }}"
                             data-due-date="{{ assignment.submit_last_date|date:'Y-m-d H:i' }}"
-                            data-created="{{ assignment.created_at|date:'Y-m-d H:i' }}">
+                            data-created="{{ assignment.created_at|date:'Y-m-d H:i' }}"
+                            data-assignment-url="{% url 'assignment_detail' assignment.id %}"
+                            style="cursor: pointer;">
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <a href="{% url 'assignment_detail' assignment.id %}" class="text-decoration-none fw-bold text-primary assignment-title">
+                                    <span class="text-decoration-none fw-bold text-primary assignment-title">
                                         {{ assignment.title }}
-                                    </a>
+                                    </span>
                                     {% if assignment.is_past_due %}
                                         <span class="badge bg-danger ms-2">Overdue</span>
                                     {% else %}
@@ -149,7 +151,6 @@
                                 </div>
                             </td>
 
-
                             <td>
                                 <div>
                                     <div class="text-muted">{{ assignment.created_at|date:"M d, Y" }}</div>
@@ -157,31 +158,15 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-ellipsis-v"></i>
+                                {% if user == assignment.created_by %}
+                                    <button class="btn btn-outline-danger btn-sm delete-btn" 
+                                            data-assignment-id="{{ assignment.id }}"
+                                            data-assignment-title="{{ assignment.title }}"
+                                            title="Delete Assignment"
+                                            onclick="event.stopPropagation(); confirmDelete({{ assignment.id }}, '{{ assignment.title }}')">
+                                        <i class="fas fa-trash"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'assignment_detail' assignment.id %}">
-                                                <i class="fas fa-eye me-2"></i>View Details
-                                            </a>
-                                        </li>
-                                        {% if user == assignment.created_by %}
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="fas fa-edit me-2"></i>Edit
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" href="#" onclick="confirmDelete({{ assignment.id }}, '{{ assignment.title }}')">
-                                                <i class="fas fa-trash me-2"></i>Delete
-                                            </a>
-                                        </li>
-                                        {% endif %}
-                                    </ul>
-                                </div>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
@@ -262,4 +247,20 @@
 <script src="{% static 'js/assignment_list.js' %}"></script>
 <!-- Font Awesome -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<script>
+// Add click functionality to rows
+document.addEventListener('DOMContentLoaded', function() {
+    const clickableRows = document.querySelectorAll('.clickable-row');
+    
+    clickableRows.forEach(row => {
+        row.addEventListener('click', function() {
+            const assignmentUrl = this.getAttribute('data-assignment-url');
+            if (assignmentUrl) {
+                window.location.href = assignmentUrl;
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

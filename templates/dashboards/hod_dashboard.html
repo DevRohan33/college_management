@@ -1,20 +1,10 @@
+{% extends "hod_base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOD Dashboard</title>
+{% block title %}HOD Dashboard{% endblock %}
 
-    <!-- Bootstrap & FontAwesome -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
+{% block extra_css %}
+<style>
         /* --- Start of styles from student_base.html --- */
         :root {
             --primary-color: #6366f1;
@@ -1726,419 +1716,274 @@
             font-size: 1.2rem;
             color: var(--text-secondary);
         }
-    </style>
+</style>
 
-    {% block extra_css %}{% endblock %}
-</head>
+{% endblock %}
 
-<body>
-
-    <!-- Mobile menu toggle -->
-    <button class="mobile-menu-toggle" id="mobileMenuToggle">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Theme toggle -->
-    <button class="theme-toggle" id="themeToggle">
-        <i class="fas fa-moon" ></i>
-    </button>
-
-    <!-- Sidebar overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <div class="main-container">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <a class="navbar-brand" href="/">
-                    <div>
-                        <!-- Replace icon with logo -->
-                        <img src="{% static 'index/logo.png' %}" alt="Logo" class="logo">
+{% block content %}
+<div class="animate-fade-in-up">
+    <!-- Quick Overview Section -->
+    <div class="hod-section">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card welcome-card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h1 class="header-title text-white mb-2">Welcome Back, {{ user.first_name|default:user.username }} </h1>
+                                <p class="header-subtitle text-white mb-0">Department Name Goes here</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="d-none d-md-block">
+                                    <i class="fas fa-school" style="font-size: 4rem; opacity: 0.3;"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    ECE
-                </a>
+                </div>
             </div>
-            <ul class="sidebar-menu">
-                <!-- Placeholder for HOD specific links, will be populated below -->
-                 <li>
-                    <a href="#dashboard" class="{% if request.resolver_match.url_name == 'hod_dashboard' %}active{% endif %}">
-                        <i class="fas fa-tachometer-alt icon"></i> Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="#department" class="{% if request.resolver_match.url_name == 'hod_department_detail' %}active{% endif %}">
-                        <i class="fas fa-building icon"></i> Department
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'teacher_list' %}" class="{% if request.resolver_match.url_name == 'teacher_list' %}active{% endif %}">
-                        <i class="fas fa-chalkboard-teacher icon"></i> Teachers
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'classes_routine' %}" class="{% if request.resolver_match.url_name == 'classes_routine' %}active{% endif %}">
-                        <i class="fas fa-user-graduate icon"></i> Classes Routine
-                    </a>
-                </li>
-                <li>
-                    <a href="#subjects" class="{% if request.resolver_match.url_name == 'hod_subjects' %}active{% endif %}">
-                        <i class="fas fa-book icon"></i> Subjects
-                    </a>
-                </li>
-                <li>
-                    <a href="#notices" class="{% if request.resolver_match.url_name == 'notice_list' %}active{% endif %}">
-                        <i class="fas fa-bullhorn icon"></i> Notices
-                    </a>
-                </li>
-                 <li>
-                    <a href="{% url 'notice_create' %}" class="{% if request.resolver_match.url_name == 'notice_create' %}active{% endif %}">
-                        <i class="fas fa-plus-circle icon"></i> Post Notice
-                    </a>
-                </li>
-
-                <hr class="menu-divider">
-
-                <li><a href="#">
-                    <i class="fas fa-cog icon"></i> Settings</a></li>
-                <li><a href="#">
-                    <i class="fas fa-question-circle icon"></i> Help & Support</a></li>
-                <li><a href="{% url 'logout' %}">
-                    <i class="fas fa-sign-out-alt icon"></i> Logout</a></li>
-            </ul>
         </div>
 
-        <!-- Page Content -->
-        <main class="main-content">
+        <!-- Stats Grid -->
+        <div class="stats-grid stagger-animation animate-fade-in-up">
+            <div class="stat-card animate-fade-in-up stagger-1 hod-stat-card">
+                <div class="stat-icon gpa">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stat-value">{{ total_teachers }}</div>
+                <div class="stat-label">Total Teachers</div>
+            </div>
+            
+            <div class="stat-card animate-fade-in-up stagger-2 hod-stat-card">
+                
+                <div class="stat-icon attendance">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="stat-value">{{ total_students }}</div>
+            <div class="stat-label">Total Students</div>
+            </div>
+            
+            <div class="stat-card animate-fade-in-up stagger-3 hod-stat-card">
+            <div class="stat-icon courses">
+                <i class="fas fa-book"></i>
+            </div>
+                <div class="stat-value">{{ subjects.count }}</div>
+                <div class="stat-label">Total Subjects</div>
+            </div>
+            
+            <div class="stat-card animate-fade-in-up stagger-4 hod-stat-card">
+                <div class="stat-icon assignments">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-value"> classes_count </div>
+                <div class="stat-label">Total Classes</div>
+            </div>
+        </div>
+    </div>
 
-            <!-- Django messages -->
-            {% if messages %}
-              <div class="container-fluid mb-4">
-                {% for message in messages %}
-                  <div class="alert alert-{{ message.tags }} alert-dismissible fade show animate-fade-in-up" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>
-                {% endfor %}
-              </div>
-            {% endif %}
-
-            <!-- Main Dashboard Content -->
-            <div class="animate-fade-in-up">
-                <!-- Quick Overview Section -->
-                <div class="hod-section">
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card welcome-card">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-8">
-                                            <h1 class="header-title text-white mb-2">Welcome Back, {{ user.first_name|default:user.username }} </h1>
-                                            <p class="header-subtitle text-white mb-0">Department Name Goes here</p>
-                                        </div>
-                                        <div class="col-md-4 text-center">
-                                            <div class="d-none d-md-block">
-                                                <i class="fas fa-school" style="font-size: 4rem; opacity: 0.3;"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Stats Grid -->
-                    <div class="stats-grid stagger-animation animate-fade-in-up">
-                        <div class="stat-card animate-fade-in-up stagger-1 hod-stat-card">
-                            <div class="stat-icon teachers">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                            </div>
-                            <div class="stat-value">{{ total_teachers }}</div>
-                            <div class="stat-label">Total Teachers</div>
-                        </div>
-                        
-                        <div class="stat-card animate-fade-in-up stagger-2 hod-stat-card">
-                            <div class="stat-icon students">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="stat-value">{{ total_students }}</div>
-                            <div class="stat-label">Total Students</div>
-                        </div>
-                        
-                        <div class="stat-card animate-fade-in-up stagger-3 hod-stat-card">
-                            <div class="stat-icon subjects">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="stat-value">{{ subjects.count }}</div>
-                            <div class="stat-label">Total Subjects</div>
-                        </div>
-                        
-                        <div class="stat-card animate-fade-in-up stagger-4 hod-stat-card">
-                            <div class="stat-icon classes">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div class="stat-value"> classes_count </div>
-                            <div class="stat-label">Total Classes</div>
-                        </div>
+    <!-- Department Details Section -->
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Teachers List -->
+            <div class="card mb-4 hod-section animate-fade-in-up stagger-1">
+                <div class="card-header">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>Teachers in DepartmentName
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Semesters</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for teacher in teachers %}
+                                <tr>
+                                    <td>{{ teacher.get_full_name }}</td>
+                                    <td>{{ teacher.email }}</td>
+                                    <td>
+                                        {% for sem in teacher.semesters.all %}
+                                            Semester {{ sem.semester }}{% if not forloop.last %}, {% endif %}
+                                        {% empty %}
+                                            -
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="text-center py-4 text-muted">No teachers found in this department.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'teacher_list' %}" class="btn btn-outline-primary btn-sm">View All Teachers</a>
+                </div>
+            </div>
 
-                <!-- Department Details Section -->
-                <div class="row">
-                    <div class="col-lg-8">
-                        <!-- Teachers List -->
-                        <div class="card mb-4 hod-section animate-fade-in-up stagger-1">
-                            <div class="card-header">
-                                <i class="fas fa-chalkboard-teacher me-2"></i>Teachers in DepartmentName
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Email</th>
-                                                <th>Semesters</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for teacher in teachers %}
-                                            <tr>
-                                                <td>{{ teacher.get_full_name }}</td>
-                                                <td>{{ teacher.email }}</td>
-                                                <td>
-                                                    {% for sem in teacher.semesters.all %}
-                                                        Semester {{ sem.semester }}{% if not forloop.last %}, {% endif %}
-                                                    {% empty %}
-                                                        -
-                                                    {% endfor %}
-                                                </td>
-                                            </tr>
-                                            {% empty %}
-                                            <tr><td colspan="3" class="text-center py-4 text-muted">No teachers found in this department.</td></tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="{% url 'teacher_list' %}" class="btn btn-outline-primary btn-sm">View All Teachers</a>
-                            </div>
-                        </div>
-
-                        <!-- Subjects Offered -->
-                        <div class="card mb-4 hod-section animate-fade-in-up stagger-2">
-                            <div class="card-header">
-                                <i class="fas fa-book me-2"></i>Subjects Offered
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Code</th>
-                                                <th>Name</th>
-                                                <th>Semester</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for subject in subjects %}
-                                            <tr>
-                                                <td>{{ subject.code }}</td>
-                                                <td>{{ subject.name }}</td>
-                                                <td>Semester {{ subject.semester.semester }}</td>
-                                            </tr>
-                                            {% empty %}
-                                            <tr><td colspan="3" class="text-center py-4 text-muted">No subjects found for this department.</td></tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4">
-                        <!-- Department Details -->
-                        <div class="card profile-card mb-4 hod-section animate-fade-in-up stagger-1">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="stat-icon courses" style="width: 80px; height: 80px; font-size: 2rem;">
-                                        <i class="fas fa-building"></i>
-                                    </div>
-                                    <h5 class="mb-1 mt-2">{{ department.name }}</h5>
-                                    <p class="text-muted small mb-2">Department head name (HOD)</p>
-                                </div>
-                                <ul class="details-list">
-                                    <li class="details-item">
-                                        <span class="details-label">Code</span>
-                                        <span class="details-value">{{ department.code }}</span>
-                                    </li>
-                                    <li class="details-item">
-                                        <span class="details-label">Established</span>
-                                        <span class="details-value">{{ department.establishment_date|date:"Y" }}</span>
-                                    </li>
-                                    <li class="details-item">
-                                        <span class="details-label">Email</span>
-                                        <span class="details-value">{{ department.email }}</span>
-                                    </li>
-                                    <li class="details-item">
-                                        <span class="details-label">Phone</span>
-                                        <span class="details-value">{{ department.phone_number|default:"N/A" }}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Latest Notices -->
-                        <div class="card mb-4 hod-section animate-fade-in-up stagger-2">
-                            <div class="card-header">
-                                <i class="fas fa-bullhorn me-2"></i>Latest Notices
-                            </div>
-                            <div class="card-body">
-                                {% if notices %}
-                                    <div class="latest-notice">
-                                        <div class="notice-title">{{ notices.0.title }}</div>
-                                        <div class="notice-time">
-                                            <i class="fas fa-clock"></i>
-                                            {{ notices.0.created_at|timesince }} ago
-                                        </div>
-                                        <div class="mt-2">
-                                            <p class="btn-outline-enhanced btn-sm"> Placeholder Read More </p>
-                                            <!-- <a href="{% url 'notice_detail' notices.0.id %}" class="btn-outline-enhanced btn-sm">Read More</a> -->
-                                        </div>
-                                    </div>
-                                {% else %}
-                                    <div class="no-content-state">
-                                        <div class="no-content-icon">
-                                            <i class="fas fa-bullhorn"></i>
-                                        </div>
-                                        <p>No recent notices. Stay tuned for updates!</p>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="card-footer text-center">
-                                <a href="{% url 'notice_list' %}" class="btn btn-outline-primary btn-sm">View All Notices</a>
-                            </div>
-                        </div>
-
-                        <!-- Quick Actions -->
-                        <div class="card animate-fade-in-up stagger-3">
-                            <div class="card-header">
-                                <i class="fas fa-bolt me-2"></i>Quick Actions
-                            </div>
-                            <div class="card-body">
-                                <div class="d-grid gap-3">
-                                    <a href="{% url 'teacher_list' %}" class="btn-enhanced">
-                                        <i class="fas fa-users"></i>
-                                        Manage Teachers
-                                    </a>
-                                    <a href="{% url 'classes_routine' %}" class="btn-outline-enhanced">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        Manage Classes
-                                    </a>
-                                    <a href="{% url 'notice_create' %}" class="btn-outline-enhanced">
-                                        <i class="fas fa-plus-circle"></i>
-                                        Post Notice
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Subjects Offered -->
+            <div class="card mb-4 hod-section animate-fade-in-up stagger-2">
+                <div class="card-header">
+                    <i class="fas fa-book me-2"></i>Subjects Offered
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Semester</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subject in subjects %}
+                                <tr>
+                                    <td>{{ subject.code }}</td>
+                                    <td>{{ subject.name }}</td>
+                                    <td>Semester {{ subject.semester.semester }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="text-center py-4 text-muted">No subjects found for this department.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Mobile menu functionality
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const themeToggle = document.getElementById('themeToggle');
-
-        // Mobile menu toggle
-        mobileMenuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
-        });
-
-        // Close sidebar when clicking overlay
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-        });
-
-        // Theme toggle functionality
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            
-            const icon = themeToggle.querySelector('i');
-            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        });
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        const themeIcon = themeToggle.querySelector('i');
-        themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-
-        // Close mobile menu when resizing to desktop
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('active');
-                sidebarOverlay.classList.remove('active');
-            }
-        });
-
-        // Add loading states for links
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            link.addEventListener('click', function() {
-                if (!this.classList.contains('active')) {
-                    const icon = this.querySelector('i');
-                    const originalClass = icon.className;
-                    icon.className = 'fas fa-spinner fa-spin icon';
+        <div class="col-lg-4">
+            <!-- Department Details -->
+            <!-- <div class="card profile-card mb-4 hod-section animate-fade-in-up stagger-1">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="stat-icon courses" style="width: 80px; height: 80px; font-size: 2rem;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h5 class="mb-1 mt-2">{{ department.name }}</h5>
+                        <p class="text-muted small mb-2">Department head name (HOD)</p>
+                    </div>
+                    <ul class="details-list">
+                        <li class="details-item">
+                            <span class="details-label">Code</span>
+                            <span class="details-value">{{ department.code }}</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Established</span>
+                            <span class="details-value">{{ department.establishment_date|date:"Y" }}</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Email</span>
+                            <span class="details-value">{{ department.email }}</span>
+                        </li>
+                        <li class="details-item">
+                            <span class="details-label">Phone</span>
+                            <span class="details-value">{{ department.phone_number|default:"N/A" }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div> -->
+            <div class="card profile-card mb-4 animate-fade-in-up stagger-1">
+                <div class="card-body">
+                    {% if student.profile_image %}
+                        <!-- <img src="{{ student.profile_image.url }}" class="profile-image rounded-circle" alt="Profile"> -->
+                        <img src="#" class="profile-image rounded-circle" alt="Profile">
+                    {% else %}
+                        <img src="https://via.placeholder.com/120x120/6366f1/ffffff?text={{ user.first_name|slice:':1'|upper }}{{ user.last_name|slice:':1'|upper }}" 
+                             class="profile-image rounded-circle" alt="Profile">
+                    {% endif %}
                     
-                    setTimeout(() => {
-                        icon.className = originalClass;
-                    }, 1000);
-                }
+                    <h5 class="mb-1">{{ user.get_full_name }}</h5>
+                    <p class="text-muted small mb-2">{{ user.department.name }} • Department head name (HOD)</p>
+                    
+                    <div class="profile-status">
+                        <i class="fas fa-circle"></i>
+                        Active
+                    </div>
+                    
+                    <div class="mt-3">
+                        <span class="badge bg-light text-dark">ID: {{ student.roll_no|default:user.username }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest Notices -->
+            <div class="card mb-4 hod-section animate-fade-in-up stagger-2">
+                <div class="card-header">
+                    <i class="fas fa-bullhorn me-2"></i>Latest Notices
+                </div>
+                <div class="card-body">
+                    {% if notices %}
+                        <div class="latest-notice">
+                            <div class="notice-title">{{ notices.0.title }}</div>
+                            <div class="notice-time">
+                                <i class="fas fa-clock"></i>
+                                {{ notices.0.created_at|timesince }} ago
+                            </div>
+                            <div class="mt-2">
+                                <p class="btn-outline-enhanced btn-sm"> Placeholder Read More </p>
+                                <!-- <a href="{% url 'notice_detail' notices.0.id %}" class="btn-outline-enhanced btn-sm">Read More</a> -->
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="no-content-state">
+                            <div class="no-content-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <p>No recent notices. Stay tuned for updates!</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'notice_list' %}" class="btn btn-outline-primary btn-sm">View All Notices</a>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card animate-fade-in-up stagger-3">
+                <div class="card-header">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'teacher_list' %}" class="btn-enhanced">
+                            <i class="fas fa-users"></i>
+                            Manage Teachers
+                        </a>
+                        <a href="{% url 'classes_routine' %}" class="btn-outline-enhanced">
+                            <i class="fas fa-calendar-alt"></i>
+                            Manage Classes
+                        </a>
+                        <a href="{% url 'notice_create' %}" class="btn-outline-enhanced">
+                            <i class="fas fa-plus-circle"></i>
+                            Post Notice
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
-        });
-
-        // Animate cards on load
-        document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                card.classList.add('animate-fade-in-up');
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
-
-        // Add smooth scroll behavior
-        document.documentElement.style.scrollBehavior = 'smooth';
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
-
-    {% block extra_js %}{% endblock %}
-</body>
-</html>
+        }
+    });
+});
+</script>
+{% endblock %}

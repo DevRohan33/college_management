@@ -1,0 +1,208 @@
+{% extends "hod_base.html" %}
+{% load static %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<h1 class="header-title">Edit Your Profile</h1>
+
+<!-- Display Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card">
+    <div class="card-header">Update Your Information</div>
+    <div class="card-body p-4">
+        <form method="POST" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+
+            <!-- Display form errors -->
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Please correct the following errors:</strong>
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+
+            <h5 class="mb-3">Non-Editable Details</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="non-editable-field">
+                        <strong>Name:</strong> {{ user.get_full_name|default:"Not set" }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="non-editable-field">
+                        <strong>Email:</strong> {{ user.email }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="non-editable-field">
+                        <strong>Department:</strong> 
+                        {% if user.department %}
+                            {{ user.department.name }}
+                        {% else %}
+                            Not assigned
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="non-editable-field">
+                        <strong>Role:</strong> Head of Department
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            <h5 class="mb-3">Editable Details</h5>
+            
+            <div class="row">
+                <!-- Profile Image Section -->
+                <div class="col-12 text-center mb-4">
+                    {% if hod.profile_image %}
+                        <img src="{{ hod.profile_image.url }}" alt="Profile Image" class="current-profile-image mb-3" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'image/default_image.jpg' %}" alt="Default Profile" class="current-profile-image mb-3" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+                    {% endif %}
+                    <div class="mb-3">
+                        <label for="id_profile_image" class="form-label">{{ form.profile_image.label }}</label>
+                        {{ form.profile_image }}
+                        {% if form.profile_image.errors %}
+                            <div class="text-danger small">{{ form.profile_image.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Phone Number -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_phone_number" class="form-label">{{ form.phone_number.label }}</label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <div class="text-danger small">{{ form.phone_number.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Employee ID -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_employee_id" class="form-label">{{ form.employee_id.label }}</label>
+                    {{ form.employee_id }}
+                    {% if form.employee_id.errors %}
+                        <div class="text-danger small">{{ form.employee_id.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Qualification -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_qualification" class="form-label">{{ form.qualification.label }}</label>
+                    {{ form.qualification }}
+                    {% if form.qualification.errors %}
+                        <div class="text-danger small">{{ form.qualification.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Experience Years -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_experience_years" class="form-label">{{ form.experience_years.label }}</label>
+                    {{ form.experience_years }}
+                    {% if form.experience_years.errors %}
+                        <div class="text-danger small">{{ form.experience_years.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Joining Date -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_joining_date" class="form-label">{{ form.joining_date.label }}</label>
+                    {{ form.joining_date }}
+                    {% if form.joining_date.errors %}
+                        <div class="text-danger small">{{ form.joining_date.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Specialization -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_specialization" class="form-label">{{ form.specialization.label }}</label>
+                    {{ form.specialization }}
+                    {% if form.specialization.errors %}
+                        <div class="text-danger small">{{ form.specialization.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Office Address -->
+                <div class="col-12 mb-3">
+                    <label for="id_office_address" class="form-label">{{ form.office_address.label }}</label>
+                    {{ form.office_address }}
+                    {% if form.office_address.errors %}
+                        <div class="text-danger small">{{ form.office_address.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Bio -->
+                <div class="col-12 mb-3">
+                    <label for="id_bio" class="form-label">{{ form.bio.label }}</label>
+                    {{ form.bio }}
+                    {% if form.bio.errors %}
+                        <div class="text-danger small">{{ form.bio.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Change Password Link -->
+            <div class="mt-4 text-end">
+                <a href="{% url 'hod_change_password' %}" class="btn btn-secondary me-2">
+                    <i class="fas fa-key me-2"></i>Change Password
+                </a>
+            </div>
+            
+            <!-- Save Button -->
+            <div class="mt-3 text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.non-editable-field {
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #007bff;
+}
+
+.current-profile-image {
+    border: 3px solid #dee2e6;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.edit-form .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.header-title {
+    color: #495057;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0,0,0,.125);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    font-weight: 600;
+    color: #495057;
+}
+</style>
+{% endblock %}

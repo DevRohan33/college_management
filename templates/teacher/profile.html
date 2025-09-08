@@ -6,10 +6,204 @@
 
 {% block extra_css %}
 <style>
-    .profile-card { border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; }
-    .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }
-    .label { font-weight: 600; color: var(--text-secondary); }
-    .value { color: var(--text-primary); }
+    .profile-card { 
+        border-radius: 12px; 
+        border: 1px solid #e5e7eb; 
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .avatar { 
+        width: 120px; 
+        height: 120px; 
+        border-radius: 50%; 
+        object-fit: cover; 
+    }
+    
+    .label { 
+        font-weight: 600; 
+        color: #6b7280; 
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .value { 
+        color: #111827;
+        font-size: 0.95rem;
+    }
+
+    /* Edit Profile Section */
+    .edit-header {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        padding: 1.5rem;
+        margin: -1rem -1rem 1.5rem -1rem;
+    }
+
+    .edit-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .edit-header p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    /* Form Styling */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+        width: 100%;
+    }
+
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-control.is-invalid {
+        border-color: #ef4444;
+    }
+
+    .invalid-feedback {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    /* File Upload */
+    .file-upload {
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        background-color: #f9fafb;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .file-upload:hover {
+        border-color: #6366f1;
+        background-color: #f0f0ff;
+    }
+
+    .file-upload.has-file {
+        border-color: #10b981;
+        background-color: #f0fdf4;
+    }
+
+    .file-upload input[type="file"] {
+        display: none;
+    }
+
+    .file-preview {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #f3f4f6;
+        border-radius: 8px;
+        display: none;
+    }
+
+    .file-preview.show {
+        display: block;
+    }
+
+    .current-file {
+        background-color: #e0f2fe;
+        padding: 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Textarea */
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .char-counter {
+        text-align: right;
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+    }
+
+    .char-counter.warning { color: #f59e0b; }
+    .char-counter.danger { color: #ef4444; }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: #6366f1;
+        border-color: #6366f1;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: #5b56f0;
+        border-color: #5b56f0;
+    }
+
+    .btn-secondary {
+        background-color: #6b7280;
+        border-color: #6b7280;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5d6374;
+        border-color: #5d6374;
+    }
+
+    /* Success Alert */
+    .alert-success {
+        background-color: #d1fae5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .edit-header {
+            padding: 1rem;
+            margin: -1rem -1rem 1rem -1rem;
+        }
+        
+        .btn-secondary {
+            margin-right: 0;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            width: 100%;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -50,7 +244,9 @@
 
     <div class="col-lg-8">
         <div class="card profile-card mb-4">
-            <div class="card-header"><i class="fas fa-id-card me-2"></i>Professional Details</div>
+            <div class="card-header">
+                <i class="fas fa-id-card me-2"></i>Professional Details
+            </div>
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -73,26 +269,248 @@
             </div>
         </div>
 
+        <!-- Edit Profile Section -->
         <div class="card profile-card">
-            <div class="card-header"><i class="fas fa-pen me-2"></i>Edit Profile</div>
+            <div class="edit-header">
+                <h5><i class="fas fa-user-edit me-2"></i>Update Your Profile</h5>
+                <p>Keep your information up-to-date to help students and colleagues connect with you.</p>
+            </div>
+            
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>{{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" id="profileForm">
                     {% csrf_token %}
-                    <div class="row g-3">
-                        <div class="col-md-6">{{ form.profile_image.label_tag }}{{ form.profile_image }}</div>
-                        <div class="col-md-6">{{ form.phone_number.label_tag }}{{ form.phone_number }}</div>
-                        <div class="col-12">{{ form.address.label_tag }}{{ form.address }}</div>
-                        <div class="col-md-4">{{ form.degree.label_tag }}{{ form.degree }}</div>
-                        <div class="col-md-4">{{ form.primary_subject.label_tag }}{{ form.primary_subject }}</div>
-                        <div class="col-md-4">{{ form.ability_subjects.label_tag }}{{ form.ability_subjects }}</div>
-                        <div class="col-12">{{ form.bio.label_tag }}{{ form.bio }}</div>
+                    
+                    <!-- Profile Image -->
+                    <div class="form-group">
+                        <label>Profile Picture</label>
+                        {% if profile.profile_image %}
+                            <div class="current-file">
+                                <i class="fas fa-image me-2"></i>
+                                Currently: <a href="{{ profile.profile_image.url }}" target="_blank">{{ profile.profile_image.name}}</a>
+                                <input type="checkbox" name="profile_image-clear" id="profile_image-clear_id">
+                                <label for="profile_image-clear_id" class="ms-2">Clear</label>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="file-upload" onclick="document.getElementById('id_profile_image').click()">
+                            {{ form.profile_image }}
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt fa-2x text-primary mb-2"></i>
+                                <div><strong>Choose Profile Picture</strong></div>
+                                <small class="text-muted">Click to upload or drag and drop (JPG, PNG, max 5MB)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="file-preview" id="filePreview">
+                            <div class="d-flex align-items-center">
+                                <img id="previewImage" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;" class="me-3">
+                                <div>
+                                    <div class="fw-bold" id="fileName"></div>
+                                    <small class="text-muted" id="fileSize"></small>
+                                </div>
+                            </div>
+                        </div>
+                        {% if form.profile_image.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.profile_image.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
-                    <div class="text-end mt-3">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Changes</button>
+
+                    <div class="row">
+                        <!-- Phone Number -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.phone_number.id_for_label }}">
+                                    <i class="fas fa-phone me-2"></i>Phone Number
+                                </label>
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.phone_number.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Degree -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.degree.id_for_label }}">
+                                    <i class="fas fa-graduation-cap me-2"></i>Degree
+                                </label>
+                                {{ form.degree }}
+                                {% if form.degree.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.degree.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-group">
+                        <label for="{{ form.address.id_for_label }}">
+                            <i class="fas fa-map-marker-alt me-2"></i>Address
+                        </label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.address.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <!-- Primary Subject -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.primary_subject.id_for_label }}">
+                                    <i class="fas fa-book me-2"></i>Primary Subject
+                                </label>
+                                {{ form.primary_subject }}
+                                {% if form.primary_subject.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.primary_subject.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Ability Subjects -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.ability_subjects.id_for_label }}">
+                                    <i class="fas fa-books me-2"></i>Ability Subjects
+                                </label>
+                                {{ form.ability_subjects }}
+                                {% if form.ability_subjects.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.ability_subjects.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="form-group">
+                        <label for="{{ form.bio.id_for_label }}">
+                            <i class="fas fa-user-circle me-2"></i>Bio
+                        </label>
+                        {{ form.bio }}
+                        <div class="char-counter" id="bioCounter">
+                            <span id="bioCount">0</span>/500 characters
+                        </div>
+                        {% if form.bio.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.bio.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo me-1"></i>Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Changes
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('id_profile_image');
+    const fileUpload = document.querySelector('.file-upload');
+    const filePreview = document.getElementById('filePreview');
+    const bioTextarea = document.querySelector('textarea[name="bio"]');
+    const bioCount = document.getElementById('bioCount');
+    const bioCounter = document.getElementById('bioCounter');
+
+    // File input handling
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.match('image.*')) {
+                    alert('Please select a valid image file (JPG, PNG).');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB.');
+                    this.value = '';
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImage').src = e.target.result;
+                    document.getElementById('fileName').textContent = file.name;
+                    document.getElementById('fileSize').textContent = formatFileSize(file.size);
+                    filePreview.classList.add('show');
+                    fileUpload.classList.add('has-file');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                filePreview.classList.remove('show');
+                fileUpload.classList.remove('has-file');
+            }
+        });
+    }
+
+    // Bio character counter
+    if (bioTextarea) {
+        function updateCounter() {
+            const count = bioTextarea.value.length;
+            bioCount.textContent = count;
+            
+            bioCounter.className = 'char-counter';
+            if (count > 400) bioCounter.classList.add('warning');
+            if (count > 450) bioCounter.classList.add('danger');
+        }
+        
+        bioTextarea.addEventListener('input', updateCounter);
+        updateCounter(); // Initial count
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+});
+
+function resetForm() {
+    if (confirm('Are you sure you want to reset all changes?')) {
+        document.getElementById('profileForm').reset();
+        document.getElementById('filePreview').classList.remove('show');
+        document.querySelector('.file-upload').classList.remove('has-file');
+        document.getElementById('bioCount').textContent = '0';
+        document.getElementById('bioCounter').className = 'char-counter';
+    }
+}
+</script>
 {% endblock %}

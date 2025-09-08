@@ -40,7 +40,7 @@
             </a>
         </div>
             <ul class="sidebar-menu">
-                <li><a href="#dashboard" class="{% if request.resolver_match.url_name == 'teacher_dashboard' %}active{% endif %}">
+                <li><a href="/" class="{% if request.resolver_match.url_name == 'teacher_dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt icon"></i> Dashboard</a></li>
                 <li><a href="{% url 'teacher_profile' %}" class="{% if request.resolver_match.url_name == 'teacher_profile' %}active{% endif %}">
                     <i class="fas fa-user icon"></i> My Profile</a></li>
@@ -61,10 +61,6 @@
                 
                 <li><a href="#">
                     <i class="fas fa-calendar-alt icon"></i> Schedule</a></li>
-                <li><a href="#">
-                    <i class="fas fa-file-alt icon"></i> Reports</a></li>
-                <li><a href="#">
-                    <i class="fas fa-cog icon"></i> Settings</a></li>
                 <li><a href="#">
                     <i class="fas fa-question-circle icon"></i> Help & Support</a></li>
                 <li><a href="{% url 'logout' %}">

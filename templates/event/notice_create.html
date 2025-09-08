@@ -6,300 +6,302 @@
 {% block extra_css %}
 <style>
     .notice-form-container {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #f8fafc;
         min-height: calc(100vh - 100px);
         padding: 40px 0;
     }
 
     .form-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(15px);
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e5e7eb;
         overflow: hidden;
-        animation: slideUp 0.6s ease-out;
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
     }
 
     .form-header {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        background: #1f2937;
         color: white;
-        padding: 30px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .form-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 4s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 0.3; transform: scale(1); }
-        50% { opacity: 0.6; transform: scale(1.02); }
+        padding: 24px 32px;
+        border-bottom: 1px solid #374151;
     }
 
     .form-header h2 {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin-bottom: 8px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .form-header p {
-        font-size: 1rem;
-        opacity: 0.9;
-        position: relative;
-        z-index: 1;
-        margin: 0;
-    }
-
-    .form-body {
-        padding: 40px;
-    }
-
-    .form-group {
-        margin-bottom: 25px;
-        position: relative;
-    }
-
-    .form-label {
-        font-size: 1.1rem;
+        font-size: 1.5rem;
         font-weight: 600;
-        color: #374151;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .form-label i {
-        color: #6366f1;
-        font-size: 1.1rem;
-    }
-
-    .form-control {
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 15px 18px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(5px);
-    }
-
-    .form-control:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        background: white;
-        transform: translateY(-2px);
-    }
-
-    .form-select {
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 15px 18px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(5px);
-        cursor: pointer;
-    }
-
-    .form-select:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        background: white;
-        transform: translateY(-2px);
-    }
-
-    .target-audience {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border-radius: 15px;
-        padding: 20px;
-        border: 2px solid #e2e8f0;
-        transition: all 0.3s ease;
-    }
-
-    .target-audience:hover {
-        border-color: #cbd5e1;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .audience-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 15px;
+        margin: 0;
+        color: white;
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    .audience-title i {
-        color: #6366f1;
-        font-size: 1.3rem;
+    .form-header p {
+        font-size: 0.875rem;
+        color: #d1d5db;
+        margin: 4px 0 0 0;
+    }
+
+    .form-body {
+        padding: 32px;
+    }
+
+    .form-section {
+        margin-bottom: 32px;
+    }
+
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f3f4f6;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .section-title i {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 12px 16px;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        background: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-select {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 12px 16px;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        background: white;
+        cursor: pointer;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .priority-indicator {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-left: 8px;
+    }
+
+    .priority-normal {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .priority-important {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .priority-urgent {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .audience-section {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 20px;
     }
 
     .checkbox-group {
         display: flex;
-        gap: 25px;
-        flex-wrap: wrap;
+        gap: 24px;
+        margin-top: 12px;
     }
 
     .checkbox-item {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 12px 18px;
-        background: white;
-        border-radius: 10px;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        min-width: 120px;
-    }
-
-    .checkbox-item:hover {
-        border-color: #6366f1;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+        gap: 8px;
     }
 
     .checkbox-item input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        accent-color: #6366f1;
+        width: 16px;
+        height: 16px;
+        accent-color: #3b82f6;
         cursor: pointer;
     }
 
     .checkbox-item label {
-        font-weight: 600;
+        font-size: 0.875rem;
+        font-weight: 500;
         color: #374151;
         cursor: pointer;
         margin: 0;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
 
     .checkbox-item label i {
-        font-size: 1.1rem;
-        color: #6366f1;
-    }
-
-    .btn-submit {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        border: none;
-        border-radius: 12px;
-        padding: 15px 40px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: white;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-submit::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.5s;
-    }
-
-    .btn-submit:hover::before {
-        left: 100%;
-    }
-
-    .btn-submit:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
-    }
-
-    .btn-submit:active {
-        transform: translateY(-1px);
-    }
-
-    .priority-section {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border-radius: 15px;
-        padding: 20px;
-        border: 2px solid #fbbf24;
-        margin-bottom: 25px;
-    }
-
-    .priority-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #92400e;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .priority-title i {
-        color: #f59e0b;
-    }
-
-    .form-floating {
-        position: relative;
-    }
-
-    .form-floating .form-control {
-        height: auto;
-        min-height: 120px;
-        padding: 20px 18px 8px 18px;
-    }
-
-    .form-floating label {
-        padding: 8px 18px;
+        font-size: 0.75rem;
         color: #6b7280;
-        font-weight: 500;
     }
 
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 6px;
+        border: 1px solid;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-cancel {
+        background: white;
+        color: #374151;
+        border-color: #d1d5db;
+    }
+
+    .btn-cancel:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+    }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .btn-primary:disabled {
+        background: #9ca3af;
+        border-color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .form-help {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+
+    .required-indicator {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+    .character-count {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-align: right;
+        margin-top: 4px;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
+        .notice-form-container {
+            padding: 20px 0;
+        }
+        
         .form-body {
-            padding: 30px 20px;
+            padding: 24px 20px;
+        }
+        
+        .form-header {
+            padding: 20px 24px;
         }
         
         .checkbox-group {
             flex-direction: column;
+            gap: 16px;
         }
         
-        .checkbox-item {
-            min-width: 100%;
+        .btn-group {
+            flex-direction: column-reverse;
         }
         
-        .form-header h2 {
-            font-size: 1.8rem;
+        .btn {
+            justify-content: center;
         }
+    }
+
+    /* Animation for form validation */
+    .form-control.is-valid {
+        border-color: #10b981;
+    }
+
+    .form-control.is-invalid {
+        border-color: #ef4444;
+    }
+
+    .form-select.is-valid {
+        border-color: #10b981;
+    }
+
+    .form-select.is-invalid {
+        border-color: #ef4444;
     }
 </style>
 {% endblock %}
@@ -311,85 +313,116 @@
             <div class="col-lg-8 col-md-10">
                 <div class="form-card">
                     <div class="form-header">
-                        <h2><i class="fas fa-bullhorn"></i> Create New Notice</h2>
-                        <p>Share important information with students and teachers</p>
+                        <h2>
+                            <i class="fas fa-bullhorn"></i>
+                            Create Notice
+                        </h2>
+                        <p>Create and publish notices for university community</p>
                     </div>
                     
                     <div class="form-body">
-                        <form method="POST">
+                        <form method="POST" id="noticeForm">
                             {% csrf_token %}
                             
-                            <!-- Title Field -->
-                            <div class="form-group">
-                                <label for="title" class="form-label">
-                                    <i class="fas fa-heading"></i>
-                                    Notice Title
-                                </label>
-                                <input type="text" 
-                                       name="title" 
-                                       id="title" 
-                                       class="form-control" 
-                                       placeholder="Enter notice title..." 
-                                       required>
-                            </div>
-
-                            <!-- Priority Level -->
-                            <div class="priority-section">
-                                <div class="priority-title">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Priority Level
+                            <!-- Basic Information Section -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="fas fa-info-circle"></i>
+                                    Basic Information
                                 </div>
-                                <select name="priority" class="form-select">
-                                    <option value="normal">Normal</option>
-                                    <option value="important">Important</option>
-                                    <option value="urgent">Urgent</option>
-                                </select>
+                                
+                                <div class="form-group">
+                                    <label for="title" class="form-label">
+                                        Notice Title <span class="required-indicator">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           name="title" 
+                                           id="title" 
+                                           class="form-control" 
+                                           placeholder="Enter a clear and concise title" 
+                                           required
+                                           maxlength="200">
+                                    <div class="form-help">Choose a descriptive title that clearly indicates the notice content</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="priority" class="form-label">
+                                        Priority Level <span class="required-indicator">*</span>
+                                    </label>
+                                    <select name="priority" id="priority" class="form-select" required>
+                                        <option value="">Select priority level</option>
+                                        <option value="normal">Normal</option>
+                                        <option value="important">Important</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                    <div class="form-help">Select the appropriate priority level for this notice</div>
+                                </div>
                             </div>
 
-                            <!-- Target Audience -->
-                            <div class="target-audience">
-                                <div class="audience-title">
+                            <!-- Target Audience Section -->
+                            <div class="form-section">
+                                <div class="section-title">
                                     <i class="fas fa-users"></i>
                                     Target Audience
                                 </div>
-                                <div class="checkbox-group">
-                                    <div class="checkbox-item">
-                                        <input type="checkbox" name="audience" value="students" id="students">
-                                        <label for="students">
-                                            <i class="fas fa-user-graduate"></i>
-                                            Students
-                                        </label>
+                                
+                                <div class="audience-section">
+                                    <label class="form-label">
+                                        Who should see this notice? <span class="required-indicator">*</span>
+                                    </label>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" name="audience" value="students" id="students">
+                                            <label for="students">
+                                                <i class="fas fa-user-graduate"></i>
+                                                Students
+                                            </label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" name="audience" value="teachers" id="teachers">
+                                            <label for="teachers">
+                                                <i class="fas fa-chalkboard-teacher"></i>
+                                                Faculty & Staff
+                                            </label>
+                                        </div>
                                     </div>
-                                    <div class="checkbox-item">
-                                        <input type="checkbox" name="audience" value="teachers" id="teachers">
-                                        <label for="teachers">
-                                            <i class="fas fa-chalkboard-teacher"></i>
-                                            Teachers
-                                        </label>
-                                    </div>
+                                    <div class="form-help">Select all applicable audience groups</div>
                                 </div>
                             </div>
 
-                            <!-- Description Field -->
-                            <div class="form-group">
-                                <div class="form-floating">
+                            <!-- Content Section -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="fas fa-edit"></i>
+                                    Notice Content
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="description" class="form-label">
+                                        Description <span class="required-indicator">*</span>
+                                    </label>
                                     <textarea name="description" 
                                               id="description" 
-                                              class="form-control" 
-                                              placeholder="Enter notice description..." 
-                                              required></textarea>
-                                    <label for="description">
-                                        <i class="fas fa-align-left"></i>
-                                        Notice Description
-                                    </label>
+                                              class="form-control form-textarea" 
+                                              placeholder="Provide detailed information about the notice..."
+                                              required
+                                              maxlength="2000"></textarea>
+                                    <div class="character-count">
+                                        <span id="charCount">0</span> / 2000 characters
+                                    </div>
+                                    <div class="form-help">Provide clear and comprehensive details about the notice</div>
                                 </div>
                             </div>
 
-                            <!-- Submit Button -->
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-submit">
-                                    <i class="fas fa-paper-plane me-2"></i>
-                                    Post Notice
+                            <!-- Action Buttons -->
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-cancel">
+                                    <i class="fas fa-times"></i>
+                                    Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Publish Notice
                                 </button>
                             </div>
                         </form>
@@ -403,31 +436,98 @@
 
 {% block extra_js %}
 <script>
-    // Add some interactivity
     document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form');
-        const submitBtn = document.querySelector('.btn-submit');
+        const form = document.getElementById('noticeForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const textarea = document.getElementById('description');
+        const charCount = document.getElementById('charCount');
         
-        // Form validation feedback
+        // Character count for description
+        textarea.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = count;
+            
+            if (count > 1800) {
+                charCount.style.color = '#dc2626';
+            } else if (count > 1500) {
+                charCount.style.color = '#f59e0b';
+            } else {
+                charCount.style.color = '#6b7280';
+            }
+        });
+        
+        // Form validation
         const inputs = document.querySelectorAll('.form-control, .form-select');
         inputs.forEach(input => {
             input.addEventListener('blur', function() {
-                if (this.checkValidity()) {
-                    this.style.borderColor = '#10b981';
-                } else {
-                    this.style.borderColor = '#ef4444';
+                validateField(this);
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    validateField(this);
                 }
             });
         });
         
-        // Submit button loading state
-        form.addEventListener('submit', function() {
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Posting...';
+        // Audience validation
+        const audienceCheckboxes = document.querySelectorAll('input[name="audience"]');
+        audienceCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', validateAudience);
+        });
+        
+        function validateField(field) {
+            if (field.checkValidity() && field.value.trim() !== '') {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+                return true;
+            } else {
+                field.classList.remove('is-valid');
+                field.classList.add('is-invalid');
+                return false;
+            }
+        }
+        
+        function validateAudience() {
+            const checked = document.querySelectorAll('input[name="audience"]:checked');
+            const audienceSection = document.querySelector('.audience-section');
+            
+            if (checked.length > 0) {
+                audienceSection.style.borderColor = '#10b981';
+                return true;
+            } else {
+                audienceSection.style.borderColor = '#ef4444';
+                return false;
+            }
+        }
+        
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Validate all fields
+            inputs.forEach(input => {
+                if (!validateField(input)) {
+                    isValid = false;
+                }
+            });
+            
+            // Validate audience
+            if (!validateAudience()) {
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
             submitBtn.disabled = true;
         });
         
         // Auto-resize textarea
-        const textarea = document.getElementById('description');
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.max(this.scrollHeight, 120) + 'px';
