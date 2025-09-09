@@ -7,6 +7,8 @@ from datetime import datetime
 from routine.models import ClassRoutine
 from hod.forms import TeacherEditForm, HODProfileForm 
 from hod.models import HOD  # Assuming you have an HOD model
+from .forms import ClassRoutineForm
+
 
 # HOD Dashboard View
 @login_required
@@ -29,7 +31,7 @@ def hod_dashboard_view(request):
         'recent_notices': recent_notices,
         'hod_profile': hod_profile, # Use the retrieved or created hod_profile
     }
-    return render(request, "hod/dashboard.html", context)
+    return render(request, "dashboards/hod_dashboard.html", context)
 
 
 # Teacher Management Views
@@ -275,21 +277,31 @@ def notice_create_view(request):
 
 @login_required
 def hod_routine_create_view(request):
+    # Check if user is HOD
     if getattr(request.user, "role", "").lower() != "hod":
+        messages.error(request, "Access denied. HOD only.")
         return redirect("index")
     
-    form = ClassRoutineForm() # Use the form defined above or your actual form
     if request.method == 'POST':
-        form = ClassRoutineForm(request.POST)
+        form = ClassRoutineForm(
+            request.POST, 
+            department=request.user.department
+        )
         if form.is_valid():
             routine = form.save(commit=False)
+            routine.department = request.user.department
             routine.save()
             messages.success(request, "Class routine created successfully!")
             return redirect('classes_routine')
+    else:
+        form = ClassRoutineForm(department=request.user.department)
     
-    context = {'form': form}
-    return render(request, 'hod/hod_routine_create.html', context)
-
+    context = {
+        'form': form,
+        'title': 'Create Class Routine',
+        'button_text': 'Create Routine'
+    }
+    return render(request, 'hod/routine_form.html', context)
 
 @login_required
 def hod_routine_edit_view(request, pk):

@@ -87,17 +87,20 @@ ROOT_URLCONF = 'college_portal.urls'
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(",")
 
 # Add Render host automatically
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+# RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+# if RENDER_EXTERNAL_HOSTNAME:
+#     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-ALLOWED_HOSTS.extend([
-    'college-management-d1jh.onrender.com',
-])
+# ALLOWED_HOSTS.extend([
+#     'college-management-d1jh.onrender.com',
+# ])
+ALLOWED_HOSTS = ["DevRohan33.pythonanywhere.com", "localhost", "127.0.0.1"]
+
 
 # Update CSRF_TRUSTED_ORIGINS
 CSRF_TRUSTED_ORIGINS = [
     "https://college-management-d1jh.onrender.com",
+     "https://DevRohan33.pythonanywhere.com",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "https://*.render.com",
@@ -123,37 +126,36 @@ TEMPLATES = [
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-
 #sqlit3
-# DATABASES = {
-#     'default': dj_database_url.config(default=f"sqlite:///{BASE_DIR}/db.sqlite3")
-# }
+DATABASES = {
+    'default': dj_database_url.config(default=f"sqlite:///{BASE_DIR}/db.sqlite3")
+}
 
 
 # if running on Render (Render sets DATABASE_URL automatically)
-DATABASE_URL = config("DATABASE_URL", default="")
+# DATABASE_URL = config("DATABASE_URL", default="")
 
-if DATABASE_URL:
-    # Running on Render → SSL required
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
-else:
-    # Running locally → use Postgres without SSL
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "clg_portal",
-            "USER": "rohan",
-            "PASSWORD": "Rohan@330",
-            "HOST": "localhost",
-            "PORT": "5432",
-        }
-    }
+# if DATABASE_URL:
+#     # Running on Render → SSL required
+#     DATABASES = {
+#         "default": dj_database_url.config(
+#             default=DATABASE_URL,
+#             conn_max_age=600,
+#             ssl_require=True
+#         )
+#     }
+# else:
+#     # Running locally → use Postgres without SSL
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": "clg_portal",
+#             "USER": "rohan",
+#             "PASSWORD": "Rohan@330",
+#             "HOST": "localhost",
+#             "PORT": "5432",
+#         }
+#     }
 
 
 
@@ -255,6 +257,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # WhiteNoise for static files only
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"

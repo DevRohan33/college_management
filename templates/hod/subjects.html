@@ -1,0 +1,20 @@
+{% extends "hod_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow p-4">
+        <h2 class="mb-3">{{ subject.title }}</h2>
+        <p><strong>Description:</strong> {{ subject.description }}</p>
+        <p><strong>Code:</strong> {{ subject.code }}</p>
+        <p><strong>Semester:</strong> {{ subject.semester }}</p>
+        <p><strong>Department:</strong> {{ subject.department.name }}</p>
+
+        <div class="mt-4">
+            <a href="#" class="btn btn-primary">Edit Subject</a>
+            <a href="#" class="btn btn-danger">Delete Subject</a>
+            <a href="{% url 'hod_subjects' %}" class="btn btn-secondary">Back to Subjects</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -13,7 +13,15 @@
         position: relative;
         overflow: hidden;
     }
-
+    .header-title-new {
+            font-weight: 700;
+            font-size: 2.25rem;
+            margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
     .welcome-card::before {
         content: '';
         position: absolute;
@@ -917,7 +925,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h1 class="header-title text-white mb-2">Welcome Back, {{ user.first_name|default:user.username }}! 👋</h1>
+                            <h1 class="header-title-new text-white mb-2">Welcome Back, {{ user.first_name|default:user.username }}! 👋</h1>
                             <p class="header-subtitle text-white mb-0">Ready to make today productive? Let's dive into your academic journey.</p>
                         </div>
                         <div class="col-md-4 text-center">

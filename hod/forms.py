@@ -18,6 +18,10 @@
 from django import forms
 from account.models import User, Semester # Assuming Semester is still in account.models
 from .models import HOD # Import your HOD model from the current app
+from django import forms
+from routine.models import ClassRoutine
+from subject.models import Subject
+from teacher.models import TeacherProfile
 
 class TeacherEditForm(forms.ModelForm):
     class Meta:
@@ -107,3 +111,34 @@ class HODProfileForm(forms.ModelForm):
             user.save()
             hod.save()
         return hod
+    
+
+
+class ClassRoutineForm(forms.ModelForm):
+    class Meta:
+        model = ClassRoutine
+        fields = ['day_of_week', 'start_time', 'end_time', 'subject', 'teacher', 'semester']
+        widgets = {
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+            'day_of_week': forms.Select(choices=[
+                ('mon', 'Monday'),
+                ('tue', 'Tuesday'),
+                ('wed', 'Wednesday'),
+                ('thu', 'Thursday'),
+                ('fri', 'Friday'),
+                ('sat', 'Saturday'),
+            ])
+        }
+
+    def __init__(self, *args, department=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if department:
+            # Filter subjects by department
+            self.fields['subject'].queryset = Subject.objects.filter(department=department)
+            # Filter teachers by department
+            self.fields['teacher'].queryset = TeacherProfile.objects.filter(
+                user__department=department
+            )
+            # Filter semesters by department
+            self.fields['semester'].queryset = Semester.objects.all()
