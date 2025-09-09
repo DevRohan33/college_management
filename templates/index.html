@@ -63,8 +63,12 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero-section">
-        <div class="container">
+    <section id="home" class="hero-section" 
+    style="background: linear-gradient(135deg, rgba(120, 84, 45, 0.56), rgba(231, 174, 95, 0.48)),
+           url('{% static "index/hero.jpg" %}') center/cover no-repeat;
+           position: relative;
+           overflow: hidden;">
+        <div class="container" >
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="hero-content" data-aos="fade-up">
@@ -125,52 +129,7 @@
         </div>
     </section>
 
-    <!-- Notice Board -->
-    <section class="section-padding bg-light">
-        <div class="container">
-            <div class="text-center mb-5" data-aos="fade-up">
-                <h2 class="section-title">Latest <span class="gradient-text">Announcements</span></h2>
-                <p class="section-subtitle">Stay updated with important notices and upcoming events</p>
-            </div>
-            
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="notice-card" data-aos="fade-up" data-aos-delay="100">
-                        <div class="notice-date">
-                            <i class="fas fa-calendar-alt me-2"></i>August 20, 2024
-                        </div>
-                        <h5 class="notice-title">
-                            <i class="fas fa-exclamation-circle me-2 text-danger"></i>
-                            Admission Deadline Extended - Last Date: August 31, 2024
-                        </h5>
-                        <p class="mb-0">Due to overwhelming response, we've extended the admission deadline for all B.Tech programs. Don't miss this opportunity to secure your future!</p>
-                    </div>
-                    
-                    <div class="notice-card" data-aos="fade-up" data-aos-delay="200">
-                        <div class="notice-date">
-                            <i class="fas fa-calendar-alt me-2"></i>August 15, 2024
-                        </div>
-                        <h5 class="notice-title">
-                            <i class="fas fa-trophy me-2 text-warning"></i>
-                            Annual Tech Fest "Innovate 2024" - September 5-7
-                        </h5>
-                        <p class="mb-0">Join us for three days of innovation, competitions, and networking with industry experts. Registration now open for all events!</p>
-                    </div>
-                    
-                    <div class="notice-card" data-aos="fade-up" data-aos-delay="300">
-                        <div class="notice-date">
-                            <i class="fas fa-calendar-alt me-2"></i>August 10, 2024
-                        </div>
-                        <h5 class="notice-title">
-                            <i class="fas fa-graduation-cap me-2 text-success"></i>
-                            New AI & Data Science Lab Inaugurated
-                        </h5>
-                        <p class="mb-0">State-of-the-art AI lab with latest GPU clusters and cloud computing facilities now available for students and research.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
     <!-- Programs Section -->
     <section id="programs" class="section-padding">
@@ -292,6 +251,53 @@
         </div>
     </section>
 
+    <!-- Notice Board -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="section-title">Latest <span class="gradient-text">Announcements</span></h2>
+                <p class="section-subtitle">Stay updated with important notices and upcoming events</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="notice-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="notice-date">
+                            <i class="fas fa-calendar-alt me-2"></i>August 20, 2024
+                        </div>
+                        <h5 class="notice-title">
+                            <i class="fas fa-exclamation-circle me-2 text-danger"></i>
+                            Admission Deadline Extended - Last Date: August 31, 2024
+                        </h5>
+                        <p class="mb-0">Due to overwhelming response, we've extended the admission deadline for all B.Tech programs. Don't miss this opportunity to secure your future!</p>
+                    </div>
+                    
+                    <div class="notice-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="notice-date">
+                            <i class="fas fa-calendar-alt me-2"></i>August 15, 2024
+                        </div>
+                        <h5 class="notice-title">
+                            <i class="fas fa-trophy me-2 text-warning"></i>
+                            Annual Tech Fest "Innovate 2024" - September 5-7
+                        </h5>
+                        <p class="mb-0">Join us for three days of innovation, competitions, and networking with industry experts. Registration now open for all events!</p>
+                    </div>
+                    
+                    <div class="notice-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="notice-date">
+                            <i class="fas fa-calendar-alt me-2"></i>August 10, 2024
+                        </div>
+                        <h5 class="notice-title">
+                            <i class="fas fa-graduation-cap me-2 text-success"></i>
+                            New AI & Data Science Lab Inaugurated
+                        </h5>
+                        <p class="mb-0">State-of-the-art AI lab with latest GPU clusters and cloud computing facilities now available for students and research.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
     <!-- Campus Facilities -->
     <section id="campus" class="section-padding bg-light">
         <div class="container">

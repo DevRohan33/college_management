@@ -1,0 +1,171 @@
+    .advanced-form-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    
+    .form-sidebar {
+        background: linear-gradient(135deg, #4e54c8, #8a64d0);
+        color: white;
+        height: 100%;
+        padding: 2rem 1.5rem;
+    }
+    
+    .nav-step {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+    
+    .nav-step.active {
+        opacity: 1;
+    }
+    
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+    
+    .step-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .step-desc {
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+    
+    .form-content {
+        background: #fff;
+        height: 100%;
+    }
+    
+    .form-section {
+        display: none;
+    }
+    
+    .form-section.active {
+        display: block;
+        animation: fadeIn 0.5s;
+    }
+    
+    .section-title {
+        color: #4e54c8;
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-description {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+    
+    .floating-input-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .floating-input-group input,
+    .floating-input-group select,
+    .floating-input-group textarea {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background: #f8f9fa;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+    
+    .floating-input-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .floating-input-group label {
+        position: absolute;
+        top: 1rem;
+        left: 3rem;
+        color: #6c757d;
+        pointer-events: none;
+        transition: all 0.3s;
+        background: #f8f9fa;
+        padding: 0 0.5rem;
+    }
+    
+    .floating-input-group .icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        transition: color 0.3s;
+    }
+    
+    .floating-input-group input:focus,
+    .floating-input-group select:focus,
+    .floating-input-group textarea:focus {
+        border-color: #4e54c8;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(78, 84, 200, 0.1);
+        outline: none;
+    }
+    
+    .floating-input-group input:focus ~ label,
+    .floating-input-group select:focus ~ label,
+    .floating-input-group textarea:focus ~ label,
+    .floating-input-group input:not(:placeholder-shown) ~ label,
+    .floating-input-group select:not([value=""]) ~ label,
+    .floating-input-group textarea:not(:placeholder-shown) ~ label {
+        top: -0.5rem;
+        left: 0.8rem;
+        font-size: 0.8rem;
+        color: #4e54c8;
+        background: #fff;
+    }
+    
+    .floating-input-group input:focus ~ .icon,
+    .floating-input-group select:focus ~ .icon,
+    .floating-input-group textarea:focus ~ .icon {
+        color: #4e54c8;
+    }
+    
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    #submit-btn {
+        display: none;
+    }
+    
+    .progress-container {
+        text-align: right;
+    }
+    
+    .progress {
+        border-radius: 10px;
+        margin-bottom: 0.25rem;
+    }
+    
+    .progress-bar {
+        background-color: #4e54c8;
+        border-radius: 10px;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }

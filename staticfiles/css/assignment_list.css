@@ -1,0 +1,106 @@
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        padding: 15px;
+        background-color: #f8f9fa !important;
+    }
+    
+    .table td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .badge {
+        font-size: 0.8em;
+        padding: 0.4em 0.8em;
+        border-radius: 20px;
+    }
+    
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .sortable:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+    
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #007bff, #28a745);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+    
+    .assignment-title {
+        font-size: 1.05em;
+        transition: color 0.2s;
+    }
+    
+    .assignment-title:hover {
+        color: #0056b3 !important;
+    }
+    
+    .show-more-btn {
+        font-size: 0.8em;
+        color: #007bff;
+    }
+    
+    .empty-state {
+        padding: 40px 20px;
+    }
+    
+    .nav-pills .nav-link {
+        border-radius: 25px;
+        margin-right: 5px;
+    }
+    
+    .nav-pills .nav-link.active {
+        background-color: #007bff;
+    }
+    
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.9em;
+        }
+        
+        .avatar-circle {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8em;
+        }
+    }
+    
+    .overdue-row {
+        background-color: rgba(220, 53, 69, 0.05);
+        border-left: 3px solid #dc3545;
+    }
+    
+    .search-highlight {
+        background-color: #fff3cd;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
